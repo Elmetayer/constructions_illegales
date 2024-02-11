@@ -1,3 +1,2 @@
-data/
 .venv/
-.streamlit/
+.DS_Store
