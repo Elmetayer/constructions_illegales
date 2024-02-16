@@ -29,10 +29,12 @@ coords_WSG = coords_Lambert.to_crs('EPSG:4326')
 st.write('Les coordonnées sont: ({}, {})'.format(coords_WSG.geometry[0].x, coords_WSG.geometry[0].y))
 
 # center on Liberty Bell, add marker
-m = folium.Map(location=[coords_WSG.geometry[0].x, coords_WSG.geometry[0].y], zoom_start=16)
+m = folium.Map(location=[coords_WSG.geometry[0].y, coords_WSG.geometry[0].x], zoom_start=16)
 folium.Marker(
-    [coords_WSG.geometry[0].x, coords_WSG.geometry[0].y], popup="Liberty Bell", tooltip="Liberty Bell"
-).add_to(m)
+    [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x], 
+    popup = adresse, 
+    tooltip = adresse).add_to(m)
 
 # call to render Folium map in Streamlit
 st_data = st_folium(m, width=725)
+st.write(json.load(st_data))
