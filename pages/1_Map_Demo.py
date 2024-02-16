@@ -50,8 +50,6 @@ fg.add_child(folium.Marker(
     tooltip = ''))
 m = folium.Map(location = CENTER_START, zoom_start = 16)
 out_m = st_folium(m, feature_group_to_add = fg, center = center, width=725)
-if (out_m['last_clicked'] and (
-    out_m['last_clicked']['lat'] != st.session_state['click_coords'][0] or
-    out_m['last_clicked']['lng'] != st.session_state['click_coords'][1])):
+if out_m['last_clicked']:
     st.session_state['click_coords'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.experimental_rerun()
