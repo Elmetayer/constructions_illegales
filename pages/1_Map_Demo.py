@@ -13,7 +13,7 @@ st.markdown("# Map Demo")
 st.sidebar.header("Map Demo")
 
 # recherche de l'adresse dans la barre latérale
-adresse = st.sidebar.text_input('Adresse', '')
+adresse = st.sidebar.text_input('Adresse', 'Champ de Mars, 5 Av. Anatole France, 75007 Paris')
 request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
     adresse)
 response_wxs = requests.get(request_wxs).content
