@@ -35,8 +35,7 @@ fg.add_child(folium.Marker(
     popup = adresse, 
     tooltip = ''))
 m = folium.Map(location = st.session_state['last_coords'], zoom_start = 16)
-
-# call to render Folium map in Streamlit
-st_data = st_folium(m, feature_group_to_add = fg, width=725)
-if st_data['last_clicked'] is not None:
-    st.session_state['last_coords'] = [st_data['last_clicked']['lat'], st_data['last_clicked']['lng']]
+out_m = st_folium(m, feature_group_to_add = fg, width=725)
+if (out_m['last_clicked'] and out_m['last_clicked'] != st.session_state['last_coords']):
+    st.session_state['last_coords'] = out_m['last_clicked']
+    st.experimental_rerun()
