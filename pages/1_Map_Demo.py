@@ -1,6 +1,6 @@
 import folium
 import streamlit as st
-import request
+import requests
 import json
 import shapely
 import geopandas
