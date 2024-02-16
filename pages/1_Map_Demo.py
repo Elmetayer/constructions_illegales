@@ -22,7 +22,7 @@ X0 = adresses['features'][0]['properties']['x']
 Y0 = adresses['features'][0]['properties']['y']
 coords_Lambert = gpd.GeoDataFrame(
     {'Nom': ['adresse'],
-     'geometry': [shapely.geometry.Point(X0, YO)]},
+     'geometry': [shapely.geometry.Point(X0, Y0)]},
     crs = 'EPSG:2154')
 coords_WSG = coords_Lambert.to_crs('EPSG:4326')
 st.write('Les coordonnées sont: ({}, {})'.format(coords_WSG.geometry[0].x, coords_WSG.geometry[0].y))
