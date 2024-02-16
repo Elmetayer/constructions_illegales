@@ -27,17 +27,16 @@ coords_Lambert = gpd.GeoDataFrame(
     crs = 'EPSG:2154')
 coords_WSG = coords_Lambert.to_crs('EPSG:4326')
 st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-st.write(st.session_state['last_coords'])
 
 # affichage de la carte et centrage sur l'adresse entrée
-m = folium.Map(location = st.session_state['last_coords'], zoom_start = 16)
-folium.Marker(
+fg = folium.FeatureGroup(name = 'centre carte')
+fg.add_child(folium.Marker(
     st.session_state['last_coords'], 
     popup = adresse, 
-    tooltip = '').add_to(m)
+    tooltip = ''))
+m = folium.Map(location = st.session_state['last_coords'], zoom_start = 16)
 
 # call to render Folium map in Streamlit
-st_data = st_folium(m, width=725)
-#st.session_state['last_coords'] = [st_data['last_clicked']['lat'], st_data['last_clicked']['lng']]
-
-st.write(st_data['last_clicked'])
+st_data = st_folium(m, feature_group_to_add = fg, width=725)
+if st_data['last_clicked'] is not None:
+    st.session_state['last_coords'] = [st_data['last_clicked']['lat'], st_data['last_clicked']['lng']]
