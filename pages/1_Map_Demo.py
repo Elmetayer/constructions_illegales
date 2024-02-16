@@ -12,10 +12,9 @@ st.markdown("# Map Demo")
 st.sidebar.header("Map Demo")
 
 # recherche de l'adresse dans la barre latérale
-title = st.sidebar.text_input('Adresse', '')
+adresse = st.sidebar.text_input('Adresse', '')
 request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
-    adresse
-)
+    adresse)
 response_wxs = requests.get(request_wxs).content
 adresses = json.load(BytesIO(response_wxs))
 X0 = adresses['features'][0]['properties']['x']
