@@ -29,12 +29,15 @@ coords_WSG = coords_Lambert.to_crs('EPSG:4326')
 st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
 
 # affichage de la carte et centrage sur l'adresse entrée
+center = None
+if st.session_state['last_coords']:
+    center = st.session_state['last_coords']
 fg = folium.FeatureGroup(name = 'centre carte')
 fg.add_child(folium.Marker(
     st.session_state['last_coords'], 
     popup = adresse, 
     tooltip = ''))
-m = folium.Map(location = st.session_state['last_coords'], zoom_start = 16)
+m = folium.Map(location = [48.858370, 2.294481], zoom_start = 16)
 out_m = st_folium(m, feature_group_to_add = fg, width=725)
 if (out_m['last_clicked'] and out_m['last_clicked'] != st.session_state['last_coords']):
     st.session_state['last_coords'] = out_m['last_clicked']
