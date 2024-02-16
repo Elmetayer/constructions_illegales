@@ -5,6 +5,7 @@ import json
 import shapely
 import geopandas
 from streamlit_folium import st_folium
+from io import BytesIO
 
 # titre de la page
 st.set_page_config(page_title="Map Demo", page_icon="📈")
@@ -19,17 +20,17 @@ response_wxs = requests.get(request_wxs).content
 adresses = json.load(BytesIO(response_wxs))
 X0 = adresses['features'][0]['properties']['x']
 Y0 = adresses['features'][0]['properties']['y']
-coords = gpd.GeoDataFrame(
+coords_Lambert = gpd.GeoDataFrame(
     {'Nom': ['adresse'],
      'geometry': [shapely.geometry.Point(X0, YO)]},
     crs = 'EPSG:2154')
-bounds = bounds.to_crs('EPSG:4326')
-st.write('Les coordonnées sont: ({}, {})'.format(coords.geometry[0].x, coords.geometry[0].y))
+coords_WSG = coords_Lambert.to_crs('EPSG:4326')
+st.write('Les coordonnées sont: ({}, {})'.format(coords_WSG.geometry[0].x, coords_WSG.geometry[0].y))
 
 # center on Liberty Bell, add marker
-m = folium.Map(location=[39.949610, -75.150282], zoom_start=16)
+m = folium.Map(location=[coords_WSG.geometry[0].x, coords_WSG.geometry[0].y], zoom_start=16)
 folium.Marker(
-    [39.949610, -75.150282], popup="Liberty Bell", tooltip="Liberty Bell"
+    [coords_WSG.geometry[0].x, coords_WSG.geometry[0].y], popup="Liberty Bell", tooltip="Liberty Bell"
 ).add_to(m)
 
 # call to render Folium map in Streamlit
