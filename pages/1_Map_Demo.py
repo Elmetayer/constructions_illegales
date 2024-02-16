@@ -38,6 +38,6 @@ folium.Marker(
 
 # call to render Folium map in Streamlit
 st_data = st_folium(m, width=725)
-st.session_state['last_coords'] = [st_data['last_coords']['lat'], st_data['last_coords']['lng']]
+st.session_state['last_coords'] = [st_data['last_clicked']['lat'], st_data['last_clicked']['lng']]
 
 
