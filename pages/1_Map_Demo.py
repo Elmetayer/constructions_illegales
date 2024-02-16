@@ -6,6 +6,7 @@ import shapely
 import geopandas
 from streamlit_folium import st_folium
 from io import BytesIO
+import geopandas as gpd
 
 # titre de la page
 st.set_page_config(page_title="Map Demo", page_icon="📈")
