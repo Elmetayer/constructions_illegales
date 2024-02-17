@@ -23,6 +23,8 @@ if 'last_clicked' not in st.session_state:
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = None
 
+st.write(st.session_state['bbox'])
+
 def search_adresse():
     if st.session_state['adresse_text']:
         request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
