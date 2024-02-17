@@ -70,13 +70,11 @@ def get_bbox(coords_center, size, mode):
     return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
 
 
-# mode d'affichage de la bouding box
+# mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
+bbox_size = st.sidebar.slider('Taille (m)', 0, 500, 100)
 if bbox_mode:
     st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
-
-# taille de la bounding box
-bbox_size = st.sidebar.slider('Taille (m)', 0, 500, 100)
 if bbox_size:
     st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
 
