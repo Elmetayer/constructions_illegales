@@ -16,29 +16,30 @@ st.sidebar.header("Map Demo")
 # variables de session
 CENTER_START = [48.858370, 2.294481]
 if 'last_coords' not in st.session_state:
-    st.session_state['last_coords'] = 'click'
-if 'first_launch' not in st.session_state:
-    st.session_state['first_launch'] = True
+    st.session_state['last_coords'] = [48.858370, 2.294481]
 
 st.write('adresse courante: {}'.format(st.session_state['adresse_coords']))
 st.write('coordonnées click courantes: {}'.format(st.session_state['click_coords']))
 st.write('init: {}'.format(st.session_state['first_launch']))
 
 # recherche de l'adresse dans la barre latérale
-adresse = st.sidebar.text_input('Adresse', None)
-if adresse:
-    request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
-        adresse)
-    response_wxs = requests.get(request_wxs).content
-    adresses = json.load(BytesIO(response_wxs))
-    X0 = adresses['features'][0]['properties']['x']
-    Y0 = adresses['features'][0]['properties']['y']
-    coords_Lambert = gpd.GeoDataFrame(
-        {'Nom': ['adresse'],
-         'geometry': [shapely.geometry.Point(X0, Y0)]},
-        crs = 'EPSG:2154')
-    coords_WSG = coords_Lambert.to_crs('EPSG:4326')
-    st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+with st.sidebar.form('adresse_search'):
+    st.write('saisir l\'adresse')
+    adresse = st.sidebar.text_input('Adresse', None)
+    submit_adresse = st.form_submit_button("submit_adresse")
+    if submit_adresse:   
+        request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
+            adresse)
+        response_wxs = requests.get(request_wxs).content
+        adresses = json.load(BytesIO(response_wxs))
+        X0 = adresses['features'][0]['properties']['x']
+        Y0 = adresses['features'][0]['properties']['y']
+        coords_Lambert = gpd.GeoDataFrame(
+            {'Nom': ['adresse'],
+             'geometry': [shapely.geometry.Point(X0, Y0)]},
+            crs = 'EPSG:2154')
+        coords_WSG = coords_Lambert.to_crs('EPSG:4326')
+        st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
 
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
@@ -48,9 +49,6 @@ fg.add_child(folium.Marker(
     tooltip = ''))
 m = folium.Map(location = CENTER_START, zoom_start = 16)
 out_m = st_folium(m, feature_group_to_add = fg, center = st.session_state['last_coords'], width=725)
-if out_m['last_clicked']:
-    if st.session_state['first_launch']:
-        st.session_state['first_launch'] = False
-    elif st.session_state['last_coords'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
-        st.session_state['last_coords'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
-        st.rerun()
+if out_m['last_clicked'] and st.session_state['last_coords'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
+    st.session_state['last_coords'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']
+    st.rerun()
