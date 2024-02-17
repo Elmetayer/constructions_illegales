@@ -53,11 +53,11 @@ def get_bbox(coords_center, size, mode):
         crs = 'EPSG:4326')
     coords_center_meter = ccoords_center_WSG.to_crs('EPSG:4087')
     if mode == 'haut/gauche':
-        bbox_meters = gpd.GeoDataFrame(
+        bbox_WSG = gpd.GeoDataFrame(
             {'Nom': ['min', 'max'],
             'geometry': [
-                shapely.geometry.Point(coords_center_meter.geometry[0].x, coords_center_meter.geometry[0].x + size),
-                shapely.geometry.Point(coords_center_meter.geometry[0].y - size, coords_center_meter.geometry[0].y)]},
+                shapely.affinity.translate(shapely.geometry.Point(ccoords_center_WSG.geometry[0].x, ccoords_center_WSG.geometry[0].x), 0, size),
+                shapely.affinity.translate(shapely.geometry.Point(ccoords_center_WSG.geometry[0].y, ccoords_center_WSG.geometry[0].y), -size, 0)]},
             crs = 'EPSG:4087')
     if mode == 'centre':
         bbox_meters = gpd.GeoDataFrame(
@@ -66,7 +66,7 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_meter.geometry[0].x - size//2, coords_center_meter.geometry[0].y - size//2),
                 shapely.geometry.Point(coords_center_meter.geometry[0].x + size//2, coords_center_meter.geometry[0].y + size//2)]},
             crs = 'EPSG:4087')
-    bbox_WSG = bbox_meters.to_crs('EPSG:4326')
+        bbox_WSG = bbox_meters.to_crs('EPSG:4326')
     return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
 
 
