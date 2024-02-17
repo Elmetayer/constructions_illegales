@@ -18,7 +18,7 @@ CENTER_START = [48.858370, 2.294481]
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
 if 'last_clicked' not in st.session_state:
-    st.session_state['last_clicked'] = [48.858370, 2.294481]
+    st.session_state['last_clicked'] = None
 
 def search_adresse():
     request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
@@ -36,6 +36,7 @@ def search_adresse():
 
 def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
+    st.session_state['last_clicked'] = None
     st.session_state['adresse_text'] = ''
 
 # recherche de l'adresse dans la barre latérale
@@ -51,6 +52,10 @@ st.sidebar.button('Mettre à jour', on_click = update_point)
 fg = folium.FeatureGroup(name = 'centre carte')
 fg.add_child(folium.Marker(
     st.session_state['last_coords'], 
+    popup = adresse, 
+    tooltip = ''))
+fg.add_child(folium.Marker(
+    st.session_state['last_clicked'], 
     popup = adresse, 
     tooltip = ''))
 m = folium.Map(location = CENTER_START, zoom_start = 16)
