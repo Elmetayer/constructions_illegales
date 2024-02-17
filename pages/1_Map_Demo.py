@@ -49,7 +49,7 @@ def update_point():
 def get_bbox(coords_center, size, mode):
     ccoords_center_WSG = gpd.GeoDataFrame(
         {'Nom': ['centre'],
-        'geometry': [shapely.geometry.Point(coords_center[0], coords_center[1])]},
+        'geometry': [shapely.geometry.Point(coords_center[1], coords_center[0])]},
         crs = 'EPSG:4326')
     coords_center_meter = ccoords_center_WSG.to_crs('EPSG:6933')
     if mode == 'haut/gauche':
@@ -67,7 +67,7 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_meter.geometry[0].x + size//2, coords_center_meter.geometry[0].y + size//2)]},
             crs = 'EPSG:6933')
         bbox_WSG = bbox_meters.to_crs('EPSG:4326')
-    return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
+    return(bbox_WSG.geometry[0].y, bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y, bbox_WSG.geometry[1].x)
 
 
 # mode d'affichage et taille de la bouding box
@@ -107,10 +107,10 @@ if st.session_state['last_clicked']:
 if st.session_state['bbox']:
     # bounding box
     polygon_bbox = shapely.Polygon((
-        (st.session_state['bbox'][0], st.session_state['bbox'][0]), 
-        (st.session_state['bbox'][1], st.session_state['bbox'][0]), 
-        (st.session_state['bbox'][1], st.session_state['bbox'][1]),
-        (st.session_state['bbox'][0], st.session_state['bbox'][1])))
+        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
+        (st.session_state['bbox'][2], st.session_state['bbox'][1]), 
+        (st.session_state['bbox'][2], st.session_state['bbox'][3]),
+        (st.session_state['bbox'][0], st.session_state['bbox'][3])))
     gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
