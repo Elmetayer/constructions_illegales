@@ -51,6 +51,10 @@ adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = sea
 #    st.sidebar.write('coordonnées: ({}, {})'.format(
 #        st.session_state['last_clicked'][0], st.session_state['last_clicked'][1]))
 update_button = st.sidebar.button('mettre à jour', on_click = update_point)
+cancel_button = st.sidebar.button('annuler')
+if cancel_button:
+    st.session_state['last_clicked'] = None
+    st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
