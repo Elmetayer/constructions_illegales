@@ -19,6 +19,9 @@ if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
+# convention pour la bbox : xmin, ymin, xmax, ymax
+if 'bbox' not in st.session_state:
+    st.session_state['bbox'] = None
 
 def search_adresse():
     if st.session_state['adresse_text']:
@@ -37,15 +40,40 @@ def search_adresse():
             st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
             st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
 
-# mode d'affichage de la bouding box
-bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
-
-# recherche de l'adresse dans la barre latérale
-adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
-
 def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
     st.session_state['adresse_text'] = ''
+
+def get_bbox(coords_center, size, mode):
+    ccoords_center_WSG = gpd.GeoDataFrame(
+        {'Nom': ['centre'],
+        'geometry': [shapely.geometry.Point(coords_center[0], coords_center[1])]},
+        crs = 'EPSG:4326')
+    coords_center_meter = coords_Lambert.to_crs('EPSG:3035')
+    if mode == 'haut/gauche':
+        bbox_meters = gpd.GeoDataFrame(
+            {'Nom': ['min', 'max'],
+            'geometry': [
+                shapely.geometry.Point(coords_center_meter.geometry[0].x, coords_center_meter.geometry[0].x + size),
+                shapely.geometry.Point(coords_center_meter.geometry[0].y - size, coords_center_meter.geometry[0].y)]})
+    if mode == 'centre':
+        bbox_meters = gpd.GeoDataFrame(
+            {'Nom': ['min', 'max'],
+            'geometry': [
+                shapely.geometry.Point(coords_center_meter.geometry[0].x - size//2, coords_center_meter.geometry[0].y - size//2),
+                shapely.geometry.Point(coords_center_meter.geometry[0].x + size//2, coords_center_meter.geometry[0].y + size//2)]})
+    bbox_WSG = bbox_meters.to_crs('EPSG:4326')
+    return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
+
+
+# mode d'affichage de la bouding box
+bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
+
+# taille de la bounding box
+bbox_size = st.sidebar.slider('Taille (m)', 0, 500, 100)
+
+# recherche de l'adresse dans la barre latérale
+adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
 
 # gestion des points de recherche
 update_button = st.sidebar.button('valider le point', on_click = update_point)
@@ -56,11 +84,31 @@ if cancel_button:
 
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
-if st.session_state['last_clicked']:# and st.session_state['last_clicked'] != st.session_state['last_coords']:
+
+style_bbox = {
+    'color': '#ff3939',
+    'fillOpacity': 0,
+    'weight': 3,
+    'opacity': 1,
+    'dashArray': '5, 5'}
+
+if st.session_state['last_clicked']:
+    # pointeur
     fg.add_child(folium.Marker(
         st.session_state['last_clicked'], 
         popup = st.session_state['last_clicked'], 
         tooltip = st.session_state['last_clicked']))
+    # bounding box
+    bbox_coords = get_bbox(st.session_state['last_clicked'], bbox_siez, bbox_mode)
+    polygon_bbox = shapely.Polygon((
+        (bbox_coords[0], bbox_coords[0]), 
+        (bbox_coords[1], bbox_coords[0]), 
+        (bbox_coords[1], bbox_coords[1]),
+        (bbox_coords[0], bbox_coords[1])))
+    gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
+    polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
+    fg.add_child(polygon_folium_bbox)
+
 m = folium.Map(location = CENTER_START, zoom_start = 16)
 out_m = st_folium(
     m, 
