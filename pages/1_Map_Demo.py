@@ -38,9 +38,6 @@ def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
     st.session_state['adresse_text'] = ''
 
-def cancel_point():
-    st.session_state['last_clicked'] = st.session_state['last_coords']
-
 # recherche de l'adresse dans la barre latérale
 #with st.sidebar.form('adresse_search'):
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
@@ -49,14 +46,9 @@ adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = sea
 st.sidebar.write('coordonnées: ({}, {})'.format(
     st.session_state['last_clicked'][0], st.session_state['last_clicked'][1]))
 st.sidebar.button('Mettre à jour', on_click = update_point)
-st.sidebar.button('Annuler', on_click = cancel_point)
-    
+
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
-fg.add_child(folium.Marker(
-    st.session_state['last_clicked'], 
-    popup = adresse, 
-    tooltip = ''))
 fg.add_child(folium.Marker(
     st.session_state['last_coords'], 
     popup = adresse, 
