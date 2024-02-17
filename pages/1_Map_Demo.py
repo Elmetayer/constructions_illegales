@@ -23,7 +23,7 @@ st.write('adresse courante: {}'.format(st.session_state['last_coords']))
 # recherche de l'adresse dans la barre latérale
 with st.sidebar.form('adresse_search'):
     st.write('saisir l\'adresse')
-    adresse = st.sidebar.text_input('Adresse', None)
+    adresse = st.text_input('Adresse', None)
     submit_adresse = st.form_submit_button("submit_adresse")
     if submit_adresse:   
         request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
