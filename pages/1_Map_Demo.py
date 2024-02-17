@@ -17,6 +17,8 @@ st.sidebar.header("Map Demo")
 CENTER_START = [48.858370, 2.294481]
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
+if 'last_coords' not in st.session_state:
+    st.session_state['last_clicked'] = [48.858370, 2.294481]
 
 st.write('adresse courante: {}'.format(st.session_state['last_coords']))
 
@@ -33,7 +35,7 @@ def search_adresse():
         crs = 'EPSG:2154')
     coords_WSG = coords_Lambert.to_crs('EPSG:4326')
     st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-    #st.session_state['adresse_text'] = ''
+    st.session_state['last_clicked'] = st.session_state['last_coords']
 
 # recherche de l'adresse dans la barre latérale
 with st.sidebar.form('adresse_search'):
@@ -48,6 +50,7 @@ fg.add_child(folium.Marker(
     tooltip = ''))
 m = folium.Map(location = CENTER_START, zoom_start = 16)
 out_m = st_folium(m, feature_group_to_add = fg, center = st.session_state['last_coords'], width=725)
-if out_m['last_clicked'] and st.session_state['last_coords'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
+if out_m['last_clicked'] and st.session_state['last_coords'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_coords'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
+    st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.rerun()
