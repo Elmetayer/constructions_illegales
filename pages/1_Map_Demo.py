@@ -26,42 +26,38 @@ def search_adresse():
             st.session_state['adresse_text'])
         response_wxs = requests.get(request_wxs).content
         adresses = json.load(BytesIO(response_wxs))
-        X0 = adresses['features'][0]['properties']['x']
-        Y0 = adresses['features'][0]['properties']['y']
-        coords_Lambert = gpd.GeoDataFrame(
-            {'Nom': ['adresse'],
-             'geometry': [shapely.geometry.Point(X0, Y0)]},
-            crs = 'EPSG:2154')
-        coords_WSG = coords_Lambert.to_crs('EPSG:4326')
-        st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-        st.session_state['last_clicked'] = st.session_state['last_coords']
-
-def update_point():
-    st.session_state['last_coords'] = st.session_state['last_clicked']
-    #st.session_state['last_clicked'] = None
-    st.session_state['adresse_text'] = ''
-
+        if len(adresses['features']) > 0:
+            X0 = adresses['features'][0]['properties']['x']
+            Y0 = adresses['features'][0]['properties']['y']
+            coords_Lambert = gpd.GeoDataFrame(
+                {'Nom': ['adresse'],
+                 'geometry': [shapely.geometry.Point(X0, Y0)]},
+                crs = 'EPSG:2154')
+            coords_WSG = coords_Lambert.to_crs('EPSG:4326')
+            st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+            st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
+    
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
 
 # gestion des points de recherche
-update_button = st.sidebar.button('valider le point', on_click = update_point)
+update_button = st.sidebar.button('valider le point')
+if update_button:
+    st.session_state['last_coords'] = st.session_state['last_clicked']
+    st.session_state['adresse_text'] = ''
+    st.rerun()
 cancel_button = st.sidebar.button('annuler le point')
 if cancel_button:
-    st.session_state['last_clicked'] = st.session_state['last_coords']
+    st.session_state['last_clicked'] = None
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
-fg.add_child(folium.Marker(
-    st.session_state['last_coords'], 
-    popup = adresse, 
-    tooltip = ''))
 if st.session_state['last_clicked'] and st.session_state['last_clicked'] != st.session_state['last_coords']:
     fg.add_child(folium.Marker(
         st.session_state['last_clicked'], 
-        popup = adresse, 
-        tooltip = ''))
+        popup = st.session_state['last_clicked'], 
+        tooltip = st.session_state['last_clicked']))
 m = folium.Map(location = CENTER_START, zoom_start = 16)
 out_m = st_folium(m, feature_group_to_add = fg, center = st.session_state['last_coords'], width=725)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
