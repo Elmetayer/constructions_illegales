@@ -18,9 +18,7 @@ CENTER_START = [48.858370, 2.294481]
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
 
-st.write('adresse courante: {}'.format(st.session_state['adresse_coords']))
-st.write('coordonnées click courantes: {}'.format(st.session_state['click_coords']))
-st.write('init: {}'.format(st.session_state['first_launch']))
+st.write('adresse courante: {}'.format(st.session_state['last_coords']))
 
 # recherche de l'adresse dans la barre latérale
 with st.sidebar.form('adresse_search'):
@@ -50,5 +48,5 @@ fg.add_child(folium.Marker(
 m = folium.Map(location = CENTER_START, zoom_start = 16)
 out_m = st_folium(m, feature_group_to_add = fg, center = st.session_state['last_coords'], width=725)
 if out_m['last_clicked'] and st.session_state['last_coords'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
-    st.session_state['last_coords'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']
+    st.session_state['last_coords'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.rerun()
