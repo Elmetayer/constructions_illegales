@@ -59,7 +59,12 @@ if st.session_state['last_clicked']:# and st.session_state['last_clicked'] != st
         popup = st.session_state['last_clicked'], 
         tooltip = st.session_state['last_clicked']))
 m = folium.Map(location = CENTER_START, zoom_start = 16)
-out_m = st_folium(m, feature_group_to_add = fg, center = st.session_state['last_coords'], width=725)
+out_m = st_folium(
+    m, 
+    feature_group_to_add = fg, 
+    center = st.session_state['last_coords'], 
+    width = 700,
+    height = 700)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.rerun()
