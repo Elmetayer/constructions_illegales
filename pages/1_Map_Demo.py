@@ -34,11 +34,11 @@ def search_adresse():
             crs = 'EPSG:2154')
         coords_WSG = coords_Lambert.to_crs('EPSG:4326')
         st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-        st.session_state['last_clicked'] = None
+        st.session_state['last_clicked'] = st.session_state['last_coords']
 
 def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
-    st.session_state['last_clicked'] = None
+    #st.session_state['last_clicked'] = None
     st.session_state['adresse_text'] = ''
 
 # recherche de l'adresse dans la barre latérale
@@ -48,7 +48,7 @@ adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = sea
 update_button = st.sidebar.button('valider le point', on_click = update_point)
 cancel_button = st.sidebar.button('annuler le point')
 if cancel_button:
-    st.session_state['last_clicked'] = None
+    st.session_state['last_clicked'] = st.session_state['last_coords']
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
