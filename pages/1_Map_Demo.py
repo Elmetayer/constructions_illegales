@@ -53,7 +53,7 @@ if cancel_button:
 
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
-if st.session_state['last_clicked'] and st.session_state['last_clicked'] != st.session_state['last_coords']:
+if st.session_state['last_clicked']:# and st.session_state['last_clicked'] != st.session_state['last_coords']:
     fg.add_child(folium.Marker(
         st.session_state['last_clicked'], 
         popup = st.session_state['last_clicked'], 
