@@ -56,8 +56,8 @@ def get_bbox(coords_center, size, mode):
         bbox_WSG = gpd.GeoDataFrame(
             {'Nom': ['min', 'max'],
             'geometry': [
-                shapely.affinity.translate(shapely.geometry.Point(ccoords_center_WSG.geometry[0].x, ccoords_center_WSG.geometry[0].y), 0, size),
-                shapely.affinity.translate(shapely.geometry.Point(ccoords_center_WSG.geometry[0].x, ccoords_center_WSG.geometry[0].y), -size, 0)]},
+                shapely.geometry.Point(ccoords_center_WSG.geometry[0].x, ccoords_center_WSG.geometry[0].y - size),
+                shapely.geometry.Point(ccoords_center_WSG.geometry[0].x + size, ccoords_center_WSG.geometry[0].y)]},
             crs = 'EPSG:4326')
     if mode == 'centre':
         bbox_meters = gpd.GeoDataFrame(
