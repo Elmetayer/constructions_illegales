@@ -73,9 +73,9 @@ def get_bbox(coords_center, size, mode):
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
 bbox_size = st.sidebar.slider('Taille (m)', 0, 500, 100)
-if bbox_mode:
+if bbox_mode and st.session_state['last_clicked']:
     st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
-if bbox_size:
+if bbox_size and st.session_state['last_clicked']:
     st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
 
 # recherche de l'adresse dans la barre latérale
