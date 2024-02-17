@@ -33,6 +33,7 @@ def search_adresse():
         crs = 'EPSG:2154')
     coords_WSG = coords_Lambert.to_crs('EPSG:4326')
     st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+
 def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
     st.session_state['adresse_text'] = ''
@@ -43,7 +44,7 @@ with st.sidebar.form('adresse_search'):
     submit_adresse = st.form_submit_button('rechercher', on_click = search_adresse)
 
 st.write(st.session_state['last_clicked'])
-st.button('Mettre à jour', on_click=click_button)
+st.button('Mettre à jour', on_click = update_point)
     
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
