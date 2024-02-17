@@ -33,6 +33,7 @@ def search_adresse():
         crs = 'EPSG:2154')
     coords_WSG = coords_Lambert.to_crs('EPSG:4326')
     st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+    st.session_state['last_clicked'] = None
 
 def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
