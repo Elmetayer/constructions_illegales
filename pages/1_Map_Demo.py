@@ -102,6 +102,7 @@ if st.session_state['last_clicked']:
         st.session_state['last_clicked'], 
         popup = st.session_state['last_clicked'], 
         tooltip = st.session_state['last_clicked']))
+if st.session_state['bbox']:
     # bounding box
     polygon_bbox = shapely.Polygon((
         (st.session_state['bbox'][0], st.session_state['bbox'][0]), 
