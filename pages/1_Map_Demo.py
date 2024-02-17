@@ -36,7 +36,10 @@ def search_adresse():
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
             st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
             st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
-    
+
+# mode d'affichage de la bouding box
+bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
+
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
 
