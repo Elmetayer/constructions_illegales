@@ -56,4 +56,4 @@ if out_m['last_clicked']:
     if st.session_state['click_coords'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
         st.session_state['click_coords'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
         st.session_state['last_action'] = 'click'
-        st.run()
+        st.rerun()
