@@ -86,6 +86,7 @@ update_button = st.sidebar.button('valider le point', on_click = update_point)
 cancel_button = st.sidebar.button('annuler le point')
 if cancel_button:
     st.session_state['last_clicked'] = None
+    st.session_state['bbox'] = None
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
