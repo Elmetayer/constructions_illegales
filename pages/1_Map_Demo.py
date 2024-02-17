@@ -20,25 +20,26 @@ if 'last_coords' not in st.session_state:
 
 st.write('adresse courante: {}'.format(st.session_state['last_coords']))
 
+def search_adresse():
+    request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
+        st.session_state['adresse_text'])
+    response_wxs = requests.get(request_wxs).content
+    adresses = json.load(BytesIO(response_wxs))
+    X0 = adresses['features'][0]['properties']['x']
+    Y0 = adresses['features'][0]['properties']['y']
+    coords_Lambert = gpd.GeoDataFrame(
+        {'Nom': ['adresse'],
+         'geometry': [shapely.geometry.Point(X0, Y0)]},
+        crs = 'EPSG:2154')
+    coords_WSG = coords_Lambert.to_crs('EPSG:4326')
+    st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+    st.session_state['adresse_text'] = ''
+
 # recherche de l'adresse dans la barre latérale
 with st.sidebar.form('adresse_search'):
-    st.write('saisir l\'adresse')
-    adresse = st.text_input('Adresse', None)
-    submit_adresse = st.form_submit_button("submit_adresse")
-    if submit_adresse:   
-        request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
-            adresse)
-        response_wxs = requests.get(request_wxs).content
-        adresses = json.load(BytesIO(response_wxs))
-        X0 = adresses['features'][0]['properties']['x']
-        Y0 = adresses['features'][0]['properties']['y']
-        coords_Lambert = gpd.GeoDataFrame(
-            {'Nom': ['adresse'],
-             'geometry': [shapely.geometry.Point(X0, Y0)]},
-            crs = 'EPSG:2154')
-        coords_WSG = coords_Lambert.to_crs('EPSG:4326')
-        st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-
+    adresse = st.text_input('Adresse', key = 'adresse_text')
+    submit_adresse = st.form_submit_button('rechercher', onclick = search_adresse)
+    
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
 fg.add_child(folium.Marker(
