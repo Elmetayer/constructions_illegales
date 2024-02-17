@@ -39,12 +39,13 @@ def update_point():
     st.session_state['adresse_text'] = ''
 
 # recherche de l'adresse dans la barre latérale
-with st.sidebar.form('adresse_search'):
-    adresse = st.text_input('Adresse', key = 'adresse_text')
-    submit_adresse = st.form_submit_button('rechercher', on_click = search_adresse)
+#with st.sidebar.form('adresse_search'):
+adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
+#    submit_adresse = st.form_submit_button('rechercher', on_click = search_adresse)
 
-st.write(st.session_state['last_clicked'])
-st.button('Mettre à jour', on_click = update_point)
+st.sidebar.write('coordonnées: ({}, {})'.format(
+    st.session_state['last_clicked'][0], st.session_state['last_clicked'][1]))
+st.sidebar.button('Mettre à jour', on_click = update_point)
     
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
