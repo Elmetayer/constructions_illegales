@@ -43,8 +43,7 @@ def update_point():
 
 # recherche de l'adresse dans la barre latérale
 #with st.sidebar.form('adresse_search'):
-adresse = st.sidebar.text_input('Adresse', key = 'adresse_text')
-search_button = st.sidebar.button('rechercher', on_click = search_adresse)
+adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
 
 #    submit_adresse = st.form_submit_button('rechercher', on_click = search_adresse)
 
