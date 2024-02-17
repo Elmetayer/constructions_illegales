@@ -44,8 +44,9 @@ def update_point():
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
 #    submit_adresse = st.form_submit_button('rechercher', on_click = search_adresse)
 
-st.sidebar.write('coordonnées: ({}, {})'.format(
-    st.session_state['last_clicked'][0], st.session_state['last_clicked'][1]))
+if st.session_state['last_clicked']:
+    st.sidebar.write('coordonnées: ({}, {})'.format(
+        st.session_state['last_clicked'][0], st.session_state['last_clicked'][1]))
 st.sidebar.button('Mettre à jour', on_click = update_point)
 
 # affichage de la carte et centrage sur l'adresse entrée
