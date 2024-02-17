@@ -38,7 +38,7 @@ def search_adresse():
 # recherche de l'adresse dans la barre latérale
 with st.sidebar.form('adresse_search'):
     adresse = st.text_input('Adresse', key = 'adresse_text')
-    submit_adresse = st.form_submit_button('rechercher', onclick = search_adresse)
+    submit_adresse = st.form_submit_button('rechercher', on_click = search_adresse)
     
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
