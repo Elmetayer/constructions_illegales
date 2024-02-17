@@ -43,7 +43,7 @@ if adresse:
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
 fg.add_child(folium.Marker(
-    center, 
+    st.session_state['last_coords'], 
     popup = adresse, 
     tooltip = ''))
 m = folium.Map(location = CENTER_START, zoom_start = 16)
