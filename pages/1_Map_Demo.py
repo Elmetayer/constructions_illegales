@@ -103,12 +103,11 @@ if st.session_state['last_clicked']:
         popup = st.session_state['last_clicked'], 
         tooltip = st.session_state['last_clicked']))
     # bounding box
-    bbox_coords = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
     polygon_bbox = shapely.Polygon((
-        (bbox_coords[0], bbox_coords[0]), 
-        (bbox_coords[1], bbox_coords[0]), 
-        (bbox_coords[1], bbox_coords[1]),
-        (bbox_coords[0], bbox_coords[1])))
+        (st.session_state['bbox'][0], st.session_state['bbox'][0]), 
+        (st.session_state['bbox'][1], st.session_state['bbox'][0]), 
+        (st.session_state['bbox'][1], st.session_state['bbox'][1]),
+        (st.session_state['bbox'][0], st.session_state['bbox'][1])))
     gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
@@ -122,4 +121,5 @@ out_m = st_folium(
     height = 700)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
+    st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
     st.rerun()
