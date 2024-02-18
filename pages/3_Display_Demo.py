@@ -33,7 +33,7 @@ raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
 xmin, ymax = raster_transform*(0, 0)
 xmax, ymin = raster_transform*(size, size)
 request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
-   xmin, ymin, xmax, ymax, X_size, Y_size)
+   xmin, ymin, xmax, ymax, size, size)
 response_wms = requests.get(request_wms).content
 orthophoto = Image.open(BytesIO(response_wms))
 
