@@ -15,13 +15,17 @@ st.sidebar.header("Map Demo")
 
 # variables de session
 CENTER_START = [48.858370, 2.294481]
+ADRESSE_DEFAUT = 'non défini'
+SIZE_DEFAUT = 100
+MODE_DEFAUT = 'haut/gauche'
+MODE_ALTERNATIVE = 'centre'
 if 'last_coords' not in st.session_state:
-    st.session_state['last_coords'] = [48.858370, 2.294481]
-if 'last_clicked' not in st.session_state:
-    st.session_state['last_clicked'] = None
-# convention pour la bbox : xmin, ymin, xmax, ymax
+    st.session_state['last_coords'] = CENTER_START
+if 'adresse' not in st.session_state:
+    st.session_state['adresse'] = ADRESSE_DEFAUT
+# convention pour la bbox : X0, Y0, largeur, hauteur
 if 'bbox' not in st.session_state:
-    st.session_state['bbox'] = None
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
 
 st.write(st.session_state['bbox'])
 
@@ -41,7 +45,8 @@ def search_adresse():
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
             st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
             st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-            st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
+            st.session_state['adresse'] = adresses['features'][0]['properties']['label']
+            st.session_state['adresse_field'] = ''
 
 def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
@@ -69,27 +74,27 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_meter.geometry[0].x + size//2, coords_center_meter.geometry[0].y + size//2)]},
             crs = 'EPSG:3035')
         bbox_WSG = bbox_meters.to_crs('EPSG:4326')
-    return(bbox_WSG.geometry[0].y, bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y, bbox_WSG.geometry[1].x)
-
+    polygon_bbox = shapely.Polygon((
+        (bbox_WSG.geometry[0].y, bbox_WSG.geometry[0].x), 
+        (bbox_WSG.geometry[1].y, bbox_WSG.geometry[0].x), 
+        (bbox_WSG.geometry[1].y, bbox_WSG.geometry[1].x),
+        (bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x)))
+    gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
+    return(gdf_bbox)
 
 # mode d'affichage et taille de la bouding box
-bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
-bbox_size = st.sidebar.slider('Taille (m)', 0, 500, 100)
+bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, MODE_ALTERNATIVE], horizontal = True)
+bbox_size = st.sidebar.slider('Taille (m)', 0, 500, SIZE_DEFAUT)
 if bbox_mode and st.session_state['last_clicked']:
     st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
 if bbox_size and st.session_state['last_clicked']:
     st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
 
 # recherche de l'adresse dans la barre latérale
-adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
+adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse)
 
 # gestion des points de recherche
 update_button = st.sidebar.button('valider le point', on_click = update_point)
-cancel_button = st.sidebar.button('annuler le point')
-if cancel_button:
-    st.session_state['last_clicked'] = None
-    st.session_state['bbox'] = None
-    st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
@@ -101,31 +106,15 @@ style_bbox = {
     'opacity': 1,
     'dashArray': '5, 5'}
 
-if st.session_state['last_clicked']:
-    # pointeur
-    fg.add_child(folium.Marker(
-        st.session_state['last_clicked'], 
-        popup = st.session_state['last_clicked'], 
-        tooltip = st.session_state['last_clicked']))
+# pointeur
+fg.add_child(folium.Marker(
+    st.session_state['last_coords'], 
+    popup = st.session_state['adresse'], 
+    tooltip = st.session_state['last_coords']))
 
-if st.session_state['last_coords']:
-    # validé
-    fg.add_child(folium.Marker(
-        st.session_state['last_coords'], 
-        icon = folium.Icon("red"),
-        popup = st.session_state['last_coords'], 
-        tooltip = st.session_state['last_coords']))
-
-if st.session_state['bbox']:
-    # bounding box
-    polygon_bbox = shapely.Polygon((
-        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
-        (st.session_state['bbox'][2], st.session_state['bbox'][1]), 
-        (st.session_state['bbox'][2], st.session_state['bbox'][3]),
-        (st.session_state['bbox'][0], st.session_state['bbox'][3])))
-    gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
-    polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
-    fg.add_child(polygon_folium_bbox)
+# bounding box
+polygon_folium_bbox = folium.GeoJson(data = st.session_state['bbox'], style_function = lambda x: style_bbox)
+fg.add_child(polygon_folium_bbox)
 
 m = folium.Map(location = CENTER_START, zoom_start = 16)
 out_m = st_folium(
@@ -134,6 +123,7 @@ out_m = st_folium(
     center = st.session_state['last_coords'], 
     width = 700,
     height = 700)
-if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
-    st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
+if out_m['last_clicked'] and st.session_state['last_coords'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
+    st.session_state['last_coords'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
+    st.session_state['adresse'] = ADRESSE_DEFAUT
     st.rerun()
