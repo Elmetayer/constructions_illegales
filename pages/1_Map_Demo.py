@@ -160,8 +160,8 @@ out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
     center = st.session_state['map_center'], 
-    width = 400,
-    height = 400)
+    width = 600,
+    height = 600)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.session_state['new_point'] = st.session_state['last_clicked']

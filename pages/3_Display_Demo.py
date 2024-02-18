@@ -34,9 +34,9 @@ ymin = ccoords_bbox_Lambert.geometry[0].y
 ymax = ccoords_bbox_Lambert.geometry[1].y
 
 # taille en pixel
-pixel_size_defaut = min(PIXEL_SIZE_MAX, abs(int((xmax - xmin)/PIXEL_SCALE_REF)))
+pixel_size_defaut = min(PIXEL_SIZE_MAX, int((xmax - xmin)/PIXEL_SCALE_REF))
 pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, pixel_size_defaut, 100)
-scale = round(pixel_size/(xmin - xmax), 1)
+scale = round(pixel_size/(xmax - xmin), 1)
 st.sidebar.caption('Echelle: {} pixel/m'.format(scale))
 if scale != PIXEL_SCALE_REF:
     st.sidebar.warning('attendion, l\'échelle de référence est {}'.format(PIXEL_SCALE_REF))
@@ -47,5 +47,5 @@ request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMA
 response_wms = requests.get(request_wms).content
 orthophoto = Image.open(BytesIO(response_wms))
 
-fig = px.imshow(orthophoto)
+fig = px.imshow(orthophoto, width = 600, height = 600)
 st.plotly_chart(fig)
