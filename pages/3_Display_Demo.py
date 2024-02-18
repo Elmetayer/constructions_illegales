@@ -33,7 +33,7 @@ ccoords_bbox_Lambert = coords_bbox_WSG.to_crs('EPSG:2154')
 X0 = ccoords_bbox_Lambert.geometry[0].x
 Y0 = ccoords_bbox_Lambert.geometry[1].y
 
-raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
+raster_transform = rasterio.transform.Affine(PIXEL_SCALE, 0.0, X0,
                           0.0, -PIXEL_SCALE, Y0 + PIXEL_SCALE*pixel_size)
 xmin, ymax = raster_transform*(0, 0)
 xmax, ymin = raster_transform*(pixel_size, pixel_size)
