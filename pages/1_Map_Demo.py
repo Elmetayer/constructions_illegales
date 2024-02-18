@@ -64,6 +64,8 @@ def search_adresse():
             st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
             st.session_state['warning_adresse'] = None
+            st.session_state['last_clicked'] = None
+            st.session_state['adresse_clicked'] = None
         else:
             st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
