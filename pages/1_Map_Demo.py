@@ -29,8 +29,6 @@ if 'adresse_clicked' not in st.session_state:
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = None
-if 'bbox_Lambert' not in st.session_state:
-    st.session_state['bbox_Lambert'] = None
 
 st.write('last_coords')
 st.write(st.session_state['last_coords'])
@@ -42,8 +40,6 @@ st.write('last_clicked')
 st.write(st.session_state['last_clicked'])
 st.write('adresse_clicked')
 st.write(st.session_state['adresse_clicked'])
-st.write('bbox_Lambert')
-st.write(st.session_state['bbox_Lambert'])
 
 def search_adresse():
     if st.session_state['adresse_field']:
@@ -98,9 +94,14 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x - size//2, coords_center_Lambert.geometry[0].y - size//2),
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
             crs = 'EPSG:2154')
-    st.session_state['bbox_Lambert'] = bbox_Lambert
     bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
-    return(bbox_WSG.geometry[0].y, bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y, bbox_WSG.geometry[1].x)
+    polygon_bbox = shapely.Polygon((
+        (bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y), 
+        (bbox_WSG.geometry[1].x, bbox_WSG.geometry[0].y), 
+        (bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y),
+        (bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y)))
+    gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
+    return(gdf_bbox)
 
 
 # mode d'affichage et taille de la bouding box
@@ -147,12 +148,6 @@ if st.session_state['last_clicked']:
         tooltip = st.session_state['last_clicked']))
 if st.session_state['bbox']:
     # bounding box
-    polygon_bbox = shapely.Polygon((
-        (st.session_state['bbox'][1], st.session_state['bbox'][0]), 
-        (st.session_state['bbox'][3], st.session_state['bbox'][0]), 
-        (st.session_state['bbox'][3], st.session_state['bbox'][2]),
-        (st.session_state['bbox'][1], st.session_state['bbox'][2])))
-    gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
 
