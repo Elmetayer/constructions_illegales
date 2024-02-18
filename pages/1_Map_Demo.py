@@ -148,10 +148,10 @@ if st.session_state['last_clicked']:
 if st.session_state['bbox']:
     # bounding box
     polygon_bbox = shapely.Polygon((
-        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
-        (st.session_state['bbox'][2], st.session_state['bbox'][1]), 
-        (st.session_state['bbox'][2], st.session_state['bbox'][3]),
-        (st.session_state['bbox'][0], st.session_state['bbox'][3])))
+        (st.session_state['bbox'][1], st.session_state['bbox'][0]), 
+        (st.session_state['bbox'][3], st.session_state['bbox'][0]), 
+        (st.session_state['bbox'][3], st.session_state['bbox'][2]),
+        (st.session_state['bbox'][1], st.session_state['bbox'][2])))
     gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
