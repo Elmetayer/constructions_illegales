@@ -34,7 +34,7 @@ ymin = ccoords_bbox_Lambert.geometry[0].y
 ymax = ccoords_bbox_Lambert.geometry[1].y
 
 # taille en pixel
-pixel_size_defaut = min(PIXEL_SIZE_MAX, (xmin - xmax)//PIXEL_SCALE_REF)
+pixel_size_defaut = min([PIXEL_SIZE_MAX, (xmin - xmax)//PIXEL_SCALE_REF])
 pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, pixel_size_defaut, 100)
 scale = round(pixel_size/(xmin - xmax), 1)
 st.sidebar.caption('Echelle: {} pixel/m'.format(scale))
