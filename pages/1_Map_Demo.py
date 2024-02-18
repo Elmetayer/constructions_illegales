@@ -97,13 +97,7 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
             crs = 'EPSG:2154')
     bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
-    polygon_bbox = shapely.Polygon((
-        (bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y), 
-        (bbox_WSG.geometry[1].x, bbox_WSG.geometry[0].y), 
-        (bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y),
-        (bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y)))
-    gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
-    return(gdf_bbox)
+    return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
@@ -149,7 +143,13 @@ if st.session_state['last_clicked']:
         tooltip = st.session_state['last_clicked']))
 if st.session_state['bbox']:
     # bounding box
-    polygon_folium_bbox = folium.GeoJson(data = st.session_state['bbox'], style_function = lambda x: style_bbox)
+    polygon_bbox = shapely.Polygon((
+        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
+        (st.session_state['bbox'][2], st.session_state['bbox'][1]), 
+        (st.session_state['bbox'][2], st.session_state['bbox'][3]),
+        (st.session_state['bbox'][0], st.session_state['bbox'][3])))
+    gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
+    polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
 
 m = folium.Map(location = CENTER_START, zoom_start = 16)
