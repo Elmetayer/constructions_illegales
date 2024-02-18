@@ -48,11 +48,6 @@ def search_adresse():
             st.session_state['adresse'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
 
-def update_point():
-    st.session_state['last_coords'] = st.session_state['last_clicked']
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-    st.session_state['adresse_text'] = ''
-
 def get_bbox(coords_center, size, mode):
     ccoords_center_WSG = gpd.GeoDataFrame(
         {'Nom': ['centre'],
@@ -92,9 +87,6 @@ if bbox_size and st.session_state['last_clicked']:
 
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse)
-
-# gestion des points de recherche
-update_button = st.sidebar.button('valider le point', on_click = update_point)
 
 # affichage de la carte et centrage sur l'adresse entrée
 fg = folium.FeatureGroup(name = 'centre carte')
