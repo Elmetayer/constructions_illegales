@@ -25,7 +25,6 @@ def search_adresse():
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
             st.session_state['new_point'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
             st.session_state['new_adresse'] = adresses['features'][0]['properties']['label']
-            st.session_state['map_center'] = st.session_state['new_point']
             st.session_state['adresse_field'] = ''
         else:
             st.session_state['warning_adresse'] = 'aucune adresse trouvée'
@@ -76,7 +75,7 @@ def get_bbox(coords_center, size, mode):
     return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
 
 # titre de la page
-st.set_page_config(page_title="Map Demo", page_icon="📈")
+st.set_page_config(page_title="Map Demo", page_icon="🔎")
 st.markdown("# Map Demo")
 st.sidebar.header("Map Demo")
 
@@ -121,10 +120,6 @@ cancel_button = st.sidebar.button('annuler le point')
 if cancel_button:
     st.session_state['new_point'] = None
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
-    st.session_state['map_center'] = [
-        (st.session_state['bbox'][1] + st.session_state['bbox'][3])/2,
-        (st.session_state['bbox'][0] + st.session_state['bbox'][2])/2
-    ]
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
@@ -170,5 +165,4 @@ if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_cl
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.session_state['new_point'] = st.session_state['last_clicked']
     st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
-    st.session_state['map_center'] = st.session_state['new_point']
     st.rerun()

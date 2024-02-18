@@ -7,7 +7,7 @@ import rasterio
 from rasterio.io import MemoryFile
 from tempfile import NamedTemporaryFile
 
-st.set_page_config(page_title="Cropping Demo", page_icon="📈")
+st.set_page_config(page_title="Cropping Demo", page_icon="✂️")
 st.markdown("# Cropping Demo")
 st.sidebar.header("Cropping Demo")
 
