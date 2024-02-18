@@ -159,7 +159,7 @@ if st.session_state['bbox']:
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
 
-m = folium.Map(location = CENTER_START, zoom_start = 16)
+m = folium.Map(location = CENTER_START, zoom_start = 12)
 out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
