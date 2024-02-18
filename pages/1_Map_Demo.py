@@ -97,7 +97,7 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x - size//2, coords_center_Lambert.geometry[0].y - size//2),
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
             crs = 'EPSG:2154')
-    st.session_state['bbox_Lambert'] = coords_center_Lambert
+    st.session_state['bbox_Lambert'] = bbox_Lambert
     bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
     return(bbox_WSG.geometry[0].y, bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y, bbox_WSG.geometry[1].x)
 
