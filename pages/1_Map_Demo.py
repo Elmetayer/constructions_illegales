@@ -26,6 +26,8 @@ def search_adresse():
             st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
             st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
+            st.session_state['new_point'] = None
+            st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
         else:
             st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
@@ -43,9 +45,9 @@ def update_point():
     if st.session_state['new_point']:
         st.session_state['last_coords'] = st.session_state['new_point']
         st.session_state['adresse_text'] = st.session_state['adresse_clicked']
+        st.session_state['new_point'] = None
+        st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-    st.session_state['new_point'] = None
-    st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
     
 def get_bbox(coords_center, size, mode):
     ccoords_center_WSG = gpd.GeoDataFrame(
