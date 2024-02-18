@@ -109,14 +109,10 @@ if bbox_mode:
 if bbox_size:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
-st.sidebar.divider()
-
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
 if st.session_state['warning_adresse']:
     st.sidebar.warning(st.session_state['warning_adresse'])
-
-st.sidebar.divider()
 
 # gestion des points de recherche
 update_button = None
