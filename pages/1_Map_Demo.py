@@ -13,22 +13,6 @@ st.set_page_config(page_title="Map Demo", page_icon="📈")
 st.markdown("# Map Demo")
 st.sidebar.header("Map Demo")
 
-# variables de session
-CENTER_START = [48.858370, 2.294481]
-ADRESSE_DEFAUT = 'non défini'
-SIZE_DEFAUT = 100
-MODE_DEFAUT = 'haut/gauche'
-MODE_ALTERNATIVE = 'centre'
-if 'last_coords' not in st.session_state:
-    st.session_state['last_coords'] = CENTER_START
-if 'adresse' not in st.session_state:
-    st.session_state['adresse'] = ADRESSE_DEFAUT
-# convention pour la bbox : X0, Y0, largeur, hauteur
-if 'bbox' not in st.session_state:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
-
-st.write(st.session_state['bbox'])
-
 def search_adresse():
     if st.session_state['adresse_text']:
         request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
@@ -76,6 +60,22 @@ def get_bbox(coords_center, size, mode):
         (bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x)))
     gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
     return(gdf_bbox)
+
+# variables de session
+CENTER_START = [48.858370, 2.294481]
+ADRESSE_DEFAUT = 'non défini'
+SIZE_DEFAUT = 100
+MODE_DEFAUT = 'haut/gauche'
+MODE_ALTERNATIVE = 'centre'
+if 'last_coords' not in st.session_state:
+    st.session_state['last_coords'] = CENTER_START
+if 'adresse' not in st.session_state:
+    st.session_state['adresse'] = ADRESSE_DEFAUT
+# convention pour la bbox : X0, Y0, largeur, hauteur
+if 'bbox' not in st.session_state:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
+
+st.write(st.session_state['bbox'])
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, MODE_ALTERNATIVE], horizontal = True)
