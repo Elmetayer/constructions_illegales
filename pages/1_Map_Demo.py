@@ -44,6 +44,7 @@ def search_adresse():
 
 def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
+    st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
     st.session_state['adresse_text'] = ''
 
 def get_bbox(coords_center, size, mode):
@@ -105,6 +106,15 @@ if st.session_state['last_clicked']:
         st.session_state['last_clicked'], 
         popup = st.session_state['last_clicked'], 
         tooltip = st.session_state['last_clicked']))
+
+if st.session_state['last_coords']:
+    # validé
+    fg.add_child(folium.Marker(
+        st.session_state['last_coords'], 
+        icon = folium.Icon("red"),
+        popup = st.session_state['last_coords'], 
+        tooltip = st.session_state['last_coords']))
+
 if st.session_state['bbox']:
     # bounding box
     polygon_bbox = shapely.Polygon((
@@ -125,5 +135,4 @@ out_m = st_folium(
     height = 700)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
-    st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
     st.rerun()
