@@ -17,16 +17,16 @@ st.sidebar.header("Display Demo")
 
 coords_scale = 0.2
 
-polygon_bbox = shapely.Polygon((
-    (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
-    (st.session_state['bbox'][2], st.session_state['bbox'][1]), 
-    (st.session_state['bbox'][2], st.session_state['bbox'][3]),
-    (st.session_state['bbox'][0], st.session_state['bbox'][3])))
-gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
-bbox_Lambert = gdf_bbox.to_crs('EPSG:2154')
-X0 = min(bbox_Lambert.geometry.x)
-Y0 = max(bbox_Lambert.geometry.y)
-size = max(bbox_Lambert.geometry.x) - min(bbox_Lambert.geometry.x)
+coords_bbox_WSG = gpd.GeoDataFrame(
+   {'Nom': ['min', max],
+   'geometry': [
+      shapely.geometry.Point(st.session_state['bbox'][0], st.session_state['bbox'][1]),
+      shapely.geometry.Point(st.session_state['bbox'][2], st.session_state['bbox'][3])]},
+   crs = 'EPSG:4326')
+ccoords_bbox_Lambert = coords_bbox_WSG.to_crs('EPSG:2154')
+X0 = ccoords_bbox_Lambert.geometry[0].x
+Y0 = ccoords_bbox_Lambert.geometry[1].y
+size = ccoords_bbox_Lambert.geometry[1].x - ccoords_bbox_Lambert.geometry[0].x
 
 raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
                           0.0, -coords_scale, Y0 + coords_scale*size)
