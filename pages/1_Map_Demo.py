@@ -77,7 +77,6 @@ def get_bbox(coords_center, size, mode):
 # titre de la page
 st.set_page_config(page_title="Map Demo", page_icon="🔎")
 st.markdown("# Map Demo")
-st.sidebar.header("Map Demo")
 
 # variables de session
 CENTER_START = [48.858370, 2.294481]
