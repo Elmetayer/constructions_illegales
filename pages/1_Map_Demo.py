@@ -15,10 +15,15 @@ st.sidebar.header("Map Demo")
 
 # variables de session
 CENTER_START = [48.858370, 2.294481]
+ADRESSE_DEFAUT = 'non defini'
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
+if 'adresse_text' not in st.session_state:
+    st.session_state['adresse_text'] = ADRESSE_DEFAUT
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
+if 'adresse_clicked' not in st.session_state:
+    st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = None
@@ -40,11 +45,14 @@ def search_adresse():
                 crs = 'EPSG:2154')
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
             st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+            st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
             st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
+            st.session_state['adresse_field'] = ''
 
 def update_point():
     st.session_state['last_coords'] = st.session_state['last_clicked']
-    st.session_state['adresse_text'] = ''
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+    st.session_state['adresse_text'] = st.session_state['adresse_clicked']
 
 def get_bbox(coords_center, size, mode):
     ccoords_center_WSG = gpd.GeoDataFrame(
@@ -79,14 +87,14 @@ if bbox_size and st.session_state['last_clicked']:
     st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
 
 # recherche de l'adresse dans la barre latérale
-adresse = st.sidebar.text_input('Adresse', key = 'adresse_text', on_change = search_adresse)
+adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse)
 
 # gestion des points de recherche
 update_button = st.sidebar.button('valider le point', on_click = update_point)
 cancel_button = st.sidebar.button('annuler le point')
 if cancel_button:
     st.session_state['last_clicked'] = None
-    st.session_state['bbox'] = None
+    st.session_state['adresse_clicked'] = None
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
@@ -99,11 +107,16 @@ style_bbox = {
     'opacity': 1,
     'dashArray': '5, 5'}
 
+# point courant
+fg.add_child(folium.Marker(
+    st.session_state['last_coords'], 
+    popup = st.session_state['adresse_text'], 
+    tooltip = st.session_state['last_coords']))
 if st.session_state['last_clicked']:
     # pointeur
     fg.add_child(folium.Marker(
         st.session_state['last_clicked'], 
-        popup = st.session_state['last_clicked'], 
+        popup = st.session_state['adresse_clicked'], 
         tooltip = st.session_state['last_clicked']))
 if st.session_state['bbox']:
     # bounding box
@@ -125,5 +138,4 @@ out_m = st_folium(
     height = 700)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
-    st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
     st.rerun()
