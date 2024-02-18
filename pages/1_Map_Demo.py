@@ -80,10 +80,10 @@ st.write(st.session_state['bbox'])
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, MODE_ALTERNATIVE], horizontal = True)
 bbox_size = st.sidebar.slider('Taille (m)', 0, 500, SIZE_DEFAUT)
-if bbox_mode and st.session_state['last_clicked']:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
-if bbox_size and st.session_state['last_clicked']:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
+if bbox_mode:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+if bbox_size:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse)
