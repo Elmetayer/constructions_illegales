@@ -110,7 +110,7 @@ if bbox_size:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
 # recherche de l'adresse dans la barre latérale
-adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse)
+adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse')
 if st.session_state['warning_adresse']:
     st.sidebar.warning(st.session_state['warning_adresse'])
 
