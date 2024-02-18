@@ -51,7 +51,7 @@ def get_bbox(coords_center, size, mode):
         {'Nom': ['centre'],
         'geometry': [shapely.geometry.Point(coords_center[1], coords_center[0])]},
         crs = 'EPSG:4326')
-    coords_center_meter = ccoords_center_WSG.to_crs('EPSG:32632')
+    coords_center_meter = ccoords_center_WSG.to_crs('EPSG:3035')
     if mode == 'haut/gauche':
         bbox_WSG = gpd.GeoDataFrame(
             {'Nom': ['min', 'max'],
@@ -65,7 +65,7 @@ def get_bbox(coords_center, size, mode):
             'geometry': [
                 shapely.geometry.Point(coords_center_meter.geometry[0].x - size//2, coords_center_meter.geometry[0].y - size//2),
                 shapely.geometry.Point(coords_center_meter.geometry[0].x + size//2, coords_center_meter.geometry[0].y + size//2)]},
-            crs = 'EPSG:32632')
+            crs = 'EPSG:3035')
         bbox_WSG = bbox_meters.to_crs('EPSG:4326')
     return(bbox_WSG.geometry[0].y, bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y, bbox_WSG.geometry[1].x)
 
