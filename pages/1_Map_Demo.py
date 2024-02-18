@@ -30,7 +30,16 @@ if 'adresse_clicked' not in st.session_state:
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = None
 
-st.write(st.session_state['bbox'])
+st.write('last_coords')
+st.write(st.session_state['last_coords'])
+st.write('adresse_text')
+st.write(st.session_state['adresse_text'])
+st.write('warning_adresse')
+st.write(st.session_state['warning_adresse'])
+st.write('last_clicked')
+st.write(st.session_state['last_clicked'])
+st.write('adresse_clicked')
+st.write(st.session_state['adresse_clicked'])
 
 def search_adresse():
     if st.session_state['adresse_text']:
@@ -142,8 +151,8 @@ out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
     center = st.session_state['last_coords'], 
-    width = 700,
-    height = 700)
+    width = 400,
+    height = 400)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.rerun()
