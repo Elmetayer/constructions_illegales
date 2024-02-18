@@ -1,7 +1,14 @@
-import streamlit as st
 import plotly.express as px
 import rasterio
+import streamlit as st
+import folium
+from streamlit_folium import st_folium
+import requests
+import json
+from io import BytesIO
 import shapely
+import geopandas as gpd
+
 
 # titre de la page
 st.set_page_config(page_title="Display Demo", page_icon="👓")

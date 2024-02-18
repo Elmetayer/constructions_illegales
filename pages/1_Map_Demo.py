@@ -1,11 +1,10 @@
-import folium
 import streamlit as st
+import folium
+from streamlit_folium import st_folium
 import requests
 import json
-import shapely
-import geopandas
-from streamlit_folium import st_folium
 from io import BytesIO
+import shapely
 import geopandas as gpd
 
 def search_adresse():
