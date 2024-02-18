@@ -145,7 +145,7 @@ if st.session_state['last_clicked']:
         st.session_state['last_clicked'], 
         popup = st.session_state['adresse_clicked'], 
         tooltip = st.session_state['last_clicked']))
-if st.session_state['bbox']:
+if st.session_state['bbox'] is None:
     # bounding box
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
