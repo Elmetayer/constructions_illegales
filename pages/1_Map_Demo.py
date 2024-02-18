@@ -8,41 +8,6 @@ from streamlit_folium import st_folium
 from io import BytesIO
 import geopandas as gpd
 
-# titre de la page
-st.set_page_config(page_title="Map Demo", page_icon="📈")
-st.markdown("# Map Demo")
-st.sidebar.header("Map Demo")
-
-# variables de session
-CENTER_START = [48.858370, 2.294481]
-ADRESSE_DEFAUT = 'non defini'
-if 'last_coords' not in st.session_state:
-    st.session_state['last_coords'] = [48.858370, 2.294481]
-if 'adresse_text' not in st.session_state:
-    st.session_state['adresse_text'] = ADRESSE_DEFAUT
-if 'warning_adresse' not in st.session_state:
-    st.session_state['warning_adresse'] = None    
-if 'last_clicked' not in st.session_state:
-    st.session_state['last_clicked'] = None
-if 'adresse_clicked' not in st.session_state:
-    st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
-# convention pour la bbox : xmin, ymin, xmax, ymax
-if 'bbox' not in st.session_state:
-    st.session_state['bbox'] = None
-
-st.write('last_coords')
-st.write(st.session_state['last_coords'])
-st.write('adresse_text')
-st.write(st.session_state['adresse_text'])
-st.write('warning_adresse')
-st.write(st.session_state['warning_adresse'])
-st.write('last_clicked')
-st.write(st.session_state['last_clicked'])
-st.write('adresse_clicked')
-st.write(st.session_state['adresse_clicked'])
-st.write('bbox')
-st.write(st.session_state['bbox'])
-
 def search_adresse():
     if st.session_state['adresse_field']:
         request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
@@ -62,20 +27,19 @@ def search_adresse():
             st.session_state['adresse_field'] = ''
             st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
             st.session_state['warning_adresse'] = None
-            st.session_state['last_clicked'] = None
+            st.session_state['new_point'] = None
             st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
         else:
             st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
 def update_point():
-    if st.session_state['last_clicked']:
-        st.session_state['last_coords'] = st.session_state['last_clicked']
+    if st.session_state['new_point']:
+        st.session_state['last_coords'] = st.session_state['new_point']
         st.session_state['adresse_text'] = st.session_state['adresse_clicked']
         st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-        st.session_state['last_clicked'] = None
+        st.session_state['new_point'] = None
         st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
     
-
 def get_bbox(coords_center, size, mode):
     ccoords_center_WSG = gpd.GeoDataFrame(
         {'Nom': ['centre'],
@@ -98,6 +62,43 @@ def get_bbox(coords_center, size, mode):
             crs = 'EPSG:2154')
     bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
     return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
+
+# titre de la page
+st.set_page_config(page_title="Map Demo", page_icon="📈")
+st.markdown("# Map Demo")
+st.sidebar.header("Map Demo")
+
+# variables de session
+CENTER_START = [48.858370, 2.294481]
+ADRESSE_DEFAUT = 'non defini'
+if 'last_coords' not in st.session_state:
+    st.session_state['last_coords'] = [48.858370, 2.294481]
+if 'new_point' not in st.session_state:
+    st.session_state['new_point'] = None
+if 'adresse_text' not in st.session_state:
+    st.session_state['adresse_text'] = ADRESSE_DEFAUT
+if 'warning_adresse' not in st.session_state:
+    st.session_state['warning_adresse'] = None    
+if 'last_clicked' not in st.session_state:
+    st.session_state['last_clicked'] = None
+if 'adresse_clicked' not in st.session_state:
+    st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
+# convention pour la bbox : xmin, ymin, xmax, ymax
+if 'bbox' not in st.session_state:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+
+st.write('last_coords')
+st.write(st.session_state['last_coords'])
+st.write('adresse_text')
+st.write(st.session_state['adresse_text'])
+st.write('warning_adresse')
+st.write(st.session_state['warning_adresse'])
+st.write('last_clicked')
+st.write(st.session_state['last_clicked'])
+st.write('adresse_clicked')
+st.write(st.session_state['adresse_clicked'])
+st.write('bbox')
+st.write(st.session_state['bbox'])
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
@@ -135,12 +136,12 @@ fg.add_child(folium.Marker(
     st.session_state['last_coords'], 
     popup = st.session_state['adresse_text'], 
     tooltip = st.session_state['last_coords']))
-if st.session_state['last_clicked']:
+if st.session_state['new_point']:
     # pointeur
     fg.add_child(folium.Marker(
-        st.session_state['last_clicked'], 
+        st.session_state['new_point'], 
         popup = st.session_state['adresse_clicked'], 
-        tooltip = st.session_state['last_clicked']))
+        tooltip = st.session_state['new_point']))
 if st.session_state['bbox']:
     # bounding box
     polygon_bbox = shapely.Polygon((
@@ -161,4 +162,5 @@ out_m = st_folium(
     height = 400)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
+    st.session_state['new_point'] = st.session_state['last_clicked']
     st.rerun()
