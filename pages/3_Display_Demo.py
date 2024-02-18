@@ -1,6 +1,6 @@
 import streamlit as st
-import plotly.express as px
-import rasterio
+#import plotly.express as px
+#import rasterio
 
 # titre de la page
 st.set_page_config(page_title="Display Demo", page_icon="👓")
