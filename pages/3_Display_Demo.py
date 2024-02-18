@@ -18,9 +18,11 @@ st.sidebar.header("Display Demo")
 
 # variables de session
 PIXEL_SCALE = 0.2
+PIXEL_SIZE_DEFAUT = 1000
 
 # taille en pixel
-pixel_size = st.sidebar.slider('Taille (m)', 0, 1000, 1000, 100)
+pixel_size = st.sidebar.slider('Taille (pixel)', 0, 1000, PIXEL_SIZE_DEFAUT, 100)
+st.sidebar.write('Taille (m): '.format(PIXEL_SCALE*pixel_size))
 
 # calcul de l'image
 coords_bbox_WSG = gpd.GeoDataFrame(
