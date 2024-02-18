@@ -28,7 +28,7 @@ if 'adresse_clicked' not in st.session_state:
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+    st.session_state['bbox'] = None
 
 st.write('last_coords')
 st.write(st.session_state['last_coords'])
@@ -102,7 +102,6 @@ def get_bbox(coords_center, size, mode):
         (bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y)))
     gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
     return(gdf_bbox)
-
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
