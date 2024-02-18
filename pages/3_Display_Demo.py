@@ -22,7 +22,7 @@ PIXEL_SIZE_DEFAUT = 1000
 
 # taille en pixel
 pixel_size = st.sidebar.slider('Taille (pixel)', 0, 1000, PIXEL_SIZE_DEFAUT, 100)
-st.sidebar.caption('Taille (m): '.format(PIXEL_SCALE*pixel_size))
+st.sidebar.caption('Taille (m): {}'.format(PIXEL_SCALE*pixel_size))
 
 # calcul de l'image
 coords_bbox_WSG = gpd.GeoDataFrame(
