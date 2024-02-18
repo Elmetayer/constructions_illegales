@@ -29,6 +29,8 @@ if 'adresse_clicked' not in st.session_state:
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = None
+if 'bbox_Lambert' not in st.session_state:
+    st.session_state['bbox_Lambert'] = None
 
 st.write('last_coords')
 st.write(st.session_state['last_coords'])
@@ -40,11 +42,13 @@ st.write('last_clicked')
 st.write(st.session_state['last_clicked'])
 st.write('adresse_clicked')
 st.write(st.session_state['adresse_clicked'])
+st.write('bbox_Lambert')
+st.write(st.session_state['bbox_Lambert'])
 
 def search_adresse():
-    if st.session_state['adresse_text']:
+    if st.session_state['adresse_field']:
         request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
-            st.session_state['adresse_text'])
+            st.session_state['adresse_field'])
         response_wxs = requests.get(request_wxs).content
         adresses = json.load(BytesIO(response_wxs))
         if len(adresses['features']) > 0:
@@ -89,6 +93,7 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x - size//2, coords_center_Lambert.geometry[0].y - size//2),
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
             crs = 'EPSG:2154')
+    st.session_state['bbox_Lambert'] = bbox_Lambert
     bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
     return(bbox_WSG.geometry[0].y, bbox_WSG.geometry[0].x, bbox_WSG.geometry[1].y, bbox_WSG.geometry[1].x)
 
