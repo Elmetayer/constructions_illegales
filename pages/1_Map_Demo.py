@@ -109,14 +109,21 @@ if bbox_mode:
 if bbox_size:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
+st.divider()
+
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
 if st.session_state['warning_adresse']:
     st.sidebar.warning(st.session_state['warning_adresse'])
 
+st.divider()
+
 # gestion des points de recherche
-update_button = st.sidebar.button('valider le point', on_click = update_point)
-cancel_button = st.sidebar.button('annuler le point')
+update_button = None
+cancel_button = None
+if st.session_state['new_point']:
+    update_button = st.sidebar.button('valider le point', on_click = update_point)
+    cancel_button = st.sidebar.button('annuler le point')
 if cancel_button:
     st.session_state['new_point'] = None
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
