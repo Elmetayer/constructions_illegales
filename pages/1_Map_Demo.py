@@ -32,6 +32,16 @@ def search_adresse():
         else:
             st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
+def search_lonlat(lon_lat):
+    result = ADRESSE_DEFAUT
+    request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
+        lon_lat)
+    response_wxs = requests.get(request_wxs).content
+    adresses = json.load(BytesIO(response_wxs))
+    if len(adresses['features']) > 0:
+        result = adresses['features'][0]['properties']['label']
+    return result
+
 def update_point():
     if st.session_state['new_point']:
         st.session_state['last_coords'] = st.session_state['new_point']
@@ -119,7 +129,7 @@ if st.session_state['warning_adresse']:
 update_button = st.sidebar.button('valider le point', on_click = update_point)
 cancel_button = st.sidebar.button('annuler le point')
 if cancel_button:
-    st.session_state['last_clicked'] = None
+    st.session_state['new_point'] = None
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
     st.rerun()
 
@@ -164,5 +174,6 @@ out_m = st_folium(
     height = 400)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
+    st.session_state['adresse_clicked'] = search_lonlat(st.session_state['last_clicked'])
     st.session_state['new_point'] = st.session_state['last_clicked']
     st.rerun()
