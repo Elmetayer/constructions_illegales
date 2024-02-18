@@ -60,7 +60,6 @@ def search_adresse():
                 crs = 'EPSG:2154')
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
             st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-            st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
             st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
             st.session_state['warning_adresse'] = None
@@ -72,10 +71,8 @@ def search_adresse():
 def update_point():
     if st.session_state['last_clicked']:
         st.session_state['last_coords'] = st.session_state['last_clicked']
-        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
         st.session_state['adresse_text'] = st.session_state['adresse_clicked']
-    else:
-        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
 def get_bbox(coords_center, size, mode):
     ccoords_center_WSG = gpd.GeoDataFrame(
@@ -105,10 +102,10 @@ def get_bbox(coords_center, size, mode):
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
 bbox_size = st.sidebar.slider('Taille (m)', 0, 500, 100)
-if bbox_mode and st.session_state['last_clicked']:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
-if bbox_size and st.session_state['last_clicked']:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_clicked'], bbox_size, bbox_mode)
+if bbox_mode:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+if bbox_size:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse)
