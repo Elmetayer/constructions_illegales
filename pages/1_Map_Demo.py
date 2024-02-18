@@ -71,6 +71,8 @@ st.sidebar.header("Map Demo")
 # variables de session
 CENTER_START = [48.858370, 2.294481]
 ADRESSE_DEFAUT = 'non defini'
+SIZE_DEFAUT = 500
+MODE_DEFAUT = 'haut/gauche'
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
 if 'new_point' not in st.session_state:
@@ -85,7 +87,7 @@ if 'adresse_clicked' not in st.session_state:
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
 
 st.write('last_coords')
 st.write(st.session_state['last_coords'])
@@ -101,8 +103,8 @@ st.write('bbox')
 st.write(st.session_state['bbox'])
 
 # mode d'affichage et taille de la bouding box
-bbox_mode = st.sidebar.radio('Bounding box', ['haut/gauche', 'centre'])
-bbox_size = st.sidebar.slider('Taille (m)', 0, 500, 100)
+bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
+bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, SIZE_DEFAUT)
 if bbox_mode:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 if bbox_size:
