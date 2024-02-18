@@ -28,7 +28,7 @@ if 'adresse_clicked' not in st.session_state:
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
-    st.session_state['bbox'] = None
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
 st.write('last_coords')
 st.write(st.session_state['last_coords'])
