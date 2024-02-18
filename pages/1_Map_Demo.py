@@ -32,10 +32,10 @@ def search_adresse():
         else:
             st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
-def search_lonlat(lon_lat):
+def search_lat_lon(lat_lon):
     result = ADRESSE_DEFAUT
     request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
-        lon_lat)
+        lat_lon[0], lat_lon[1])
     response_wxs = requests.get(request_wxs).content
     adresses = json.load(BytesIO(response_wxs))
     if len(adresses['features']) > 0:
