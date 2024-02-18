@@ -20,6 +20,8 @@ if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
 if 'adresse_text' not in st.session_state:
     st.session_state['adresse_text'] = ADRESSE_DEFAUT
+if 'warning_adresse' not in st.session_state:
+    st.session_state['warning_adresse'] = None    
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
 if 'adresse_clicked' not in st.session_state:
@@ -48,6 +50,9 @@ def search_adresse():
             st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
             st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
+            st.session_state['warning_adresse'] = None
+        else:
+            st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
 def update_point():
     if st.session_state['last_clicked']:
@@ -89,6 +94,8 @@ if bbox_size and st.session_state['last_clicked']:
 
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse)
+if st.session_state['warning_adresse']:
+    st.sidebar.warning(st.session_state['warning_adresse'])
 
 # gestion des points de recherche
 update_button = st.sidebar.button('valider le point', on_click = update_point)
