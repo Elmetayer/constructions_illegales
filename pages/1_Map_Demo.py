@@ -72,6 +72,8 @@ def update_point():
         st.session_state['last_coords'] = st.session_state['last_clicked']
         st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
         st.session_state['adresse_text'] = st.session_state['adresse_clicked']
+    else:
+        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
 def get_bbox(coords_center, size, mode):
     ccoords_center_WSG = gpd.GeoDataFrame(
