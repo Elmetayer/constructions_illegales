@@ -8,6 +8,7 @@ import json
 from io import BytesIO
 import shapely
 import geopandas as gpd
+from PIL import Image, ImageOps
 
 
 # titre de la page
