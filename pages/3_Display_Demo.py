@@ -1,6 +1,6 @@
 import streamlit as st
-#import plotly.express as px
-#import rasterio
+import plotly.express as px
+import rasterio
 
 # titre de la page
 st.set_page_config(page_title="Display Demo", page_icon="👓")
@@ -8,7 +8,7 @@ st.markdown("# Display Demo")
 st.sidebar.header("Display Demo")
 
 coords_scale = 0.2
-'''
+
 polygon_bbox = shapely.Polygon((
     (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
     (st.session_state['bbox'][2], st.session_state['bbox'][1]), 
@@ -31,4 +31,3 @@ orthophoto = Image.open(BytesIO(response_wms))
 
 fig = px.imshow(orthophoto)
 st.plotly_chart(fig)
-'''
