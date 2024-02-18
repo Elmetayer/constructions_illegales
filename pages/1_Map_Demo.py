@@ -23,11 +23,9 @@ def search_adresse():
                  'geometry': [shapely.geometry.Point(X0, Y0)]},
                 crs = 'EPSG:2154')
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
-            st.session_state['last_coords'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-            st.session_state['adresse_text'] = adresses['features'][0]['properties']['label']
+            st.session_state['new_point'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+            st.session_state['new_adresse'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
-            st.session_state['new_point'] = None
-            st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
         else:
             st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
@@ -44,10 +42,10 @@ def search_lat_lon(lat_lon):
 def update_point():
     if st.session_state['new_point']:
         st.session_state['last_coords'] = st.session_state['new_point']
-        st.session_state['adresse_text'] = st.session_state['adresse_clicked']
+        st.session_state['adresse_text'] = st.session_state['new_adresse']
         st.session_state['new_point'] = None
-        st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+        st.session_state['new_adresse'] = ADRESSE_DEFAUT
+        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
     
 def get_bbox(coords_center, size, mode):
     ccoords_center_WSG = gpd.GeoDataFrame(
@@ -84,16 +82,16 @@ SIZE_DEFAUT = 500
 MODE_DEFAUT = 'haut/gauche'
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
-if 'new_point' not in st.session_state:
-    st.session_state['new_point'] = None
 if 'adresse_text' not in st.session_state:
     st.session_state['adresse_text'] = ADRESSE_DEFAUT
+if 'new_point' not in st.session_state:
+    st.session_state['new_point'] = None
+if 'new_adresse' not in st.session_state:
+    st.session_state['new_adresse'] = ADRESSE_DEFAUT
 if 'warning_adresse' not in st.session_state:
     st.session_state['warning_adresse'] = None    
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
-if 'adresse_clicked' not in st.session_state:
-    st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
@@ -138,7 +136,7 @@ if st.session_state['new_point']:
     # pointeur
     fg.add_child(folium.Marker(
         st.session_state['new_point'], 
-        popup = st.session_state['adresse_clicked'], 
+        popup = st.session_state['new_adresse'], 
         tooltip = st.session_state['new_point']))
 if st.session_state['bbox']:
     # bounding box
@@ -160,6 +158,6 @@ out_m = st_folium(
     height = 400)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
-    st.session_state['adresse_clicked'] = search_lat_lon(st.session_state['last_clicked'])
     st.session_state['new_point'] = st.session_state['last_clicked']
+    st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
     st.rerun()
