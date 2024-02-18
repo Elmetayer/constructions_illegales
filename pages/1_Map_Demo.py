@@ -174,6 +174,6 @@ out_m = st_folium(
     height = 400)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
-    st.session_state['adresse_clicked'] = search_lonlat(st.session_state['last_clicked'])
+    st.session_state['adresse_clicked'] = search_lat_lon(st.session_state['last_clicked'])
     st.session_state['new_point'] = st.session_state['last_clicked']
     st.rerun()
