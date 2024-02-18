@@ -68,6 +68,10 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
             crs = 'EPSG:2154')
     bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
+    st.session_state['map_center'] = [
+        (bbox_WSG.geometry[0].y + bbox_WSG.geometry[1].y)/2,
+        (bbox_WSG.geometry[0].x + bbox_WSG.geometry[1].x)/2
+    ]
     return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
 
 # titre de la page
@@ -82,6 +86,9 @@ SIZE_DEFAUT = 500
 MODE_DEFAUT = 'haut/gauche'
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
+# convention pour la bbox : xmin, ymin, xmax, ymax
+if 'bbox' not in st.session_state:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
 if 'adresse_text' not in st.session_state:
     st.session_state['adresse_text'] = ADRESSE_DEFAUT
 if 'new_point' not in st.session_state:
@@ -92,9 +99,7 @@ if 'warning_adresse' not in st.session_state:
     st.session_state['warning_adresse'] = None    
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
-# convention pour la bbox : xmin, ymin, xmax, ymax
-if 'bbox' not in st.session_state:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
+
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
@@ -153,7 +158,7 @@ m = folium.Map(location = CENTER_START, zoom_start = 16)
 out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
-    center = st.session_state['last_coords'], 
+    center = st.session_state['map_center'], 
     width = 400,
     height = 400)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
