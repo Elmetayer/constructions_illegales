@@ -40,6 +40,8 @@ st.write('last_clicked')
 st.write(st.session_state['last_clicked'])
 st.write('adresse_clicked')
 st.write(st.session_state['adresse_clicked'])
+st.write('bbox')
+st.write(st.session_state['bbox'])
 
 def search_adresse():
     if st.session_state['adresse_field']:
@@ -145,7 +147,7 @@ if st.session_state['last_clicked']:
         st.session_state['last_clicked'], 
         popup = st.session_state['adresse_clicked'], 
         tooltip = st.session_state['last_clicked']))
-if st.session_state['bbox'] is None:
+if st.session_state['bbox']:
     # bounding box
     polygon_folium_bbox = folium.GeoJson(data = st.session_state['bbox'], style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
