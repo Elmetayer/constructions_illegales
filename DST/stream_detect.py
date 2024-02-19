@@ -26,7 +26,7 @@ from detect_lib import *
 # Zone plus étendue
 Xbounds = [750000.0, 900000.0]
 Ybounds = [6400000.0, 6800000.0]
-chemin_model = '../models/Moez-UNet07_res512_23_12_23.h5'
+chemin_model = 'Moez-UNet07_res512_23_12_23.h5'
 
 # Streamlit
 st.title("Projet de détection des bâtiments")
