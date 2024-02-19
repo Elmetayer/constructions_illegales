@@ -159,7 +159,7 @@ coords_bbox_WSG = gpd.GeoDataFrame(
       shapely.geometry.Point(st.session_state['bbox'][2], st.session_state['bbox'][3])]},
    crs = 'EPSG:4326')
 bounds = coords_bbox_WSG.to_crs('EPSG:2154')
-st.write("(xmin, ymin), (xmax, ymax) = ({}, {}), ({}, {})".format(bounds.geometry[0].x, bounds.geometry[0].y, bounds.geometry[1], bounds.geometry[1].y))
+st.write("(xmin, ymin), (xmax, ymax) = ({}, {}), ({}, {})".format(bounds.geometry[0].x, bounds.geometry[0].y, bounds.geometry[1].x, bounds.geometry[1].y))
 
 # st.write(bounds)
 # st.write(bounds.crs)
