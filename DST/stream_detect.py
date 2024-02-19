@@ -162,21 +162,22 @@ coords_bbox_WSG = gpd.GeoDataFrame(
    crs = 'EPSG:4326')
 bounds = coords_bbox_WSG.to_crs('EPSG:2154')
 
-
-
-
-
-
-
 # st.write(bounds)
 # st.write(bounds.crs)
 
 ## ---- Chargement de l'orthophoto
-orthophoto = charge_ortho(bounds)
+# caching pour ne pas tout recharger lors du clic sur la carte
+@st.cache_data
+def get_cached_orthophoto(bounds):
+    return charge_ortho(bounds)
+orthophoto = get_cached_orthophoto(bounds)
 
 ## ---- Chargement du cadastre
-# ajout d'un caching
-batiments = charge_batiments(bounds)
+# caching pour ne pas tout recharger lors du clic sur la carte
+@st.cache_data
+def get_cached_batiments(bounds):
+    return charge_batiments(bounds)
+batiments = get_cached_batiments(bounds)
 st.write("Nombre de formes dans le cadastre = ", batiments.shape[0])
 
 # Création et affichage de la carte
@@ -213,11 +214,11 @@ fig.update_layout(
 if page == pages[0] : 
     st.plotly_chart(fig, use_container_width=False)
 
-# ajout d'un caching pour ne pas ré-exécuter inutilement la fonction
+# ajout d'un caching pour ne pas recharger inutilement le modèle
 @st.cache_resource
-def load_model_streamlit():
+def get_cached_model(chemin_model):
     return keras.models.load_model(chemin_model)
-model = load_model_streamlit()
+model = get_cached_model(chemin_model)
 
 img1 = np.array(orthophoto)[:512,:512,:]/255.0
 img2 = np.array(orthophoto)[-512:,:512,:]/255.0
