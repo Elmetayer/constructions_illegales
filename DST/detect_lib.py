@@ -136,8 +136,10 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
             crs = 'EPSG:2154')
     bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
-    st.session_state['map_center'] = [
-        (bbox_WSG.geometry[0].y + bbox_WSG.geometry[1].y)/2,
-        (bbox_WSG.geometry[0].x + bbox_WSG.geometry[1].x)/2
-    ]
     return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
+
+def get_bbox_center(bbox):
+    '''
+    renvoie le centre de la bounding box (pour une carte folium)
+    '''
+    return([(bbox[1] + bbox[3])/2, (bbox[0] + bbox[2])/2])

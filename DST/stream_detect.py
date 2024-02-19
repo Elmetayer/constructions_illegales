@@ -45,11 +45,6 @@ if page == pages[1] :
 
 c = st.container(border=True)
 
-
-
-
-
-
 ## ---- Carte de recherche
 
 # variables de session
@@ -63,6 +58,8 @@ if 'last_coords' not in st.session_state:
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
+if 'map_center' not in st.session_state:
+    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
 if 'adresse_text' not in st.session_state:
     st.session_state['adresse_text'] = ADRESSE_DEFAUT
 if 'new_point' not in st.session_state:
@@ -85,6 +82,9 @@ def update_point():
         st.session_state['new_adresse'] = ADRESSE_DEFAUT
         st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, bbox_mode)
 
+# fond de carte
+satellite = c.checkbox('satellite', False)
+
 # mode d'affichage et taille de la bouding box
 bbox_mode = c.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
 if bbox_mode:
@@ -104,6 +104,7 @@ if st.session_state['new_point']:
 if cancel_button:
     st.session_state['new_point'] = None
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
+    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
@@ -139,7 +140,14 @@ if st.session_state['bbox']:
     fg.add_child(polygon_folium_bbox)
 
 m = folium.Map(location = CENTER_START, zoom_start = 14)
-out_m = c.st_folium(
+if satellite:
+    tile = folium.TileLayer(
+            tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attr = 'Esri',
+            name = 'Esri Satellite',
+            overlay = False,
+            control = True).add_to(m)
+out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
     center = st.session_state['map_center'], 
