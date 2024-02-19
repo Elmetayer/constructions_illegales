@@ -118,14 +118,17 @@ if 'warning_adresse' not in st.session_state:
     st.session_state['warning_adresse'] = None    
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
+if 'bbox_size' not in st.session_state:
+    st.session_state['bbox_size'] = SIZE_DEFAUT
 
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
-bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, SIZE_DEFAUT)
+bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, st.session_state['bbox_size'])
 if bbox_mode:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 if bbox_size:
+    st.session_state['bbox_size'] = bbox_size
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 
 # fond de carte
@@ -195,8 +198,8 @@ out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
     center = st.session_state['map_center'], 
-    width = 600,
-    height = 600)
+    width = 800,
+    height = 800)
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.session_state['new_point'] = st.session_state['last_clicked']
