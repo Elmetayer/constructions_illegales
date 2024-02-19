@@ -49,6 +49,6 @@ def get_ortho_cached(xmin, ymin, xmax, ymax, pixel_size):
    response_wms = requests.get(request_wms).content
    orthophoto = Image.open(BytesIO(response_wms))
    return(orthophoto)
-orthophoto = get_ortho_cached(xmin, ymin, xmax, ymax, pixel_size, pixel_size)
+orthophoto = get_ortho_cached(xmin, ymin, xmax, ymax, pixel_size)
 fig = px.imshow(orthophoto, width = 800, height = 800)
 st.plotly_chart(fig)
