@@ -27,7 +27,7 @@ def search_adresse():
                 crs = 'EPSG:2154')
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
             st.session_state['new_point'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-            st.session_state['bbox'] = get_bbox(st.session_state['new_point'], bbox_size, bbox_mode)
+            st.session_state['map_center'] = st.session_state['new_point']
             st.session_state['new_adresse'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
         else:
@@ -57,6 +57,7 @@ def update_point():
         st.session_state['new_point'] = None
         st.session_state['new_adresse'] = ADRESSE_DEFAUT
         st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+        st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
     
 def get_bbox(coords_center, size, mode):
     '''
@@ -83,11 +84,13 @@ def get_bbox(coords_center, size, mode):
                 shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
             crs = 'EPSG:2154')
     bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
-    st.session_state['map_center'] = [
-        (bbox_WSG.geometry[0].y + bbox_WSG.geometry[1].y)/2,
-        (bbox_WSG.geometry[0].x + bbox_WSG.geometry[1].x)/2
-    ]
     return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
+
+def get_bbox_center(bbox):
+    '''
+    renvoie le centre de la bounding box
+    '''
+    return([(bbox[1] + bbox[3])/2, (bbox[0] + bbox[2])/2])
 
 # titre de la page
 st.set_page_config(page_title="Map Demo", page_icon="🔎")
@@ -103,6 +106,8 @@ if 'last_coords' not in st.session_state:
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
+if 'map_center' not in st.session_state:
+    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
 if 'adresse_text' not in st.session_state:
     st.session_state['adresse_text'] = ADRESSE_DEFAUT
 if 'new_point' not in st.session_state:
