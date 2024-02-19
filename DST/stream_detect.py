@@ -172,18 +172,11 @@ bounds = coords_bbox_WSG.to_crs('EPSG:2154')
 # st.write(bounds.crs)
 
 ## ---- Chargement de l'orthophoto
-# ajout d'un caching
-@st.cache_data
-def ortho():
-    return charge_ortho(bounds)
-orthophoto = ortho()
+orthophoto = charge_ortho(bounds)
 
 ## ---- Chargement du cadastre
 # ajout d'un caching
-@st.cache_data
-def batiments():
-    return charge_batiments(bounds)
-batiments = batiments()
+batiments = charge_batiments(bounds)
 st.write("Nombre de formes dans le cadastre = ", batiments.shape[0])
 
 # Création et affichage de la carte
