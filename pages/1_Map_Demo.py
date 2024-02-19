@@ -140,8 +140,11 @@ if st.session_state['warning_adresse']:
 update_button = None
 cancel_button = None
 if st.session_state['new_point']:
-    update_button = st.sidebar.button('valider le point', on_click = update_point)
-    cancel_button = st.sidebar.button('annuler le point')
+    col1, col2 = st.sidebar.columns([1,1])
+    with col1:
+        update_button = st.sidebar.button('valider le point', on_click = update_point)
+    with col2:
+        cancel_button = st.sidebar.button('annuler le point')
 if cancel_button:
     st.session_state['new_point'] = None
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
