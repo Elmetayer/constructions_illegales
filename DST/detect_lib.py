@@ -4,12 +4,13 @@ import requests
 from PIL import Image, ImageOps
 from io import BytesIO
 import geopandas as gpd
+import shapely
 from shapely.geometry import Polygon
 
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
-import shapely
+import json
 
 # Fonction qui envoie une requete et récupère l'orthophoto dans un cadre rectangulaire (bounds en coord Lambert 93)
 def charge_ortho(bounds):
