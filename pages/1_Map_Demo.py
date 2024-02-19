@@ -131,9 +131,11 @@ bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal
 bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, st.session_state['bbox_size'])
 if bbox_mode:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
 if bbox_size:
     st.session_state['bbox_size'] = bbox_size
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
 
 # fond de carte
 satellite = st.sidebar.checkbox('satellite', False)
