@@ -58,6 +58,7 @@ def update_point():
         st.session_state['new_adresse'] = ADRESSE_DEFAUT
         st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
         st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
+        st.session_state['map_zoom'] = out_m['zoom']
     
 def get_bbox(coords_center, size, mode):
     '''
@@ -208,5 +209,4 @@ if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_cl
     st.session_state['new_point'] = st.session_state['last_clicked']
     st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
     st.rerun()
-if out_m['zoom'] and st.session_state['map_zoom'] != out_m['zoom']:
-    st.session_state['map_zoom'] = out_m['zoom']
+    
