@@ -178,6 +178,12 @@ if st.session_state['bbox']:
     fg.add_child(polygon_folium_bbox)
 
 m = folium.Map(location = CENTER_START, zoom_start = 14)
+tile = folium.TileLayer(
+        tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        attr = 'Esri',
+        name = 'Esri Satellite',
+        overlay = False,
+        control = True).add_to(m)
 out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
