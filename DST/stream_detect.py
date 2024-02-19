@@ -55,8 +55,9 @@ c = st.container(border=True)
 # variables de session
 CENTER_START = [48.858370, 2.294481]
 ADRESSE_DEFAUT = 'non defini'
-SIZE_DEFAUT = 500
+SIZE_DEFAUT = 204.8
 MODE_DEFAUT = 'haut/gauche'
+
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
 # convention pour la bbox : xmin, ymin, xmax, ymax
@@ -82,15 +83,12 @@ def update_point():
         st.session_state['adresse_text'] = st.session_state['new_adresse']
         st.session_state['new_point'] = None
         st.session_state['new_adresse'] = ADRESSE_DEFAUT
-        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, bbox_mode)
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = c.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
-bbox_size = c.slider('Taille (m)', 0, 1000, SIZE_DEFAUT)
 if bbox_mode:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-if bbox_size:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, bbox_mode)
 
 # recherche de l'adresse dans la barre latérale
 adresse = c.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
