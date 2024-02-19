@@ -74,17 +74,6 @@ if 'warning_adresse' not in st.session_state:
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
 
-def update_point():
-    '''
-    fonction qui met à jour le point valide
-    '''
-    if st.session_state['new_point']:
-        st.session_state['last_coords'] = st.session_state['new_point']
-        st.session_state['adresse_text'] = st.session_state['new_adresse']
-        st.session_state['new_point'] = None
-        st.session_state['new_adresse'] = ADRESSE_DEFAUT
-        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, bbox_mode)
-
 # mode d'affichage et taille de la bouding box
 bbox_mode = c.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
 if bbox_mode:
@@ -165,18 +154,10 @@ st.write("(xmin, ymin), (xmax, ymax) = ({}, {}), ({}, {})".format(bounds.geometr
 # st.write(bounds.crs)
 
 ## ---- Chargement de l'orthophoto
-# caching pour ne pas tout recharger lors du clic sur la carte
-@st.cache_data
-def get_cached_orthophoto(_bounds):
-    return charge_ortho(_bounds)
-orthophoto = get_cached_orthophoto(bounds)
+orthophoto = charge_ortho(bounds)
 
 ## ---- Chargement du cadastre
-# caching pour ne pas tout recharger lors du clic sur la carte
-@st.cache_data
-def get_cached_batiments(_bounds):
-    return charge_batiments(_bounds)
-batiments = get_cached_batiments(bounds)
+batiments = charge_batiments(bounds)
 st.write("Nombre de formes dans le cadastre = ", batiments.shape[0])
 
 # Création et affichage de la carte

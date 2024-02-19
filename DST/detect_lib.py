@@ -91,6 +91,7 @@ def search_adresse():
                 crs = 'EPSG:2154')
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
             st.session_state['new_point'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+            st.session_state['last_coords'] = st.session_state['new_point']
             st.session_state['new_adresse'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
         else:
@@ -109,6 +110,17 @@ def search_lat_lon(lat_lon, defaut):
     if len(adresses['features']) > 0:
         result = adresses['features'][0]['properties']['label']
     return result
+
+def update_point():
+    '''
+    fonction qui met à jour le point valide
+    '''
+    if st.session_state['new_point']:
+        st.session_state['last_coords'] = st.session_state['new_point']
+        st.session_state['adresse_text'] = st.session_state['new_adresse']
+        st.session_state['new_point'] = None
+        st.session_state['new_adresse'] = ADRESSE_DEFAUT
+        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, bbox_mode)
     
 def get_bbox(coords_center, size, mode):
     '''
