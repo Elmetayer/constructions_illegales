@@ -139,7 +139,7 @@ if st.session_state['bbox']:
     fg.add_child(polygon_folium_bbox)
 
 m = folium.Map(location = CENTER_START, zoom_start = 14)
-out_m = st_folium(
+out_m = c.st_folium(
     m, 
     feature_group_to_add = fg, 
     center = st.session_state['map_center'], 
