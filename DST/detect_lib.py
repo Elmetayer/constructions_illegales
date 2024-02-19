@@ -8,7 +8,7 @@ from shapely.geometry import Polygon
 
 import folium
 from streamlit_folium import st_folium
-
+import shapely
 
 # Fonction qui envoie une requete et récupère l'orthophoto dans un cadre rectangulaire (bounds en coord Lambert 93)
 def charge_ortho(bounds):

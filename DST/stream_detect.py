@@ -14,6 +14,7 @@ import cv2
 
 import folium
 from streamlit_folium import st_folium
+import shapely
 
 import tensorflow as tf
 # from tensorflow.keras.models import Model
