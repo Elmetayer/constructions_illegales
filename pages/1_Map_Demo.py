@@ -27,7 +27,7 @@ def search_adresse():
                 crs = 'EPSG:2154')
             coords_WSG = coords_Lambert.to_crs('EPSG:4326')
             st.session_state['new_point'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-            st.session_state['map_center'] = [5, 5]
+            st.session_state['bbox'] = get_bbox(st.session_state['new_point'], bbox_size, bbox_mode)
             st.session_state['new_adresse'] = adresses['features'][0]['properties']['label']
             st.session_state['adresse_field'] = ''
         else:
@@ -92,7 +92,6 @@ def get_bbox(coords_center, size, mode):
 # titre de la page
 st.set_page_config(page_title="Map Demo", page_icon="🔎")
 st.markdown("# Map Demo")
-st.write(st.session_state['map_center'])
 
 # variables de session
 CENTER_START = [48.858370, 2.294481]
