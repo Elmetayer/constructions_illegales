@@ -12,6 +12,9 @@ import plotly.graph_objs as go
 #from ultralytics import YOLO
 import cv2
 
+import folium
+from streamlit_folium import st_folium
+
 import tensorflow as tf
 # from tensorflow.keras.models import Model
 # from tensorflow.keras.layers import *
@@ -40,11 +43,119 @@ if page == pages[1] :
     st.header("Modélisation")
 
 c = st.container(border=True)
-X0 = c.slider("X Lambert",Xbounds[0],Xbounds[1],step=200.0)
-Y0 = c.slider("Y Lambert",Ybounds[0],Ybounds[1],step=200.0)
 
-d = {'Nom': ['name1', 'name2'], 'geometry': [Point(X0-204.8, Y0-204.8), Point(X0+204.8, Y0+204.8)]}
-bounds = gpd.GeoDataFrame(d, crs="EPSG:2154")
+
+
+
+
+
+## ---- Carte de recherche
+
+# variables de session
+CENTER_START = [48.858370, 2.294481]
+ADRESSE_DEFAUT = 'non defini'
+SIZE_DEFAUT = 500
+MODE_DEFAUT = 'haut/gauche'
+if 'last_coords' not in st.session_state:
+    st.session_state['last_coords'] = [48.858370, 2.294481]
+# convention pour la bbox : xmin, ymin, xmax, ymax
+if 'bbox' not in st.session_state:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
+if 'adresse_text' not in st.session_state:
+    st.session_state['adresse_text'] = ADRESSE_DEFAUT
+if 'new_point' not in st.session_state:
+    st.session_state['new_point'] = None
+if 'new_adresse' not in st.session_state:
+    st.session_state['new_adresse'] = ADRESSE_DEFAUT
+if 'warning_adresse' not in st.session_state:
+    st.session_state['warning_adresse'] = None    
+if 'last_clicked' not in st.session_state:
+    st.session_state['last_clicked'] = None
+
+# mode d'affichage et taille de la bouding box
+bbox_mode = c.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
+bbox_size = c.slider('Taille (m)', 0, 1000, SIZE_DEFAUT)
+if bbox_mode:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+if bbox_size:
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+
+# recherche de l'adresse dans la barre latérale
+adresse = c.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
+if st.session_state['warning_adresse']:
+    c.warning(st.session_state['warning_adresse'])
+
+# gestion des points de recherche
+update_button = None
+cancel_button = None
+if st.session_state['new_point']:
+    update_button = c.button('valider le point', on_click = update_point)
+    cancel_button = c.button('annuler le point')
+if cancel_button:
+    st.session_state['new_point'] = None
+    st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
+    st.rerun()
+
+# affichage de la carte et centrage sur l'adresse entrée
+fg = folium.FeatureGroup(name = 'centre carte')
+
+style_bbox = {
+    'color': '#ff3939',
+    'fillOpacity': 0,
+    'weight': 3,
+    'opacity': 1,
+    'dashArray': '5, 5'}
+
+# point courant
+fg.add_child(folium.Marker(
+    st.session_state['last_coords'], 
+    popup = st.session_state['adresse_text'], 
+    tooltip = st.session_state['last_coords']))
+if st.session_state['new_point']:
+    # pointeur
+    fg.add_child(folium.Marker(
+        st.session_state['new_point'], 
+        popup = st.session_state['new_adresse'], 
+        tooltip = st.session_state['new_point']))
+if st.session_state['bbox']:
+    # bounding box
+    polygon_bbox = shapely.Polygon((
+        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
+        (st.session_state['bbox'][2], st.session_state['bbox'][1]), 
+        (st.session_state['bbox'][2], st.session_state['bbox'][3]),
+        (st.session_state['bbox'][0], st.session_state['bbox'][3])))
+    gdf_bbox = gpd.GeoDataFrame(geometry = [polygon_bbox]).set_crs(epsg = 4326)
+    polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
+    fg.add_child(polygon_folium_bbox)
+
+m = folium.Map(location = CENTER_START, zoom_start = 14)
+out_m = st_folium(
+    m, 
+    feature_group_to_add = fg, 
+    center = st.session_state['map_center'], 
+    width = 600,
+    height = 600)
+if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
+    st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
+    st.session_state['new_point'] = st.session_state['last_clicked']
+    st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
+    st.rerun()
+
+# calcul des coordonnées de la bouding box pour la recherche
+coords_bbox_WSG = gpd.GeoDataFrame(
+   {'Nom': ['min', max],
+   'geometry': [
+      shapely.geometry.Point(st.session_state['bbox'][0], st.session_state['bbox'][1]),
+      shapely.geometry.Point(st.session_state['bbox'][2], st.session_state['bbox'][3])]},
+   crs = 'EPSG:4326')
+bounds = coords_bbox_WSG.to_crs('EPSG:2154')
+
+
+
+
+
+
+
 # st.write(bounds)
 # st.write(bounds.crs)
 

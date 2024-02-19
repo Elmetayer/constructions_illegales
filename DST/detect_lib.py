@@ -6,6 +6,9 @@ from io import BytesIO
 import geopandas as gpd
 from shapely.geometry import Polygon
 
+import folium
+from streamlit_folium import st_folium
+
 
 # Fonction qui envoie une requete et récupère l'orthophoto dans un cadre rectangulaire (bounds en coord Lambert 93)
 def charge_ortho(bounds):
@@ -65,3 +68,84 @@ def shape_to_traces(shapes, nom='traces', Centre=(0,0), echelle=1, couleur='blue
         )
         traces.append(ligne)
     return traces
+
+def search_adresse():
+    '''
+    fonction qui renvoie les coordonnées à partir d'une saisie d'adresse en texte libre
+    utilise l'API de géocodage de l'IGN
+    '''
+    if st.session_state['adresse_field']:
+        request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
+            st.session_state['adresse_field'])
+        response_wxs = requests.get(request_wxs).content
+        adresses = json.load(BytesIO(response_wxs))
+        if len(adresses['features']) > 0:
+            st.session_state['warning_adresse'] = None
+            X0 = adresses['features'][0]['properties']['x']
+            Y0 = adresses['features'][0]['properties']['y']
+            coords_Lambert = gpd.GeoDataFrame(
+                {'Nom': ['adresse'],
+                 'geometry': [shapely.geometry.Point(X0, Y0)]},
+                crs = 'EPSG:2154')
+            coords_WSG = coords_Lambert.to_crs('EPSG:4326')
+            st.session_state['new_point'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+            st.session_state['new_adresse'] = adresses['features'][0]['properties']['label']
+            st.session_state['adresse_field'] = ''
+        else:
+            st.session_state['warning_adresse'] = 'aucune adresse trouvée'
+
+def search_lat_lon(lat_lon):
+    '''
+    fonction qui renvoie une adresse à partir de coordonnées
+    utilise l'API de géocodage inversée de l'IGN
+    '''
+    result = ADRESSE_DEFAUT
+    request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
+        lat_lon[0], lat_lon[1])
+    response_wxs = requests.get(request_wxs).content
+    adresses = json.load(BytesIO(response_wxs))
+    if len(adresses['features']) > 0:
+        result = adresses['features'][0]['properties']['label']
+    return result
+
+def update_point():
+    '''
+    fonction qui met à jour le point valide
+    '''
+    if st.session_state['new_point']:
+        st.session_state['last_coords'] = st.session_state['new_point']
+        st.session_state['adresse_text'] = st.session_state['new_adresse']
+        st.session_state['new_point'] = None
+        st.session_state['new_adresse'] = ADRESSE_DEFAUT
+        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+    
+def get_bbox(coords_center, size, mode):
+    '''
+    fonction qui calcule les coordonnées xmin, ymin, xmax, ymax de la bounding box
+    à partir du point de référence, de la taille et du mode
+    '''
+    ccoords_center_WSG = gpd.GeoDataFrame(
+        {'Nom': ['centre'],
+        'geometry': [shapely.geometry.Point(coords_center[1], coords_center[0])]},
+        crs = 'EPSG:4326')
+    coords_center_Lambert = ccoords_center_WSG.to_crs('EPSG:2154')
+    if mode == 'haut/gauche':
+        bbox_Lambert = gpd.GeoDataFrame(
+            {'Nom': ['min', 'max'],
+            'geometry': [
+                shapely.geometry.Point(coords_center_Lambert.geometry[0].x, coords_center_Lambert.geometry[0].y - size),
+                shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size, coords_center_Lambert.geometry[0].y)]},
+            crs = 'EPSG:2154')
+    if mode == 'centre':
+        bbox_Lambert = gpd.GeoDataFrame(
+            {'Nom': ['min', 'max'],
+            'geometry': [
+                shapely.geometry.Point(coords_center_Lambert.geometry[0].x - size//2, coords_center_Lambert.geometry[0].y - size//2),
+                shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
+            crs = 'EPSG:2154')
+    bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
+    st.session_state['map_center'] = [
+        (bbox_WSG.geometry[0].y + bbox_WSG.geometry[1].y)/2,
+        (bbox_WSG.geometry[0].x + bbox_WSG.geometry[1].x)/2
+    ]
+    return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
