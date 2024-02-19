@@ -101,6 +101,8 @@ CENTER_START = [48.858370, 2.294481]
 ADRESSE_DEFAUT = 'non defini'
 SIZE_DEFAUT = 500
 MODE_DEFAUT = 'haut/gauche'
+ZOOM_DEFAUT = 14
+
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
 # convention pour la bbox : xmin, ymin, xmax, ymax
@@ -120,7 +122,8 @@ if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
 if 'bbox_size' not in st.session_state:
     st.session_state['bbox_size'] = SIZE_DEFAUT
-
+if 'map_zoom' not in st.session_state:
+    st.session_state['map_zoom'] = ZOOM_DEFAUT
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
@@ -186,7 +189,7 @@ if st.session_state['bbox']:
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
 
-m = folium.Map(location = CENTER_START, zoom_start = 14)
+m = folium.Map(location = CENTER_START, zoom_start = st.session_state['map_zoom'])
 if satellite:
     tile = folium.TileLayer(
             tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -205,3 +208,5 @@ if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_cl
     st.session_state['new_point'] = st.session_state['last_clicked']
     st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
     st.rerun()
+if out_m['zoom'] and st.session_state['map_zoom'] != out_m['zoom']:
+    st.session_state['map_zoom'] = out_m['zoom']
