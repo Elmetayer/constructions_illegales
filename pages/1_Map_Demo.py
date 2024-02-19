@@ -142,6 +142,7 @@ if st.session_state['new_point']:
 if cancel_button:
     st.session_state['new_point'] = None
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
+    st.session_state['map_center'] = st.session_state['last_coords']
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
