@@ -95,12 +95,12 @@ def search_adresse():
         else:
             st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
-def search_lat_lon(lat_lon):
+def search_lat_lon(lat_lon, defaut):
     '''
     fonction qui renvoie une adresse à partir de coordonnées
     utilise l'API de géocodage inversée de l'IGN
     '''
-    result = ADRESSE_DEFAUT
+    result = defaut
     request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
         lat_lon[0], lat_lon[1])
     response_wxs = requests.get(request_wxs).content
@@ -108,17 +108,6 @@ def search_lat_lon(lat_lon):
     if len(adresses['features']) > 0:
         result = adresses['features'][0]['properties']['label']
     return result
-
-def update_point():
-    '''
-    fonction qui met à jour le point valide
-    '''
-    if st.session_state['new_point']:
-        st.session_state['last_coords'] = st.session_state['new_point']
-        st.session_state['adresse_text'] = st.session_state['new_adresse']
-        st.session_state['new_point'] = None
-        st.session_state['new_adresse'] = ADRESSE_DEFAUT
-        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
     
 def get_bbox(coords_center, size, mode):
     '''

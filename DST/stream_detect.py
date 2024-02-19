@@ -73,6 +73,17 @@ if 'warning_adresse' not in st.session_state:
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
 
+def update_point():
+    '''
+    fonction qui met à jour le point valide
+    '''
+    if st.session_state['new_point']:
+        st.session_state['last_coords'] = st.session_state['new_point']
+        st.session_state['adresse_text'] = st.session_state['new_adresse']
+        st.session_state['new_point'] = None
+        st.session_state['new_adresse'] = ADRESSE_DEFAUT
+        st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
+
 # mode d'affichage et taille de la bouding box
 bbox_mode = c.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
 bbox_size = c.slider('Taille (m)', 0, 1000, SIZE_DEFAUT)
@@ -139,7 +150,7 @@ out_m = st_folium(
 if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]:
     st.session_state['last_clicked'] = [out_m['last_clicked']['lat'], out_m['last_clicked']['lng']]
     st.session_state['new_point'] = st.session_state['last_clicked']
-    st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
+    st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'], ADRESSE_DEFAUT)
     st.rerun()
 
 # calcul des coordonnées de la bouding box pour la recherche
