@@ -161,8 +161,8 @@ if cancel_button:
 
 center_button = st.button('centrer la carte')
 if center_button:
-    st.session_state['map_center'] = st.session_state['last_coords']
-    
+    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
+
 fg = folium.FeatureGroup(name = 'centre carte')
 
 style_bbox = {
