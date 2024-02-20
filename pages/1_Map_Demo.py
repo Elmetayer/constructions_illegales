@@ -162,7 +162,7 @@ if cancel_button:
 
 center_button = st.button('centrer la carte')
 if center_button:
-    st.session_state['map_center'] = [st.session_state['map_center'][0]+1, st.session_state['map_center'][1]+1]
+    st.session_state['map_center'] = [st.session_state['map_center'][0]+0.0001, st.session_state['map_center'][1]+0.0001]
     
 fg = folium.FeatureGroup(name = 'centre carte')
 
