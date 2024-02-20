@@ -122,6 +122,8 @@ if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
 if 'bbox_size' not in st.session_state:
     st.session_state['bbox_size'] = SIZE_DEFAUT
+if 'zoom' not in st.session_state:
+    st.session_state['zoom'] = ZOOM_DEFAUT
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
@@ -190,7 +192,7 @@ if st.session_state['bbox']:
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
 
-m = folium.Map(location = CENTER_START, zoom_start = ZOOM_DEFAUT)
+m = folium.Map(location = CENTER_START, zoom_start = st.session_state['zoom'])
 if satellite:
     tile = folium.TileLayer(
             tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -198,11 +200,6 @@ if satellite:
             name = 'Esri Satellite',
             overlay = False,
             control = True).add_to(m)
-if fit_button:
-    m.fit_bounds([
-        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
-        (st.session_state['bbox'][2], st.session_state['bbox'][3]), 
-    ])
 out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
@@ -214,4 +211,10 @@ if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_cl
     st.session_state['new_point'] = st.session_state['last_clicked']
     st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
     st.rerun()
+if fit_button:
+    m.fit_bounds([
+        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
+        (st.session_state['bbox'][2], st.session_state['bbox'][3]), 
+    ])
+    st.session_state['zoom'] = out_m['zoom']
     
