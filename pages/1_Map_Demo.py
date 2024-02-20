@@ -154,18 +154,18 @@ if st.session_state['new_point']:
 if cancel_button:
     st.session_state['new_point'] = None
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
-    #st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-    #st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
+    st.session_state['map_center'] = [st.session_state['map_center'][0]+1, st.session_state['map_center'][1]+1]
+    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
 
 center_button = st.button('centrer la carte')
 if center_button:
+    st.session_state['map_center'] = [st.session_state['map_center'][0]+1, st.session_state['map_center'][1]+1]
+    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
     st.rerun()
-    #st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-    #st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
-
+    
 fg = folium.FeatureGroup(name = 'centre carte')
 
 style_bbox = {
