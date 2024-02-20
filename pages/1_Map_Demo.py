@@ -58,7 +58,6 @@ def update_point():
         st.session_state['new_adresse'] = ADRESSE_DEFAUT
         st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
         st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
-        st.session_state['map_zoom'] = out_m['zoom']
     
 def get_bbox(coords_center, size, mode):
     '''
@@ -123,8 +122,6 @@ if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
 if 'bbox_size' not in st.session_state:
     st.session_state['bbox_size'] = SIZE_DEFAUT
-if 'map_zoom' not in st.session_state:
-    st.session_state['map_zoom'] = ZOOM_DEFAUT
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
@@ -139,6 +136,7 @@ if bbox_size:
 
 # fond de carte
 satellite = st.sidebar.checkbox('satellite', False)
+fit_button = st.button('ajuster le zoom')
 
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
@@ -192,7 +190,7 @@ if st.session_state['bbox']:
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
 
-m = folium.Map(location = CENTER_START, zoom_start = st.session_state['map_zoom'])
+m = folium.Map(location = CENTER_START, zoom_start = ZOOM_DEFAUT)
 if satellite:
     tile = folium.TileLayer(
             tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -200,6 +198,11 @@ if satellite:
             name = 'Esri Satellite',
             overlay = False,
             control = True).add_to(m)
+if fit_button:
+    m.fit_bounds([
+        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
+        (st.session_state['bbox'][2], st.session_state['bbox'][3]), 
+    ])
 out_m = st_folium(
     m, 
     feature_group_to_add = fg, 
