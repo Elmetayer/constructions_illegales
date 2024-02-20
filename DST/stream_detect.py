@@ -30,7 +30,9 @@ from detect_lib import *
 # Zone plus étendue
 Xbounds = [750000.0, 900000.0]
 Ybounds = [6400000.0, 6800000.0]
-chemin_model = 'DST/Moez-UNet07_res512_23_12_23.h5'
+# déposer le modèle à la racine pour faire un déploiement sur streamlit.io
+# chemin_model = 'DST/Moez-UNet07_res512_23_12_23.h5'
+chemin_model = '../Keras/UNet07_res512_23_12_23.h5'
 
 # Streamlit
 st.title("Projet de détection des bâtiments")
