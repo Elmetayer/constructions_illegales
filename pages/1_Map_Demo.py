@@ -102,6 +102,7 @@ ADRESSE_DEFAUT = 'non defini'
 SIZE_DEFAUT = 500
 MODE_DEFAUT = 'haut/gauche'
 ZOOM_DEFAUT = 14
+EPSILON_COORD = 0.00001
 
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
@@ -154,15 +155,16 @@ if st.session_state['new_point']:
 if cancel_button:
     st.session_state['new_point'] = None
     st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
-    st.session_state['map_center'] = [st.session_state['map_center'][0]+1, st.session_state['map_center'][1]+1]
-    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
+    # astuce pour provoquer le rafraîchissement
+    st.session_state['map_center'] = [st.session_state['map_center'][0]+EPSILON_COORD, st.session_state['map_center'][1]+EPSILON_COORD]
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
 
 center_button = st.button('centrer la carte')
 if center_button:
-    st.session_state['map_center'] = [st.session_state['map_center'][0]+0.0001, st.session_state['map_center'][1]+0.0001]
+    # astuce pour provoquer le rafraîchissement
+    st.session_state['map_center'] = [st.session_state['map_center'][0]+EPSILON_COORD, st.session_state['map_center'][1]+EPSILON_COORD]
     
 fg = folium.FeatureGroup(name = 'centre carte')
 
