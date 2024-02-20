@@ -160,7 +160,9 @@ if cancel_button:
 # affichage de la carte et centrage sur l'adresse entrée
 
 center_button = st.button('centrer la carte')
-
+if center_button:
+    st.session_state['map_center'] = st.session_state['last_coords']
+    
 fg = folium.FeatureGroup(name = 'centre carte')
 
 style_bbox = {
@@ -211,6 +213,5 @@ if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_cl
     st.session_state['new_point'] = st.session_state['last_clicked']
     st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
     st.rerun()
-if center_button:
-    st.session_state['map_center'] = st.session_state['last_coords']
+
     
