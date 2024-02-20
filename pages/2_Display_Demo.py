@@ -43,12 +43,12 @@ if scale != PIXEL_SCALE_REF:
 
 # récupération et affichage de l'orthophoto
 @st.cache_data
-def get_ortho_cached(xmin, ymin, xmax, ymax, pixel_size):
+def get_fig_ortho_cached(xmin, ymin, xmax, ymax, pixel_size):
    request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
    response_wms = requests.get(request_wms).content
    orthophoto = Image.open(BytesIO(response_wms))
-   return(orthophoto)
-orthophoto = get_ortho_cached(xmin, ymin, xmax, ymax, pixel_size)
-fig = px.imshow(orthophoto, width = 800, height = 800)
+   fig = px.imshow(orthophoto, width = 800, height = 800)
+   return(fig)
+fig = get_fig_ortho_cached(xmin, ymin, xmax, ymax, pixel_size)
 st.plotly_chart(fig)
