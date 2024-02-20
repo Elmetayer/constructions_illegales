@@ -122,8 +122,9 @@ if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
 if 'bbox_size' not in st.session_state:
     st.session_state['bbox_size'] = SIZE_DEFAUT
-if 'zoom' not in st.session_state:
-    st.session_state['zoom'] = ZOOM_DEFAUT
+
+# fond de carte
+satellite = st.sidebar.checkbox('satellite', False)
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
@@ -135,10 +136,6 @@ if bbox_size:
     st.session_state['bbox_size'] = bbox_size
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
     st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
-
-# fond de carte
-satellite = st.sidebar.checkbox('satellite', False)
-fit_button = st.button('ajuster le zoom')
 
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
@@ -161,6 +158,9 @@ if cancel_button:
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
+
+center_button = st.button('centrer la carte')
+
 fg = folium.FeatureGroup(name = 'centre carte')
 
 style_bbox = {
@@ -192,7 +192,7 @@ if st.session_state['bbox']:
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
 
-m = folium.Map(location = CENTER_START, zoom_start = st.session_state['zoom'])
+m = folium.Map(location = CENTER_START, zoom_start = ZOOM_DEFAUT)
 if satellite:
     tile = folium.TileLayer(
             tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -211,11 +211,6 @@ if out_m['last_clicked'] and st.session_state['last_clicked'] != [out_m['last_cl
     st.session_state['new_point'] = st.session_state['last_clicked']
     st.session_state['new_adresse'] = search_lat_lon(st.session_state['new_point'])
     st.rerun()
-if fit_button:
-    m.fit_bounds([
-        (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
-        (st.session_state['bbox'][2], st.session_state['bbox'][3]), 
-    ])
-    #st.session_state['zoom'] = out_m['zoom']
-    st.rerun()
+if center_button:
+    st.session_state['map_center'] = st.session_state['last_coords']
     
