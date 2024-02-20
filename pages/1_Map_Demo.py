@@ -132,12 +132,10 @@ bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal
 bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, st.session_state['bbox_size'])
 if bbox_mode:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
 if bbox_size:
     st.session_state['bbox_size'] = bbox_size
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
-    st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
-
+    
 # recherche de l'adresse dans la barre latérale
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
 if st.session_state['warning_adresse']:
