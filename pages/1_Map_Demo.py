@@ -216,6 +216,6 @@ if fit_button:
         (st.session_state['bbox'][0], st.session_state['bbox'][1]), 
         (st.session_state['bbox'][2], st.session_state['bbox'][3]), 
     ])
-    st.session_state['zoom'] = out_m['zoom']
+    #st.session_state['zoom'] = out_m['zoom']
     st.rerun()
     
