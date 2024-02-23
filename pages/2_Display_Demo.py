@@ -36,16 +36,19 @@ ymax = ccoords_bbox_Lambert.geometry[1].y
 # taille en pixel
 pixel_size_defaut = min(PIXEL_SIZE_MAX, int((xmax - xmin)/PIXEL_SCALE_REF))
 pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, pixel_size_defaut, 100)
-scale = round(pixel_size/(xmax - xmin), 1)
-st.sidebar.caption('Echelle: {} pixel/m'.format(scale))
+scale = round((xmax - xmin)/pixel_size, 1)
+st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
 if scale != PIXEL_SCALE_REF:
-    st.sidebar.warning('attendion, l\'échelle de référence est {}'.format(PIXEL_SCALE_REF))
+    st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # récupération et affichage de l'orthophoto
-request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
-   xmin, ymin, xmax, ymax, pixel_size, pixel_size)
-response_wms = requests.get(request_wms).content
-orthophoto = Image.open(BytesIO(response_wms))
-
-fig = px.imshow(orthophoto, width = 600, height = 600)
+@st.cache_data
+def get_fig_ortho_cached(xmin, ymin, xmax, ymax, pixel_size):
+   request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
+      xmin, ymin, xmax, ymax, pixel_size, pixel_size)
+   response_wms = requests.get(request_wms).content
+   orthophoto = Image.open(BytesIO(response_wms))
+   fig = px.imshow(orthophoto, width = 800, height = 800)
+   return(fig)
+fig = get_fig_ortho_cached(xmin, ymin, xmax, ymax, pixel_size)
 st.plotly_chart(fig)
