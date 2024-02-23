@@ -169,7 +169,7 @@ if cancel_button:
     st.rerun()
 
 # affichage de la carte et centrage sur l'adresse entrée
-
+st.write('adresse: {}'.format(st.session_state['adresse_text']))
 center_button = st.button('centrer la carte')
 if center_button:
     st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
