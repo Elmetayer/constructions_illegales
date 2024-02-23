@@ -49,7 +49,7 @@ def search_lat_lon(lat_lon):
     request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
         lat_lon[0], lat_lon[1])
     '''
-    request_wxs = 'https://data.geopf.fr/geocodage/rest/0.1/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
+    request_wxs = 'https://data.geopf.fr/geocodage/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
         lat_lon[0], lat_lon[1])
     response_wxs = requests.get(request_wxs).content
     adresses = json.load(BytesIO(response_wxs))
