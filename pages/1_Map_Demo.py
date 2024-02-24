@@ -139,7 +139,7 @@ satellite = st.sidebar.checkbox('satellite', False)
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
-bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, st.session_state['bbox_size'])
+bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, st.session_state['bbox_size'], 50)
 if bbox_mode:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 if bbox_size:
