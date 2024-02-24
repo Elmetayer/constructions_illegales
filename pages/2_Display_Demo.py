@@ -61,7 +61,7 @@ if load_button:
    
 # taille en pixel
 if st.session_state['coords_bbox_Lambert'] is not None:
-   coords_size = st.session_state['coords_bbox_Lambert'].geometry[1].x - st.session_state['coords_bbox_Lambert'].geometry[0].x
+   coords_size = st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]
 else:
    coords_size = SIZE_MAX
 pixel_size_defaut = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
