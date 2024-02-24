@@ -52,7 +52,7 @@ if 'coords_bbox_Lambert' not in st.session_state:
 if 'bbox' not in st.session_state:
    st.session_state['refresh_bbox'] = 0
 else:
-   st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] == st.session_state['bbox'])*1
+   st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] != st.session_state['bbox'])*1
 
 # bouton de mise à jour
 load_button = None
