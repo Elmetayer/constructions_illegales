@@ -20,7 +20,7 @@ def search_adresse():
         '''
         request_geocodage = 'https://data.geopf.fr/geocodage/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
             st.session_state['adresse_field'])
-        response_geocodage = requests.get(request_wxs).content
+        response_geocodage = requests.get(request_geocodage).content
         adresses = json.load(BytesIO(response_geocodage))
         if len(adresses['features']) > 0:
             st.session_state['warning_adresse'] = None
