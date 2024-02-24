@@ -51,7 +51,10 @@ else:
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
     load_button = st.button('mettre à jour')
-
+if load_button:
+   st.session_state['bbox_selected'] = st.session_state['bbox']
+   st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+   
 # taille en pixel
 if st.session_state['coords_bbox_Lambert'] is not None:
    coords_size = st.session_state['coords_bbox_Lambert'].geometry[1].x - st.session_state['coords_bbox_Lambert'].geometry[0].x
@@ -80,10 +83,7 @@ def get_fig_ortho_cached(_coords_bbox_Lambert, pixel_size):
       return(fig)
    else:
       return(None)
-if load_button:
-   st.session_state['bbox_selected'] = st.session_state['bbox']
-   st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
-   fig = get_fig_ortho_cached(st.session_state['coords_bbox_Lambert'], pixel_size)
+fig = get_fig_ortho_cached(st.session_state['coords_bbox_Lambert'], pixel_size)
 
 # affichage de l'orthophoto
 if fig is not None:
