@@ -60,7 +60,7 @@ if st.session_state['refresh_bbox']:
     load_button = st.button('mettre à jour', on_click = load)
 
 # taille en pixel
-if st.session_state['coords_bbox_Lambert']:
+if st.session_state['coords_bbox_Lambert'] is not Nont:
    coords_size = st.session_state['coords_bbox_Lambert'].geometry[1].x - st.session_state['coords_bbox_Lambert'].geometry[0].x
 else:
    coords_size = SIZE_MAX
