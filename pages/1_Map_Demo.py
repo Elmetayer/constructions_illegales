@@ -13,11 +13,6 @@ def search_adresse():
     utilise l'API de géocodage de l'IGN
     '''
     if st.session_state['adresse_field']:
-        '''
-        ancienne URL IGN
-        request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
-            st.session_state['adresse_field'])
-        '''
         request_geocodage = 'https://data.geopf.fr/geocodage/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
             st.session_state['adresse_field'])
         response_geocodage = requests.get(request_geocodage).content
@@ -44,11 +39,6 @@ def search_lat_lon(lat_lon):
     utilise l'API de géocodage inversée de l'IGN
     '''
     result = ADRESSE_DEFAUT
-    '''
-    ancienne URL IGN
-    request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
-        lat_lon[0], lat_lon[1])
-    '''
     request_geocodage = 'https://data.geopf.fr/geocodage/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
         lat_lon[0], lat_lon[1])
     response_geocodage = requests.get(request_geocodage).content

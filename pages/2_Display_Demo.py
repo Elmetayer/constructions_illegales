@@ -10,6 +10,18 @@ import shapely
 import geopandas as gpd
 from PIL import Image, ImageOps
 
+def load():
+    '''
+    fonction qui met à jour la bbox courante
+    '''
+    st.session_state['bbox_selected'] = st.session_state['bbox']
+    coords_bbox_WSG = gpd.GeoDataFrame({
+      'Nom': ['min', max],
+      'geometry': [
+         shapely.geometry.Point(st.session_state['bbox_selected'][0], st.session_state['bbox_selected'][1]),
+         shapely.geometry.Point(st.session_state['bbox_selected'][2], st.session_state['bbox_selected'][3])]},
+      crs = 'EPSG:4326')
+    st.session_state['coords_bbox_Lambert'] = coords_bbox_WSG.to_crs('EPSG:2154')
 
 # titre de la page
 st.set_page_config(page_title="Display Demo", page_icon="👓")
@@ -20,35 +32,41 @@ st.sidebar.header("Display Demo")
 PIXEL_SIZE_MAX = 1000
 PIXEL_SCALE_REF = 0.2
 
-# calcul de l'image
-coords_bbox_WSG = gpd.GeoDataFrame(
-   {'Nom': ['min', max],
-   'geometry': [
-      shapely.geometry.Point(st.session_state['bbox'][0], st.session_state['bbox'][1]),
-      shapely.geometry.Point(st.session_state['bbox'][2], st.session_state['bbox'][3])]},
-   crs = 'EPSG:4326')
-ccoords_bbox_Lambert = coords_bbox_WSG.to_crs('EPSG:2154')
-xmin = ccoords_bbox_Lambert.geometry[0].x
-xmax = ccoords_bbox_Lambert.geometry[1].x
-ymin = ccoords_bbox_Lambert.geometry[0].y
-ymax = ccoords_bbox_Lambert.geometry[1].y
+if 'bbox_selected' not in st.session_state:
+    st.session_state['bbox_selected'] = st.session_state['bbox']
+if 'coords_bbox_Lambert' not in st.session_state:
+    st.session_state['coords_bbox_Lambert'] = st.session_state['bbox']
+
+# bouton de mise à jour
+load_button = None
+if st.session_state['bbox_selected'] != st.session_state['bbox']:
+    load_button = st.button('mettre à jour', on_click = load)
 
 # taille en pixel
-pixel_size_defaut = min(PIXEL_SIZE_MAX, int((xmax - xmin)/PIXEL_SCALE_REF))
+coords_size = st.session_state['coords_bbox_Lambert'][1].x - st.session_state['coords_bbox_Lambert'][0].x
+pixel_size_defaut = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
 pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, pixel_size_defaut, 100)
-scale = round((xmax - xmin)/pixel_size, 1)
+scale = round(coords_size/pixel_size, 1)
 st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
 if scale != PIXEL_SCALE_REF:
     st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # récupération et affichage de l'orthophoto
 @st.cache_data
-def get_fig_ortho_cached(xmin, ymin, xmax, ymax, pixel_size):
-   request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
-      xmin, ymin, xmax, ymax, pixel_size, pixel_size)
-   response_wms = requests.get(request_wms).content
-   orthophoto = Image.open(BytesIO(response_wms))
-   fig = px.imshow(orthophoto, width = 800, height = 800)
-   return(fig)
-fig = get_fig_ortho_cached(xmin, ymin, xmax, ymax, pixel_size)
-st.plotly_chart(fig)
+def get_fig_ortho_cached(coords_bbox_Lambert, pixel_size):
+   if ccoords_bbox_Lambert is not None:
+      xmin = coords_bbox_Lambert.geometry[0].x
+      xmax = coords_bbox_Lambert.geometry[1].x
+      ymin = coords_bbox_Lambert.geometry[0].y
+      ymax = coords_bbox_Lambert.geometry[1].y
+      request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
+         xmin, ymin, xmax, ymax, pixel_size, pixel_size)
+      response_wms = requests.get(request_wms).content
+      orthophoto = Image.open(BytesIO(response_wms))
+      fig = px.imshow(orthophoto, width = 800, height = 800)
+      return(fig)
+   else:
+      return(None)
+fig = get_fig_ortho_cached(st.session_state['coords_bbox_Lambert'], pixel_size)
+if fig is not None:
+   st.plotly_chart(fig)
