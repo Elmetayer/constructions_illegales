@@ -75,7 +75,7 @@ if scale != PIXEL_SCALE_REF:
     st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # récupération et affichage de l'orthophoto
-@st.cache_data
+#@st.cache_data
 def get_fig_ortho_cached(_coords_bbox_Lambert, pixel_size):
    if _coords_bbox_Lambert is not None:
       xmin = _coords_bbox_Lambert.geometry[0].x
