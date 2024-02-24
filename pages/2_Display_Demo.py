@@ -73,12 +73,12 @@ if scale != PIXEL_SCALE_REF:
 
 # récupération et affichage de l'orthophoto
 @st.cache_data
-def get_fig_ortho_cached(coords_bbox_Lambert, pixel_size):
-   if coords_bbox_Lambert is not None:
-      xmin = coords_bbox_Lambert.geometry[0].x
-      xmax = coords_bbox_Lambert.geometry[1].x
-      ymin = coords_bbox_Lambert.geometry[0].y
-      ymax = coords_bbox_Lambert.geometry[1].y
+def get_fig_ortho_cached(_coords_bbox_Lambert, pixel_size):
+   if _coords_bbox_Lambert is not None:
+      xmin = _coords_bbox_Lambert.geometry[0].x
+      xmax = _coords_bbox_Lambert.geometry[1].x
+      ymin = _coords_bbox_Lambert.geometry[0].y
+      ymax = _coords_bbox_Lambert.geometry[1].y
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
          xmin, ymin, xmax, ymax, pixel_size, pixel_size)
       response_wms = requests.get(request_wms).content
