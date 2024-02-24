@@ -69,7 +69,7 @@ if scale != PIXEL_SCALE_REF:
 # récupération et affichage de l'orthophoto
 @st.cache_data
 def get_fig_ortho_cached(coords_bbox_Lambert, pixel_size):
-   if ccoords_bbox_Lambert is not None:
+   if coords_bbox_Lambert is not None:
       xmin = coords_bbox_Lambert.geometry[0].x
       xmax = coords_bbox_Lambert.geometry[1].x
       ymin = coords_bbox_Lambert.geometry[0].y
