@@ -10,18 +10,24 @@ import shapely
 import geopandas as gpd
 from PIL import Image, ImageOps
 
+def get_bbox_Lambert(bbox):
+   '''
+   fonction qui renvoie un gdf en Lambert à partir d'une bbox en WSG84
+   '''
+   coords_bbox_WSG = gpd.GeoDataFrame({
+      'Nom': ['min', max],
+      'geometry': [
+         shapely.geometry.Point(bbox[0], bbox[1]),
+         shapely.geometry.Point(bbox[2], bbox[3])]},
+      crs = 'EPSG:4326')
+   return(coords_bbox_WSG.to_crs('EPSG:2154'))
+
 def load():
     '''
     fonction qui met à jour la bbox courante
     '''
     st.session_state['bbox_selected'] = st.session_state['bbox']
-    coords_bbox_WSG = gpd.GeoDataFrame({
-      'Nom': ['min', max],
-      'geometry': [
-         shapely.geometry.Point(st.session_state['bbox_selected'][0], st.session_state['bbox_selected'][1]),
-         shapely.geometry.Point(st.session_state['bbox_selected'][2], st.session_state['bbox_selected'][3])]},
-      crs = 'EPSG:4326')
-    st.session_state['coords_bbox_Lambert'] = coords_bbox_WSG.to_crs('EPSG:2154')
+    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
 
 # titre de la page
 st.set_page_config(page_title="Display Demo", page_icon="👓")
@@ -35,7 +41,7 @@ PIXEL_SCALE_REF = 0.2
 if 'bbox_selected' not in st.session_state:
     st.session_state['bbox_selected'] = st.session_state['bbox']
 if 'coords_bbox_Lambert' not in st.session_state:
-    st.session_state['coords_bbox_Lambert'] = st.session_state['bbox']
+    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
 
 # bouton de mise à jour
 load_button = None
