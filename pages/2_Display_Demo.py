@@ -39,19 +39,24 @@ PIXEL_SIZE_MAX = 1000
 PIXEL_SCALE_REF = 0.2
 SIZE_MAX = 1000
 
-if 'bbox' not in st.session_state:
-   st.session_state['bbox'] = None
 if 'bbox_selected' not in st.session_state:
-   st.session_state['bbox_selected'] = st.session_state['bbox']
+   if 'bbox' not in st.session_state:
+      st.session_state['bbox_selected'] = None
+   else:
+      st.session_state['bbox_selected'] = st.session_state['bbox']
 if 'coords_bbox_Lambert' not in st.session_state:
    if st.session_state['bbox_selected'] is None:
       st.session_state['coords_bbox_Lambert'] = None
    else:
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+if 'bbox' not in st.session_state:
+   st.session_state['refresh_bbox'] = False
+else:
+   st.session_state['refresh_bbox'] = st.session_state['bbox_selected'] == st.session_state['bbox']
 
 # bouton de mise à jour
 load_button = None
-if st.session_state['bbox_selected'] != st.session_state['bbox']:
+if st.session_state['refresh_bbox']:
     load_button = st.button('mettre à jour', on_click = load)
 
 # taille en pixel
