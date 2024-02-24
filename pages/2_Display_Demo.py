@@ -15,7 +15,7 @@ def get_bbox_Lambert(bbox):
    fonction qui renvoie un gdf en Lambert à partir d'une bbox en WSG84
    '''
    coords_bbox_WSG = gpd.GeoDataFrame({
-      'Nom': ['min', max],
+      'Nom': ['min', 'max'],
       'geometry': [
          shapely.geometry.Point(bbox[0], bbox[1]),
          shapely.geometry.Point(bbox[2], bbox[3])]},

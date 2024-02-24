@@ -100,6 +100,7 @@ st.markdown("# Map Demo")
 CENTER_START = [48.858370, 2.294481]
 ADRESSE_DEFAUT = 'non defini'
 SIZE_DEFAUT = 500
+SIZE_MAX = 1000
 MODE_DEFAUT = 'haut/gauche'
 MODES = [MODE_DEFAUT, 'centre']
 ZOOM_DEFAUT = 14
@@ -132,7 +133,7 @@ satellite = st.sidebar.checkbox('satellite', False)
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', MODES, index = MODES.index(st.session_state['bbox_mode']), horizontal = True)
-bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, st.session_state['bbox_size'], 50)
+bbox_size = st.sidebar.slider('Taille (m)', 0, SIZE_MAX, st.session_state['bbox_size'], 50)
 if bbox_mode:
     st.session_state['bbox_mode'] = bbox_mode
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
