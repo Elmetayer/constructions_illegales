@@ -107,13 +107,13 @@ EPSILON_COORD = 0.00001
 
 if 'last_coords' not in st.session_state:
     st.session_state['last_coords'] = [48.858370, 2.294481]
+if 'adresse_text' not in st.session_state:
+    st.session_state['adresse_text'] = search_lat_lon(st.session_state['last_coords'])
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
 if 'map_center' not in st.session_state:
     st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
-if 'adresse_text' not in st.session_state:
-    st.session_state['adresse_text'] = ADRESSE_DEFAUT
 if 'new_point' not in st.session_state:
     st.session_state['new_point'] = None
 if 'new_adresse' not in st.session_state:
