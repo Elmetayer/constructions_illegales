@@ -111,6 +111,7 @@ CENTER_START = [48.858370, 2.294481]
 ADRESSE_DEFAUT = 'non defini'
 SIZE_DEFAUT = 500
 MODE_DEFAUT = 'haut/gauche'
+MODES = [MODE_DEFAUT, 'centre']
 ZOOM_DEFAUT = 14
 EPSILON_COORD = 0.00001
 
@@ -131,6 +132,8 @@ if 'warning_adresse' not in st.session_state:
     st.session_state['warning_adresse'] = None    
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
+if 'bbox_mode' not in st.session_state:
+    st.session_state['bbox_mode'] = MODE_DEFAUT
 if 'bbox_size' not in st.session_state:
     st.session_state['bbox_size'] = SIZE_DEFAUT
 
@@ -138,9 +141,10 @@ if 'bbox_size' not in st.session_state:
 satellite = st.sidebar.checkbox('satellite', False)
 
 # mode d'affichage et taille de la bouding box
-bbox_mode = st.sidebar.radio('Bounding box', [MODE_DEFAUT, 'centre'], horizontal = True)
+bbox_mode = st.sidebar.radio('Bounding box', MODES, index = MODES.index(st.session_state['bbox_mode']), horizontal = True)
 bbox_size = st.sidebar.slider('Taille (m)', 0, 1000, st.session_state['bbox_size'], 50)
 if bbox_mode:
+    st.session_state['bbox_mode'] = bbox_mode
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
 if bbox_size:
     st.session_state['bbox_size'] = bbox_size
