@@ -60,7 +60,7 @@ if load_button:
    st.rerun()
    
 # taille en pixel
-if st.session_state['coords_bbox_Lambert'] is not None:
+if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
    coords_size = st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]
 else:
    coords_size = SIZE_MAX
