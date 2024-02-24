@@ -40,6 +40,7 @@ PIXEL_SCALE_REF = 0.2
 
 if 'bbox_selected' not in st.session_state:
    if 'bbox' not in st.session_state:
+      st.session_state['bbox'] = None
       st.session_state['bbox_selected'] = None
       st.session_state['coords_bbox_Lambert'] = None
    else:
