@@ -68,7 +68,7 @@ pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, st.session_s
 if pixel_size:
     st.session_state['pixel_size'] = pixel_size
 if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-   scale = round(st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]/pixel_size, 1)
+   scale = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
    st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
    if scale != PIXEL_SCALE_REF:
       st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
