@@ -50,13 +50,13 @@ if 'coords_bbox_Lambert' not in st.session_state:
    else:
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
 if 'bbox' not in st.session_state:
-   st.session_state['refresh_bbox'] = False
+   st.session_state['refresh_bbox'] = 0
 else:
-   st.session_state['refresh_bbox'] = st.session_state['bbox_selected'] == st.session_state['bbox']
+   st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] == st.session_state['bbox'])*1
 
 # bouton de mise à jour
 load_button = None
-if st.session_state['refresh_bbox']:
+if st.session_state['refresh_bbox'] == 1:
     load_button = st.button('mettre à jour', on_click = load)
 
 # taille en pixel
