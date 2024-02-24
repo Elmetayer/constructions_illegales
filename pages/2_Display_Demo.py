@@ -43,7 +43,7 @@ if st.session_state['bbox_selected'] != st.session_state['bbox']:
     load_button = st.button('mettre à jour', on_click = load)
 
 # taille en pixel
-coords_size = st.session_state['coords_bbox_Lambert'][1].x - st.session_state['coords_bbox_Lambert'][0].x
+coords_size = st.session_state['coords_bbox_Lambert'].geometry[1].x - st.session_state['coords_bbox_Lambert'].geometry[0].x
 pixel_size_defaut = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
 pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, pixel_size_defaut, 100)
 scale = round(coords_size/pixel_size, 1)
