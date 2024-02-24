@@ -20,7 +20,8 @@ def get_bbox_Lambert(bbox):
          shapely.geometry.Point(bbox[0], bbox[1]),
          shapely.geometry.Point(bbox[2], bbox[3])]},
       crs = 'EPSG:4326')
-   return(coords_bbox_WSG.to_crs('EPSG:2154'))
+   coords_bbox_Lambert = coords_bbox_WSG.to_crs('EPSG:2154')
+   return(coords_bbox_Lambert.geometry[0].x, coords_bbox_Lambert.geometry[1].x, coords_bbox_Lambert.geometry[0].y, coords_bbox_Lambert.geometry[1].y)
 
 # titre de la page
 st.set_page_config(page_title="Display Demo", page_icon="👓")
@@ -39,7 +40,7 @@ if 'bbox_selected' not in st.session_state:
       st.session_state['bbox_selected'] = st.session_state['bbox']
 if 'coords_bbox_Lambert' not in st.session_state:
    if st.session_state['bbox_selected'] is None:
-      st.session_state['coords_bbox_Lambert'] = None
+      st.session_state['coords_bbox_Lambert'] = (None, None, None, None)
    else:
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
 if 'bbox' not in st.session_state:
@@ -54,6 +55,7 @@ if st.session_state['refresh_bbox'] == 1:
 if load_button:
    st.session_state['bbox_selected'] = st.session_state['bbox']
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+   st.rerun()
    
 # taille en pixel
 if st.session_state['coords_bbox_Lambert'] is not None:
@@ -69,12 +71,8 @@ if scale != PIXEL_SCALE_REF:
 
 # récupération de l'orthophoto
 @st.cache_data
-def get_fig_ortho_cached(_coords_bbox_Lambert, pixel_size):
-   if _coords_bbox_Lambert is not None:
-      xmin = _coords_bbox_Lambert.geometry[0].x
-      xmax = _coords_bbox_Lambert.geometry[1].x
-      ymin = _coords_bbox_Lambert.geometry[0].y
-      ymax = _coords_bbox_Lambert.geometry[1].y
+def get_fig_ortho_cached(xmin, xmax, ymin, ymax, pixel_size):
+   if (xmin, xmax, ymin, ymax) != (None, None, None, None):
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
          xmin, ymin, xmax, ymax, pixel_size, pixel_size)
       response_wms = requests.get(request_wms).content
@@ -83,7 +81,12 @@ def get_fig_ortho_cached(_coords_bbox_Lambert, pixel_size):
       return(fig)
    else:
       return(None)
-fig = get_fig_ortho_cached(st.session_state['coords_bbox_Lambert'], pixel_size)
+fig = get_fig_ortho_cached(
+   st.session_state['coords_bbox_Lambert'][0], 
+   st.session_state['coords_bbox_Lambert'][1], 
+   st.session_state['coords_bbox_Lambert'][2], 
+   st.session_state['coords_bbox_Lambert'][3], 
+   pixel_size)
 
 # affichage de l'orthophoto
 if fig is not None:
