@@ -37,6 +37,7 @@ st.sidebar.header("Display Demo")
 # variables de session
 PIXEL_SIZE_MAX = 1000
 PIXEL_SCALE_REF = 0.2
+SIZE_MAX = 1000
 
 if 'bbox' not in st.session_state:
    st.session_state['bbox'] = None
@@ -54,7 +55,10 @@ if st.session_state['bbox_selected'] != st.session_state['bbox']:
     load_button = st.button('mettre à jour', on_click = load)
 
 # taille en pixel
-coords_size = st.session_state['coords_bbox_Lambert'].geometry[1].x - st.session_state['coords_bbox_Lambert'].geometry[0].x
+if st.session_state['coords_bbox_Lambert']:
+   coords_size = st.session_state['coords_bbox_Lambert'].geometry[1].x - st.session_state['coords_bbox_Lambert'].geometry[0].x
+else:
+   coords_size = SIZE_MAX
 pixel_size_defaut = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
 pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, pixel_size_defaut, 100)
 scale = round(coords_size/pixel_size, 1)
