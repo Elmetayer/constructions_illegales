@@ -22,13 +22,6 @@ def get_bbox_Lambert(bbox):
       crs = 'EPSG:4326')
    return(coords_bbox_WSG.to_crs('EPSG:2154'))
 
-def load():
-    '''
-    fonction qui met à jour la bbox courante
-    '''
-    st.session_state['bbox_selected'] = st.session_state['bbox']
-    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
-
 # titre de la page
 st.set_page_config(page_title="Display Demo", page_icon="👓")
 st.markdown("# Display Demo")
@@ -54,13 +47,10 @@ if 'bbox' not in st.session_state:
 else:
    st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] != st.session_state['bbox'])*1
 
-st.write(st.session_state['bbox'])
-st.write(st.session_state['bbox_selected'])
-
 # bouton de mise à jour
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
-    load_button = st.button('mettre à jour', on_click = load)
+    load_button = st.button('mettre à jour')
 
 # taille en pixel
 if st.session_state['coords_bbox_Lambert'] is not None:
@@ -74,8 +64,8 @@ st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
 if scale != PIXEL_SCALE_REF:
     st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
-# récupération et affichage de l'orthophoto
-#@st.cache_data
+# récupération de l'orthophoto
+@st.cache_data
 def get_fig_ortho_cached(_coords_bbox_Lambert, pixel_size):
    if _coords_bbox_Lambert is not None:
       xmin = _coords_bbox_Lambert.geometry[0].x
@@ -90,6 +80,11 @@ def get_fig_ortho_cached(_coords_bbox_Lambert, pixel_size):
       return(fig)
    else:
       return(None)
-fig = get_fig_ortho_cached(st.session_state['coords_bbox_Lambert'], pixel_size)
+if load_button:
+   st.session_state['bbox_selected'] = st.session_state['bbox']
+   st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+   fig = get_fig_ortho_cached(st.session_state['coords_bbox_Lambert'], pixel_size)
+
+# affichage de l'orthophoto
 if fig is not None:
    st.plotly_chart(fig)
