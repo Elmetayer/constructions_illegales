@@ -48,6 +48,8 @@ if 'bbox' not in st.session_state:
 else:
    st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] != st.session_state['bbox'])*1
 
+st.write(st.session_state['coords_bbox_Lambert'])
+
 # bouton de mise à jour
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
