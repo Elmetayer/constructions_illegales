@@ -38,13 +38,14 @@ st.sidebar.header("Display Demo")
 PIXEL_SIZE_MAX = 1000
 PIXEL_SCALE_REF = 0.2
 
+if 'bbox' not in st.session_state:
+   st.session_state['bbox'] = None
 if 'bbox_selected' not in st.session_state:
-   if 'bbox' not in st.session_state:
-      st.session_state['bbox'] = None
-      st.session_state['bbox_selected'] = None
+   st.session_state['bbox_selected'] = st.session_state['bbox']
+if 'coords_bbox_Lambert' not in st.session_state:
+   if st.session_state['bbox_selected'] is None:
       st.session_state['coords_bbox_Lambert'] = None
    else:
-      st.session_state['bbox_selected'] = st.session_state['bbox']
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
 
 # bouton de mise à jour
