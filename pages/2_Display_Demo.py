@@ -47,6 +47,12 @@ if 'bbox' not in st.session_state:
    st.session_state['refresh_bbox'] = 0
 else:
    st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] != st.session_state['bbox'])*1
+if 'pixel_size' not in st.session_state:
+   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+      coords_size = st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]
+   else:
+      coords_size = SIZE_MAX
+   st.session_state['pixel_size'] = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
 
 # bouton de mise à jour
 load_button = None
@@ -58,16 +64,14 @@ if load_button:
    st.rerun()
    
 # taille en pixel
+pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
+if pixel_size:
+    st.session_state['pixel_size'] = pixel_size
 if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-   coords_size = st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]
-else:
-   coords_size = SIZE_MAX
-pixel_size_defaut = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
-pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, pixel_size_defaut, 100)
-scale = round(coords_size/pixel_size, 1)
-st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
-if scale != PIXEL_SCALE_REF:
-    st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
+   scale = round(st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]/pixel_size, 1)
+   st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
+   if scale != PIXEL_SCALE_REF:
+      st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # récupération de l'orthophoto
 @st.cache_data
@@ -86,7 +90,7 @@ fig = get_fig_ortho_cached(
    st.session_state['coords_bbox_Lambert'][1], 
    st.session_state['coords_bbox_Lambert'][2], 
    st.session_state['coords_bbox_Lambert'][3], 
-   pixel_size)
+   st.session_state['pixel_size'])
 
 # affichage de l'orthophoto
 if fig is not None:
