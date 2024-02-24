@@ -18,10 +18,10 @@ def search_adresse():
         request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
             st.session_state['adresse_field'])
         '''
-        request_wxs = 'https://data.geopf.fr/geocodage/rest/0.1/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
+        request_geocodage = 'https://data.geopf.fr/geocodage/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
             st.session_state['adresse_field'])
-        response_wxs = requests.get(request_wxs).content
-        adresses = json.load(BytesIO(response_wxs))
+        response_geocodage = requests.get(request_wxs).content
+        adresses = json.load(BytesIO(response_geocodage))
         if len(adresses['features']) > 0:
             st.session_state['warning_adresse'] = None
             X0 = adresses['features'][0]['properties']['x']
@@ -49,10 +49,10 @@ def search_lat_lon(lat_lon):
     request_wxs = 'https://wxs.ign.fr/essentiels/geoportail/geocodage/rest/0.1/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
         lat_lon[0], lat_lon[1])
     '''
-    request_wxs = 'https://data.geopf.fr/geocodage/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
+    request_geocodage = 'https://data.geopf.fr/geocodage/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
         lat_lon[0], lat_lon[1])
-    response_wxs = requests.get(request_wxs).content
-    adresses = json.load(BytesIO(response_wxs))
+    response_geocodage = requests.get(request_geocodage).content
+    adresses = json.load(BytesIO(response_geocodage))
     if len(adresses['features']) > 0:
         result = adresses['features'][0]['properties']['label']
     return result
