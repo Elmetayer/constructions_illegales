@@ -94,6 +94,8 @@ fig = get_fig_ortho_cached(
 
 # affichage de l'orthophoto
 if fig is not None:
+   st.markdown('X en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][1]))
+   st.markdown('Y en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][2], st.session_state['coords_bbox_Lambert'][3]))
    st.plotly_chart(fig)
 else:
    st.write('aucun emplacement validé')
