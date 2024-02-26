@@ -26,7 +26,6 @@ def get_bbox_Lambert(bbox):
 # titre de la page
 st.set_page_config(page_title="Display Demo", page_icon="👓")
 st.markdown("# Display Demo")
-st.sidebar.header("Display Demo")
 
 # variables de session
 PIXEL_SIZE_MAX = 1000
@@ -54,6 +53,11 @@ if 'pixel_size' not in st.session_state:
       coords_size = SIZE_MAX
    st.session_state['pixel_size'] = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
 
+# coordonnées
+if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+   st.write('X en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][1]))
+   st.write('Y en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][2], st.session_state['coords_bbox_Lambert'][3]))
+   
 # bouton de mise à jour
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
@@ -94,8 +98,6 @@ fig = get_fig_ortho_cached(
 
 # affichage de l'orthophoto
 if fig is not None:
-   st.markdown('X en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][1]))
-   st.markdown('Y en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][2], st.session_state['coords_bbox_Lambert'][3]))
    st.plotly_chart(fig)
 else:
    st.write('aucun emplacement validé')
