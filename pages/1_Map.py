@@ -93,8 +93,8 @@ def get_bbox_center(bbox):
     return([(bbox[1] + bbox[3])/2, (bbox[0] + bbox[2])/2])
 
 # titre de la page
-st.set_page_config(page_title="Map Demo", page_icon="🔎")
-st.markdown("# Map Demo")
+st.set_page_config(page_title="Sélection", page_icon="🔎")
+st.markdown("# Carte")
 
 # variables de session
 CENTER_START = [48.858370, 2.294481]

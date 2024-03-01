@@ -10,6 +10,8 @@ import shapely
 import geopandas as gpd
 from PIL import Image, ImageOps
 
+from functions.functions import *
+
 def get_bbox_Lambert(bbox):
    '''
    fonction qui renvoie un gdf en Lambert à partir d'une bbox en WSG84
@@ -24,9 +26,8 @@ def get_bbox_Lambert(bbox):
    return(coords_bbox_Lambert.geometry[0].x, coords_bbox_Lambert.geometry[1].x, coords_bbox_Lambert.geometry[0].y, coords_bbox_Lambert.geometry[1].y)
 
 # titre de la page
-st.set_page_config(page_title="Display Demo", page_icon="👓")
-st.markdown("# Display Demo")
-st.sidebar.header("Display Demo")
+st.set_page_config(page_title="Détection", page_icon="👓")
+st.markdown("# Détection")
 
 # variables de session
 PIXEL_SIZE_MAX = 1000
