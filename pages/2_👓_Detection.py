@@ -83,11 +83,15 @@ if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
 @st.cache_data
 def get_fig_ortho_cached(xmin, xmax, ymin, ymax, pixel_size):
    if (xmin, xmax, ymin, ymax) != (None, None, None, None):
+      fig_pbar = st.progress(0, text = 'requête IGN ...')
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
          xmin, ymin, xmax, ymax, pixel_size, pixel_size)
       response_wms = requests.get(request_wms).content
+      fig_pbar = st.progress(50, text = 'ouverture de l\'image ...')
       orthophoto = Image.open(BytesIO(response_wms))
+      fig_pbar = st.progress(100, text = 'affichage ...')
       fig = px.imshow(orthophoto, width = 800, height = 800)
+      fig_pbar.empty()
       return(fig)
    else:
       return(None)
