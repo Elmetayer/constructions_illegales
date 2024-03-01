@@ -4,15 +4,12 @@ import streamlit as st
 # un mdenu s'affiche automatiquement à partir des fichiers .py qui sont présents dans /pages
 # l'ordre du menu est l'ordre alphabétique des pages
 
-st.set_page_config(
-    page_title="Démo",
-    page_icon="👋",
-)
-st.header("Démo")
+st.set_page_config(page_title="Verification du cadastre", page_icon="📙",)
+st.header("Verification du cadastre")
 st.markdown(
     """
-    Quelques démos
+    En cours de construction ...
     """
     )
-st.sidebar.success("Choisir une démo")
+st.sidebar.success("Naviguer dans l'application")
 
