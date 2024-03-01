@@ -93,7 +93,7 @@ def get_bbox_center(bbox):
     return([(bbox[1] + bbox[3])/2, (bbox[0] + bbox[2])/2])
 
 # titre de la page
-st.set_page_config(page_title="Sélection", page_icon="🔎")
+st.set_page_config(page_title="Carte", page_icon="🔎")
 st.markdown("# Carte")
 
 # variables de session
