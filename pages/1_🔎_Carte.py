@@ -13,26 +13,25 @@ def search_adresse():
     utilise l'API de géocodage de l'IGN
     '''
     if st.session_state['adresse_field']:
-        with st.spinner('récupération des données ING ...'):
-            request_geocodage = 'https://data.geopf.fr/geocodage/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
-                st.session_state['adresse_field'])
-            response_geocodage = requests.get(request_geocodage).content
-            adresses = json.load(BytesIO(response_geocodage))
-            if len(adresses['features']) > 0:
-                st.session_state['warning_adresse'] = None
-                X0 = adresses['features'][0]['properties']['x']
-                Y0 = adresses['features'][0]['properties']['y']
-                coords_Lambert = gpd.GeoDataFrame(
-                    {'Nom': ['adresse'],
-                     'geometry': [shapely.geometry.Point(X0, Y0)]},
-                    crs = 'EPSG:2154')
-                coords_WSG = coords_Lambert.to_crs('EPSG:4326')
-                st.session_state['new_point'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
-                st.session_state['map_center'] = st.session_state['new_point']
-                st.session_state['new_adresse'] = adresses['features'][0]['properties']['label']
-                st.session_state['adresse_field'] = ''
-            else:
-                st.session_state['warning_adresse'] = 'aucune adresse trouvée'
+        request_geocodage = 'https://data.geopf.fr/geocodage/search?q={}&index=address&limit=1&returntruegeometry=false'.format(
+            st.session_state['adresse_field'])
+        response_geocodage = requests.get(request_geocodage).content
+        adresses = json.load(BytesIO(response_geocodage))
+        if len(adresses['features']) > 0:
+            st.session_state['warning_adresse'] = None
+            X0 = adresses['features'][0]['properties']['x']
+            Y0 = adresses['features'][0]['properties']['y']
+            coords_Lambert = gpd.GeoDataFrame(
+                {'Nom': ['adresse'],
+                 'geometry': [shapely.geometry.Point(X0, Y0)]},
+                crs = 'EPSG:2154')
+            coords_WSG = coords_Lambert.to_crs('EPSG:4326')
+            st.session_state['new_point'] = [coords_WSG.geometry[0].y, coords_WSG.geometry[0].x]
+            st.session_state['map_center'] = st.session_state['new_point']
+            st.session_state['new_adresse'] = adresses['features'][0]['properties']['label']
+            st.session_state['adresse_field'] = ''
+        else:
+            st.session_state['warning_adresse'] = 'aucune adresse trouvée'
 
 def search_lat_lon(lat_lon):
     '''
@@ -40,13 +39,12 @@ def search_lat_lon(lat_lon):
     utilise l'API de géocodage inversée de l'IGN
     '''
     result = ADRESSE_DEFAUT
-    with st.spinner('récupération des données ING ...'):
-        request_geocodage = 'https://data.geopf.fr/geocodage/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
-            lat_lon[0], lat_lon[1])
-        response_geocodage = requests.get(request_geocodage).content
-        adresses = json.load(BytesIO(response_geocodage))
-        if len(adresses['features']) > 0:
-            result = adresses['features'][0]['properties']['label']
+    request_geocodage = 'https://data.geopf.fr/geocodage/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
+        lat_lon[0], lat_lon[1])
+    response_geocodage = requests.get(request_geocodage).content
+    adresses = json.load(BytesIO(response_geocodage))
+    if len(adresses['features']) > 0:
+        result = adresses['features'][0]['properties']['label']
     return result
 
 def update_point():
