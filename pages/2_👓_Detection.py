@@ -83,21 +83,21 @@ if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
 @st.cache_data
 def get_fig_ortho_cached(xmin, xmax, ymin, ymax, pixel_size):
    if (xmin, xmax, ymin, ymax) != (None, None, None, None):
-      with st.spinner('récupération des données IGN ...'):
-         request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
-         xmin, ymin, xmax, ymax, pixel_size, pixel_size)
-         response_wms = requests.get(request_wms).content
-         orthophoto = Image.open(BytesIO(response_wms))
-         fig = px.imshow(orthophoto, width = 800, height = 800)
+      request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
+      xmin, ymin, xmax, ymax, pixel_size, pixel_size)
+      response_wms = requests.get(request_wms).content
+      orthophoto = Image.open(BytesIO(response_wms))
+      fig = px.imshow(orthophoto, width = 800, height = 800)
       return(fig)
    else:
       return(None)
-fig = get_fig_ortho_cached(
-   st.session_state['coords_bbox_Lambert'][0], 
-   st.session_state['coords_bbox_Lambert'][1], 
-   st.session_state['coords_bbox_Lambert'][2], 
-   st.session_state['coords_bbox_Lambert'][3], 
-   st.session_state['pixel_size'])
+with st.spinner('récupération des données IGN ...'):
+   fig = get_fig_ortho_cached(
+      st.session_state['coords_bbox_Lambert'][0], 
+      st.session_state['coords_bbox_Lambert'][1], 
+      st.session_state['coords_bbox_Lambert'][2], 
+      st.session_state['coords_bbox_Lambert'][3], 
+      st.session_state['pixel_size'])
 
 # affichage de l'orthophoto
 if fig is not None:
