@@ -72,6 +72,9 @@ def affiche_contours_iou(
   # on ne garde que le type de formes de référence spécifié, si applicable
   if types_ref is not None:
     gdf_shapes_ref_copy = gdf_shapes_ref_copy[gdf_shapes_ref_copy['Type'].isin(types_ref)]
+  # on s'assure que la colonne 'Type' est présente pour l'affichage
+  if 'Type' not in gdf_shapes_ref_copy.columns:
+    gdf_shapes_ref_copy['Type'] = 'inconnu'
   # on enlève les shapes extérieurs à la dalle pour diminuer le volume de données inutiles
   img_bound = shapely.Polygon(((bounds.left, bounds.bottom), (bounds.right, bounds.bottom), (bounds.right, bounds.top), (bounds.left, bounds.top), (bounds.left, bounds.bottom)))
   try:
@@ -169,7 +172,9 @@ def affiche_contours_iou(
     shape_traces_to_plot = []
     if not delta_only:
       # formes de référence
-      for shape, iou, rapprochement in zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements):
+      for i, (shape, iou, rapprochement, type_shape) in enumerate(zip(shapes_ref, shapes_ref_ious,
+                                                          shapes_ref_rapprochements,
+                                                          gdf_shapes_ref_copy['Type'])):
         list_x, list_y = shape.xy
         shape_traces_to_plot.append(
             go.Scatter(
@@ -180,11 +185,15 @@ def affiche_contours_iou(
                 fill = 'toself',
                 fillcolor = '#80b1d3',
                 opacity = 0.4,
-                text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
+                text = 'type: {}<br>iou référence: {}<br>{} prédictions rapprochées'.format(type_shape, iou, rapprochement),
                 hoverinfo = 'text',
-                showlegend = False))
+                name = 'référence',
+                legendgroup = 'référence',
+                showlegend = (i==0)))
     # formes prédites
-    for shape, iou, rapprochement in zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements):
+    i_pred = 0
+    i_pred_delta = 0
+    for i, (shape, iou, rapprochement) in enumerate(zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements)):
       list_x, list_y = shape.xy
       if iou <= seuil_iou:
         shape_traces_to_plot.append(
@@ -198,7 +207,10 @@ def affiche_contours_iou(
               opacity = 0.4,
               text = 'iou prédiction: {}'.format(iou),
               hoverinfo = 'text',
-              showlegend = False))
+              name = 'écart',
+              legendgroup = 'écart',
+              showlegend = (i_pred_delta==0)))
+        i_pred_delta += 1
       elif not delta_only:
         shape_traces_to_plot.append(
           go.Scatter(
@@ -211,7 +223,10 @@ def affiche_contours_iou(
               opacity = 0.4,
               text = 'iou prédiction: {}<br>{} bâtiments rapprochés'.format(iou, rapprochement),
               hoverinfo = 'text',
-              showlegend = False))
+              name = 'prédiction',
+              legendgroup = 'prédiction',
+              showlegend = (i_pred==0)))
+        i_pred += 1
 
     fig.add_traces(shape_traces_to_plot)
     # mise en forme
