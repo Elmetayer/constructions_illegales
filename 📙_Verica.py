@@ -11,5 +11,3 @@ st.markdown(
     En cours de construction ...
     """
     )
-st.sidebar.success("Naviguer dans l'application")
-

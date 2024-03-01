@@ -129,7 +129,7 @@ if 'bbox_size' not in st.session_state:
     st.session_state['bbox_size'] = SIZE_DEFAUT
 
 # fond de carte
-satellite = st.sidebar.checkbox('satellite', False)
+satellite = st.sidebar.toggle('satellite')
 
 # mode d'affichage et taille de la bouding box
 bbox_mode = st.sidebar.radio('Bounding box', MODES, index = MODES.index(st.session_state['bbox_mode']), horizontal = True)
