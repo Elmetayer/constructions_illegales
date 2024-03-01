@@ -10,7 +10,7 @@ import shapely
 import geopandas as gpd
 from PIL import Image, ImageOps
 
-from functions.functions import *
+from pages.functions.functions import *
 
 def get_bbox_Lambert(bbox):
    '''
