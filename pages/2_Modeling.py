@@ -55,6 +55,11 @@ if 'pixel_size' not in st.session_state:
       coords_size = SIZE_MAX
    st.session_state['pixel_size'] = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
 
+# coordonnées
+if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+   st.write('X en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][1]))
+   st.write('Y en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][2], st.session_state['coords_bbox_Lambert'][3]))
+   
 # bouton de mise à jour
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
