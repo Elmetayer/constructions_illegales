@@ -80,7 +80,7 @@ if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
       st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # récupération de l'orthophoto
-@st.cache_data
+@st.cache_data(show_spinner = False)
 def get_fig_ortho_cached(xmin, xmax, ymin, ymax, pixel_size):
    if (xmin, xmax, ymin, ymax) != (None, None, None, None):
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
