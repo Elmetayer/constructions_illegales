@@ -81,18 +81,38 @@ if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
 
 # récupération de l'orthophoto
 @st.cache_data(show_spinner = False)
-def get_fig_ortho_cached(xmin, xmax, ymin, ymax, pixel_size):
+def get_ortho_cached(xmin, xmax, ymin, ymax, pixel_size):
    if (xmin, xmax, ymin, ymax) != (None, None, None, None):
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
       response_wms = requests.get(request_wms).content
       orthophoto = Image.open(BytesIO(response_wms))
-      fig = px.imshow(orthophoto, width = 800, height = 800)
-      return(fig)
+      return(orthophoto)
+   else:
+      return(None)
+# récupération des données cadastre
+@st.cache_data(show_spinner = False)
+def get_cadastre_cached(xmin, xmax, ymin, ymax):
+   if (xmin, xmax, ymin, ymax) != (None, None, None, None):
+      bounds = gpd.GeoDataFrame(
+         {'Nom': ['name1', 'name2'],
+         'geometry': [shapely.geometry.Point(xmin, ymin), shapely.geometry.Point(xmax, ymax)]},
+         crs = 'EPSG:2154')
+      bounds = bounds.to_crs('EPSG:4326')
+      request_wfs = 'https://data.geopf.fr/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typename=CADASTRALPARCELS.PARCELLAIRE_EXPRESS:batiment&outputformat=application/json&BBOX={},{},{},{}'.format(
+    bounds.geometry[0].y, bounds.geometry[0].x, bounds.geometry[1].y, bounds.geometry[1].x)
+      response_wfs = requests.get(request_wfs)
+      gdf_cadastre = gpd.GeoDataFrame.from_features(response_wfs.json()['features'])
+      if gdf_cadastre.shape[0]>0 :
+         gdf_cadastre = gdf_cadastre.set_crs('EPSG:4326').to_crs('EPSG:2154')
+         gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
+         gdf_cadastre = gdf_cadastre.explode(index_parts = False)
+         gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
+      return(gdf_cadastre)
    else:
       return(None)
 with st.spinner('récupération des données IGN ...'):
-   fig = get_fig_ortho_cached(
+   orthophoto = get_ortho_cached(
       st.session_state['coords_bbox_Lambert'][0], 
       st.session_state['coords_bbox_Lambert'][1], 
       st.session_state['coords_bbox_Lambert'][2], 
@@ -100,7 +120,8 @@ with st.spinner('récupération des données IGN ...'):
       st.session_state['pixel_size'])
 
 # affichage de l'orthophoto
-if fig is not None:
+if orthophoto is not None:
+   fig = px.imshow(orthophoto, width = 800, height = 800)
    st.plotly_chart(fig)
 else:
    st.write('aucun emplacement validé')
