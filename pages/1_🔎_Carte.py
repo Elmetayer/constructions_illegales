@@ -99,7 +99,7 @@ st.markdown("# Carte")
 # variables de session
 CENTER_START = [48.858370, 2.294481]
 ADRESSE_DEFAUT = 'non defini'
-SIZE_DEFAUT = 500
+SIZE_DEFAUT = 200
 SIZE_MAX = 1000
 MODE_DEFAUT = 'haut/gauche'
 MODES = [MODE_DEFAUT, 'centre']
