@@ -9,6 +9,8 @@ from io import BytesIO
 import shapely
 import geopandas as gpd
 from PIL import Image, ImageOps
+from ultralytics import YOLO
+from skimage.measure import find_contours, approximate_polygon, subdivide_polygon, label
 
 from pages.functions.functions import *
 
@@ -24,6 +26,11 @@ def get_bbox_Lambert(bbox):
       crs = 'EPSG:4326')
    coords_bbox_Lambert = coords_bbox_WSG.to_crs('EPSG:2154')
    return(coords_bbox_Lambert.geometry[0].x, coords_bbox_Lambert.geometry[1].x, coords_bbox_Lambert.geometry[0].y, coords_bbox_Lambert.geometry[1].y)
+
+@st.cache_resource
+def getmodel_YOLO():
+    return YOLO('../models/YOLOv8_20240124_bruno.pt')
+model_YOLO = getmodel_YOLO()
 
 # titre de la page
 st.set_page_config(page_title="Détection", page_icon="👓")
@@ -79,21 +86,16 @@ if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
    if scale != PIXEL_SCALE_REF:
       st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
-# récupération de l'orthophoto
+# récupération des données IGN
 @st.cache_data(show_spinner = False)
-def get_ortho_cached(xmin, xmax, ymin, ymax, pixel_size):
+def get_IGN_cached(xmin, xmax, ymin, ymax, pixel_size):
    if (xmin, xmax, ymin, ymax) != (None, None, None, None):
+      # ORTHOPHOTO
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
       response_wms = requests.get(request_wms).content
       orthophoto = Image.open(BytesIO(response_wms))
-      return(orthophoto)
-   else:
-      return(None)
-# récupération des données cadastre
-@st.cache_data(show_spinner = False)
-def get_cadastre_cached(xmin, xmax, ymin, ymax):
-   if (xmin, xmax, ymin, ymax) != (None, None, None, None):
+      # cadastre
       bounds = gpd.GeoDataFrame(
          {'Nom': ['name1', 'name2'],
          'geometry': [shapely.geometry.Point(xmin, ymin), shapely.geometry.Point(xmax, ymax)]},
@@ -108,16 +110,25 @@ def get_cadastre_cached(xmin, xmax, ymin, ymax):
          gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
          gdf_cadastre = gdf_cadastre.explode(index_parts = False)
          gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
-      return(gdf_cadastre)
+      return orthophoto, gdf_cadastre
    else:
-      return(None)
+      return None, None
 with st.spinner('récupération des données IGN ...'):
-   orthophoto = get_ortho_cached(
+   orthophoto, gdf_cadastre = get_IGN_cached(
       st.session_state['coords_bbox_Lambert'][0], 
       st.session_state['coords_bbox_Lambert'][1], 
       st.session_state['coords_bbox_Lambert'][2], 
       st.session_state['coords_bbox_Lambert'][3], 
       st.session_state['pixel_size'])
+
+# prévision du modèle
+@st.cache_data(show_spinner = False)
+def get_YOLO_cached(orthophoto):
+   if orthophoto is not None:
+      prev_data = predict_YOLOv8(orthophoto, model_YOLO, size_model = 512, seuil = 0.01)
+   else:
+      prev_data = None
+   return prev_data
 
 # affichage de l'orthophoto
 if orthophoto is not None:
