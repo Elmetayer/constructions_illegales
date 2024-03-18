@@ -27,12 +27,10 @@ def get_bbox_Lambert(bbox):
    coords_bbox_Lambert = coords_bbox_WSG.to_crs('EPSG:2154')
    return(coords_bbox_Lambert.geometry[0].x, coords_bbox_Lambert.geometry[1].x, coords_bbox_Lambert.geometry[0].y, coords_bbox_Lambert.geometry[1].y)
 
-'''
-@st.cache_resource
-def getmodel_YOLO():
-    return YOLO('../models/YOLOv8_20240124_bruno.pt')
-model_YOLO = getmodel_YOLO()
-'''
+#@st.cache_resource
+#def getmodel_YOLO():
+#    return YOLO('../models/YOLOv8_20240124_bruno.pt')
+#model_YOLO = getmodel_YOLO()
 
 # titre de la page
 st.set_page_config(page_title="Détection", page_icon="👓")
