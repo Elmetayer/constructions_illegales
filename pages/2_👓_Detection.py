@@ -134,5 +134,5 @@ def get_YOLO_cached(orthophoto):
 if orthophoto is not None:
    fig = px.imshow(orthophoto, width = 800, height = 800)
    st.plotly_chart(fig)
-else:
+elif st.session_state['refresh_bbox'] == 1:
    st.write('aucun emplacement validé')
