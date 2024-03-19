@@ -65,7 +65,7 @@ def isInMap(xrange, yrange, bounds = False):
     return my_function
 
 def affiche_contours(
-    image, predict_function, model, size_model, coord_transform, resolution_model, gdf_shapes_ref, resolution_target = (1000, 1000),
+    image, predict_function, model, size_model, coord_transform, gdf_shapes_ref, resolution_target = (1000, 1000),
     seuil = 0.05, seuil_iou = 0.01, delta_only = False,
     seuil_area = 10,
     tolerance_polygone = 0.1):
