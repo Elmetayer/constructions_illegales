@@ -83,9 +83,15 @@ st.sidebar.caption('Echelle: {} m/pixel'.format(st.session_state['scale']))
 if st.session_state['scale'] != PIXEL_SCALE_REF:
    st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
-# récupération des données IGN
+# modèle YOLO  
+@st.cache_resource
+def getmodel_YOLO():
+    return YOLO('models/YOLOv8_20240124_bruno.pt')
+model_YOLO = getmodel_YOLO()
+
+# calcul de la prédiction
 @st.cache_data(show_spinner = False)
-def get_IGN_cached(xmin, xmax, ymin, ymax, pixel_size):
+def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size):
    if (xmin, xmax, ymin, ymax) != (None, None, None, None):
       # ORTHOPHOTO
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
@@ -107,39 +113,23 @@ def get_IGN_cached(xmin, xmax, ymin, ymax, pixel_size):
          gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
          gdf_cadastre = gdf_cadastre.explode(index_parts = False)
          gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
-      return orthophoto, gdf_cadastre
+      _, _, _, _, _, _, fig = affiche_contours(
+         orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
+         (st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][2], st.session_state['scale']), SIZE_YOLO, gdf_shapes_ref = gdf_cadastre,
+         resolution_target = (st.session_state['pixel_size'], st.session_state['pixel_size']),
+         seuil = 0.05, seuil_iou = 0.01, delta_only = False,
+         seuil_area = 10,
+         tolerance_polygone = 0.1)
+      return fig, orthophoto, gdf_cadastre
    else:
-      return None, None
-with st.spinner('récupération des données IGN ...'):
-   orthophoto, gdf_cadastre = get_IGN_cached(
+      return None, None, None
+with st.spinner('calcul de la prédiction ...'):
+   fig, orthophoto, gdf_cadastre = get_fig_prev(
       st.session_state['coords_bbox_Lambert'][0], 
       st.session_state['coords_bbox_Lambert'][1], 
       st.session_state['coords_bbox_Lambert'][2], 
       st.session_state['coords_bbox_Lambert'][3], 
       st.session_state['pixel_size'])
-   
-@st.cache_resource
-def getmodel_YOLO():
-    return YOLO('models/YOLOv8_20240124_bruno.pt')
-model_YOLO = getmodel_YOLO()
-
-# prévision du modèle
-@st.cache_data(show_spinner = False)
-def get_fig_prev(_orthophoto, _gdf_cadastre):
-   if _orthophoto is not None and _gdf_cadastre is not None:
-      _, _, _, _, _, _, fig = affiche_contours(
-         _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-         (st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][2], st.session_state['scale']), SIZE_YOLO, gdf_shapes_ref = _gdf_cadastre,
-         resolution_target = (st.session_state['pixel_size'], st.session_state['pixel_size']),
-         seuil = 0.05, seuil_iou = 0.01, delta_only = False,
-         seuil_area = 10,
-         tolerance_polygone = 0.1)
-   else:
-      fig = None
-   return fig
-with st.spinner('calcul de la prédiction ...'):
-   fig = get_fig_prev(orthophoto, gdf_cadastre)
-   st.plotly_chart(fig)
 
 # affichage de la prédiction
 if fig is not None:
