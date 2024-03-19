@@ -150,6 +150,6 @@ with st.spinner('calcul de la prédiction ...'):
 
 # affichage de la prédiction
 if fig is not None:
-   st.plotly_chart(fig, use_container_width=True)
+   st.plotly_chart(fig)
 elif st.session_state['refresh_bbox'] != 1:
    st.write('aucun emplacement validé')
