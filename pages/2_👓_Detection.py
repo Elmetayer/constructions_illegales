@@ -127,10 +127,10 @@ model_YOLO = getmodel_YOLO()
 
 # prévision du modèle
 @st.cache_data(show_spinner = False)
-def get_fig_prev(orthophoto, gdf_cadastre):
-   if orthophoto is not None and gdf_cadastre is not None:
+def get_fig_prev(_orthophoto, gdf_cadastre):
+   if _orthophoto is not None and gdf_cadastre is not None:
       _, _, _, _, _, _, fig = affiche_contours(
-         orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
+         _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
          (st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][2], st.session_state['scale']), SIZE_YOLO, gdf_shapes_ref = gdf_cadastre,
          resolution_target = (st.session_state['pixel_size'], st.session_state['pixel_size']),
          seuil = 0.05, seuil_iou = 0.01, delta_only = False,
