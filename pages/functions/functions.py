@@ -1,4 +1,5 @@
 import numpy as np
+import geopandas as gpd
 import shapely
 import skimage as ski
 import rasterio
