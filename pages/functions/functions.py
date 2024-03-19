@@ -1,4 +1,5 @@
 import plotly.express as px
+import plotly.graph_objs as go
 import numpy as np
 import geopandas as gpd
 import shapely
