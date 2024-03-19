@@ -237,8 +237,8 @@ def affiche_contours(
       xaxis=dict(title='X en Lambert93'),
       yaxis=dict(title='Y en Lambert93'),
       plot_bgcolor='white',
-      height = 900,
-      width = 900)
+      height = 1200,
+      width = 1200)
 
   return shapes_predict, shapes_ref, shapes_pred_ious, shapes_ref_ious, shapes_pred_rapprochements, shapes_ref_rapprochements, fig
 

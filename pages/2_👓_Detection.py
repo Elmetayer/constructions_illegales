@@ -61,7 +61,7 @@ if 'scale' not in st.session_state:
 # bouton de mise à jour de la zone
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
-   load_button = st.button('nouvelle zone')
+   load_button = st.sidebar.button('nouvelle zone')
 if load_button:
    st.session_state['bbox_selected'] = st.session_state['bbox']
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
@@ -75,7 +75,7 @@ if pixel_size:
       scale = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
       st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
       if scale != PIXEL_SCALE_REF:
-         st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
+         st.sidebar.warning('⚠️échelle de référence {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # bouton de calcul
 calcul_button = None
