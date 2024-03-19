@@ -1,6 +1,7 @@
 import numpy as np
 import shapely
 import skimage as ski
+import rasterio
 from skimage.measure import find_contours, approximate_polygon, subdivide_polygon, label
 import tensorflow as tf
 from tensorflow import image as tf_image
