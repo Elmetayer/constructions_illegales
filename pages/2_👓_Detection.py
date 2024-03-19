@@ -29,7 +29,7 @@ def get_bbox_Lambert(bbox):
 
 @st.cache_resource
 def getmodel_YOLO():
-    return YOLO('../models/YOLOv8_20240124_bruno.pt')
+    return YOLO('models/YOLOv8_20240124_bruno.pt')
 model_YOLO = getmodel_YOLO()
 
 # titre de la page
