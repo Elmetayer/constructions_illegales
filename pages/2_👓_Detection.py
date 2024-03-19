@@ -58,20 +58,23 @@ if 'scale' not in st.session_state:
    else:
       st.session_state['scale'] = None
 
-# bouton de mise à jour
+# bouton de mise à jour de la zone
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
    load_button = st.button('nouvelle zone')
 if load_button:
    st.session_state['bbox_selected'] = st.session_state['bbox']
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+   st.session_state['scale'] = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
    st.rerun()
    
 # taille en pixel
 pixel_size = st.sidebar.slider('Résolution (pixel)', 0, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
-st.sidebar.caption('Echelle: {} m/pixel'.format(st.session_state['scale']))
-if st.session_state['scale'] != PIXEL_SCALE_REF:
-   st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
+if pixel_size:
+   scale = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
+   st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
+   if scale != PIXEL_SCALE_REF:
+      st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # bouton de calcul
 calcul_button = None
