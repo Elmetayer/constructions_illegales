@@ -139,6 +139,7 @@ def get_fig_prev(_orthophoto, _gdf_cadastre):
    return fig
 with st.spinner('calcul de la prédiction ...'):
    fig = get_fig_prev(orthophoto, gdf_cadastre)
+   st.plotly_chart(fig)
 
 # affichage de la prédiction
 if fig is not None:
