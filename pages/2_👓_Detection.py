@@ -1,10 +1,8 @@
 import plotly.express as px
 import rasterio
 import streamlit as st
-import folium
 from streamlit_folium import st_folium
 import requests
-import json
 from io import BytesIO
 import geopandas as gpd
 from PIL import Image
@@ -115,8 +113,8 @@ def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size):
          gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
       _, _, _, _, _, _, fig = affiche_contours(
          orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-         (st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][2], st.session_state['scale']), SIZE_YOLO, gdf_shapes_ref = gdf_cadastre,
-         resolution_target = (st.session_state['pixel_size'], st.session_state['pixel_size']),
+         rasterio.coords.BoundingBox(xmin, ymax, xmax, ymin), gdf_shapes_ref = gdf_cadastre,
+         resolution_target = (pixel_size, pixel_size),
          seuil = 0.05, seuil_iou = 0.01, delta_only = False,
          seuil_area = 10,
          tolerance_polygone = 0.1)
