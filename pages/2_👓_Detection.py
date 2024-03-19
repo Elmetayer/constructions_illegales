@@ -1,5 +1,4 @@
 import plotly.express as px
-import rasterio
 import streamlit as st
 from streamlit_folium import st_folium
 import requests
@@ -59,22 +58,17 @@ if 'scale' not in st.session_state:
    else:
       st.session_state['scale'] = None
 
-# coordonnées
-if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-   st.write('X en Lambert 93: {} - {}'.format(st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][1]))
-   st.write('Y en Lambert 93: {} - {}'.format(st.session_state['coords_bbox_Lambert'][2], st.session_state['coords_bbox_Lambert'][3]))
-   
 # bouton de mise à jour
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
-    load_button = st.button('mettre à jour')
+    load_button = st.button('nouvelle zone')
 if load_button:
    st.session_state['bbox_selected'] = st.session_state['bbox']
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
    st.rerun()
    
 # taille en pixel
-pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
+pixel_size = st.sidebar.slider('Résolution (pixel)', 0, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
 if pixel_size:
     st.session_state['pixel_size'] = pixel_size
     st.session_state['scale'] = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
