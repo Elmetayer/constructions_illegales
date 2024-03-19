@@ -4,6 +4,7 @@ import geopandas as gpd
 import shapely
 import skimage as ski
 import rasterio
+from PIL import ImageOps
 from skimage.measure import find_contours, approximate_polygon, subdivide_polygon, label
 import tensorflow as tf
 from tensorflow import image as tf_image
