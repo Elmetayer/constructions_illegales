@@ -26,7 +26,7 @@ def get_bbox_Lambert(bbox):
 st.set_page_config(page_title="Détection", page_icon="👓")
 
 # variables de session
-PIXEL_SIZE_MAX = 1000
+PIXEL_SIZE_MAX = 2000
 PIXEL_SCALE_REF = 0.2
 SIZE_MAX = 1000
 SIZE_YOLO = 512
