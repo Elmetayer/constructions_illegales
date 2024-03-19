@@ -1,3 +1,4 @@
+import plotly.express as px
 import numpy as np
 import geopandas as gpd
 import shapely
