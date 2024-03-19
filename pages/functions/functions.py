@@ -1,6 +1,10 @@
 import numpy as np
 import shapely
 from skimage.measure import find_contours, approximate_polygon, subdivide_polygon, label
+import tensorflow as tf
+from tensorflow import image as tf_image
+from tensorflow import data as tf_data
+from tensorflow import io as tf_io
 
 def calcul_ious_shapes(shapes_1_ext, shapes_2_ext, seuil_iou = 0):
   '''
@@ -88,7 +92,7 @@ def affiche_contours(
   # Contours prédiction
   mask_contours = []
   for prev_mask in prev_masks:
-    prev_mask_resized = tf.squeeze(tf_image.resize(images = np.expand_dims(prev_mask, -1), size = resolution_target, method = 'nearest'))
+    prev_mask_resized = np.squeeze(tf_image.resize(images = np.expand_dims(prev_mask, -1), size = resolution_target, method = 'nearest'))
     mask_padded = np.pad(prev_mask_resized, ((1, 1),(1, 1)), mode = 'constant', constant_values = 0)
     mask_contours += ski.measure.find_contours(image = mask_padded == 1)
 
