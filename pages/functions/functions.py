@@ -1,3 +1,7 @@
+import numpy as np
+import shapely
+from skimage.measure import find_contours, approximate_polygon, subdivide_polygon, label
+
 def calcul_ious_shapes(shapes_1_ext, shapes_2_ext, seuil_iou = 0):
   '''
   fonction qui calcule l'IoU des shapes_1_ext en cherchant à rapprocher les shapes_2_ext
