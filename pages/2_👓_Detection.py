@@ -9,6 +9,7 @@ from io import BytesIO
 import shapely
 import geopandas as gpd
 from PIL import Image, ImageOps
+import numpy as np
 from ultralytics import YOLO
 from skimage.measure import find_contours, approximate_polygon, subdivide_polygon, label
 
