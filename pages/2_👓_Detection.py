@@ -71,7 +71,8 @@ if load_button:
 pixel_size = st.sidebar.slider('Résolution (pixel)', 0, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
 if pixel_size:
     st.session_state['pixel_size'] = pixel_size
-    st.session_state['scale'] = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
+    if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+      st.session_state['scale'] = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
 st.sidebar.caption('Echelle: {} m/pixel'.format(st.session_state['scale']))
 if st.session_state['scale'] != PIXEL_SCALE_REF:
    st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
