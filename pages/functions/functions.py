@@ -65,7 +65,7 @@ def isInMap(xrange, yrange, bounds = False):
     return my_function
 
 def affiche_contours(
-    image, predict_function, model, size_model, bounds, gdf_shapes_ref, resolution_target = (1000, 1000),
+    image, predict_function, model, size_model, coord_transform, resolution_model, gdf_shapes_ref, resolution_target = (1000, 1000),
     seuil = 0.05, seuil_iou = 0.01, delta_only = False,
     seuil_area = 10,
     tolerance_polygone = 0.1):
@@ -78,7 +78,7 @@ def affiche_contours(
   - image : array de l'image sur laquelle faire la prédiction
   - seuil_iou : les formes avec un IoU inférieur sont affichées en rouge
   - delta_only : si True, n'affiche que les formes en rouge
-  - bounds : limites de la zone étudiée
+  - coord_transform : transformation affine pour passer des pixels aux coordonnées géographiques cible
   - gdf_shapes_ref : fichier de shapefiles à utiliser pour la comparaison des formes prédites > par défaut, on compare par rapport aux formes du df_decoupe
   renvoie :
   - geoSeries avec les formes prédites, crs 2154, avec uniquement les contours
@@ -97,6 +97,12 @@ def affiche_contours(
     prev_mask_resized = tf.squeeze(tf_image.resize(images = np.expand_dims(prev_mask, -1), size = resolution_target, method = 'nearest'))
     mask_padded = np.pad(prev_mask_resized, ((1, 1),(1, 1)), mode = 'constant', constant_values = 0)
     mask_contours += ski.measure.find_contours(image = mask_padded == 1)
+
+  # utilisation des informations raster pour les coordonnées
+  X0, Y0, coords_scale = coord_transform
+  raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
+                            0.0, -coords_scale, Y0 + coords_scale*resolution_target[1])
+  bounds = rasterio.coords.BoundingBox(X0, Y0, X0 + coords_scale*resolution_target[0], Y0 + coords_scale*resolution_target[1])
 
   # Shapes référence
   gdf_shapes_ref_copy = gdf_shapes_ref.copy()

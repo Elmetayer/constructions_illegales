@@ -89,8 +89,8 @@ model_YOLO = getmodel_YOLO()
 
 # calcul de la prédiction
 @st.cache_data(show_spinner = False)
-def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size):
-   if (xmin, xmax, ymin, ymax) != (None, None, None, None):
+def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size, scale):
+   if (xmin, xmax, ymin, ymax, pixel_size, scale) != (None, None, None, None, None, None):
       # ORTHOPHOTO
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
@@ -113,7 +113,7 @@ def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size):
          gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
       _, _, _, _, _, _, fig = affiche_contours(
          orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-         rasterio.coords.BoundingBox(xmin, ymax, xmax, ymin), gdf_shapes_ref = gdf_cadastre,
+         (xmin, ymax, scale), gdf_shapes_ref = gdf_cadastre,
          resolution_target = (pixel_size, pixel_size),
          seuil = 0.05, seuil_iou = 0.01, delta_only = False,
          seuil_area = 10,
@@ -127,7 +127,8 @@ with st.spinner('calcul de la prédiction ...'):
       st.session_state['coords_bbox_Lambert'][1], 
       st.session_state['coords_bbox_Lambert'][2], 
       st.session_state['coords_bbox_Lambert'][3], 
-      st.session_state['pixel_size'])
+      st.session_state['pixel_size'],
+      st.session_state['scale'])
 
 # affichage de la prédiction
 if fig is not None:
