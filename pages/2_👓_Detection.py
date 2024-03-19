@@ -108,7 +108,7 @@ def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size, scale):
          gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
       _, _, _, _, _, _, fig = affiche_contours(
          orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-         (xmin, ymax, scale), gdf_shapes_ref = gdf_cadastre,
+         (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
          resolution_target = (pixel_size, pixel_size),
          seuil = 0.05, seuil_iou = 0.01, delta_only = False,
          seuil_area = 10,
