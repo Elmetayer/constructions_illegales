@@ -26,6 +26,7 @@ def get_bbox_Lambert(bbox):
 st.set_page_config(page_title="Détection", page_icon="👓")
 
 # variables de session
+PIXEL_SIZE_MIN = 500
 PIXEL_SIZE_MAX = 2000
 PIXEL_SCALE_REF = 0.2
 SIZE_MAX = 1000
@@ -68,12 +69,13 @@ if load_button:
    st.rerun()
    
 # taille en pixel
-pixel_size = st.sidebar.slider('Résolution (pixel)', 0, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
+pixel_size = st.sidebar.slider('Résolution (pixel)', PIXEL_SIZE_MIN, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
 if pixel_size:
-   scale = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
-   st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
-   if scale != PIXEL_SCALE_REF:
-      st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
+   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+      scale = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
+      st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
+      if scale != PIXEL_SCALE_REF:
+         st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # bouton de calcul
 calcul_button = None
@@ -94,6 +96,14 @@ if calcul_button:
 def getmodel_YOLO():
     return YOLO('models/YOLOv8_20240124_bruno.pt')
 model_YOLO = getmodel_YOLO()
+
+# paramètres des modèles
+dict_models = {
+   'YOLOv8' : {
+      'predict_function' : predict_YOLOv8, 
+      'model' : model_YOLO, 
+      'size' : SIZE_YOLO}
+}
 
 # calcul de la prédiction
 @st.cache_data(show_spinner = False)
