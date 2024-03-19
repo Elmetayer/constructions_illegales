@@ -82,7 +82,7 @@ pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, st.session_s
 if pixel_size:
     st.session_state['pixel_size'] = pixel_size
 st.sidebar.caption('Echelle: {} m/pixel'.format(st.session_state['scale']))
-if scale != PIXEL_SCALE_REF:
+if st.session_state['scale'] != PIXEL_SCALE_REF:
    st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # récupération des données IGN
