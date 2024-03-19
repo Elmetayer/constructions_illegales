@@ -77,6 +77,12 @@ st.sidebar.caption('Echelle: {} m/pixel'.format(st.session_state['scale']))
 if st.session_state['scale'] != PIXEL_SCALE_REF:
    st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
+st.sidebar.write(st.session_state['coords_bbox_Lambert'])
+
+##############
+# prédiction #
+##############
+
 # modèle YOLO  
 @st.cache_resource
 def getmodel_YOLO():
