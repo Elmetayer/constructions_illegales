@@ -40,6 +40,7 @@ st.markdown("# Détection")
 PIXEL_SIZE_MAX = 1000
 PIXEL_SCALE_REF = 0.2
 SIZE_MAX = 1000
+SIZE_YOLO = 512
 
 if 'bbox_selected' not in st.session_state:
    if 'bbox' not in st.session_state:
@@ -61,11 +62,16 @@ if 'pixel_size' not in st.session_state:
    else:
       coords_size = SIZE_MAX
    st.session_state['pixel_size'] = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
+if 'scale' not in st.session_state:
+   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+      st.session_state['scale'] = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
+   else:
+      st.session_state['scale'] = None
 
 # coordonnées
 if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-   st.write('X en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][1]))
-   st.write('Y en Lambert 93: {}-{}'.format(st.session_state['coords_bbox_Lambert'][2], st.session_state['coords_bbox_Lambert'][3]))
+   st.write('X en Lambert 93: {} - {}'.format(st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][1]))
+   st.write('Y en Lambert 93: {} - {}'.format(st.session_state['coords_bbox_Lambert'][2], st.session_state['coords_bbox_Lambert'][3]))
    
 # bouton de mise à jour
 load_button = None
@@ -80,11 +86,9 @@ if load_button:
 pixel_size = st.sidebar.slider('Taille (pixel)', 0, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
 if pixel_size:
     st.session_state['pixel_size'] = pixel_size
-if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-   scale = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
-   st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
-   if scale != PIXEL_SCALE_REF:
-      st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
+st.sidebar.caption('Echelle: {} m/pixel'.format(st.session_state['scale']))
+if scale != PIXEL_SCALE_REF:
+   st.sidebar.warning('attendion, l\'échelle de référence est {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # récupération des données IGN
 @st.cache_data(show_spinner = False)
@@ -123,16 +127,23 @@ with st.spinner('récupération des données IGN ...'):
 
 # prévision du modèle
 @st.cache_data(show_spinner = False)
-def get_YOLO_cached(orthophoto):
-   if orthophoto is not None:
-      prev_data = predict_YOLOv8(orthophoto, model_YOLO, size_model = 512, seuil = 0.01)
+def get_fig_prev(orthophoto, gdf_cadastre):
+   if orthophoto is not None and gdf_cadastre is not None:
+      _, _, _, _, _, _, fig = affiche_contours(
+         orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
+         (st.session_state['coords_bbox_Lambert'][0], st.session_state['coords_bbox_Lambert'][2], st.session_state['scale']), SIZE_YOLO, gdf_shapes_ref = gdf_cadastre,
+         resolution_target = (st.session_state['pixel_size'], st.session_state['pixel_size']),
+         seuil = 0.05, seuil_iou = 0.01, delta_only = False,
+         seuil_area = 10,
+         tolerance_polygone = 0.1)
    else:
-      prev_data = None
-   return prev_data
+      fig = None
+   return fig
+with st.spinner('calcul de la prédiction ...'):
+   fig = get_fig_prev(orthophoto, gdf_cadastre)
 
-# affichage de l'orthophoto
-if orthophoto is not None:
-   fig = px.imshow(orthophoto, width = 800, height = 800)
+# affichage de la prédiction
+if fig is not None:
    st.plotly_chart(fig)
 elif st.session_state['refresh_bbox'] != 1:
    st.write('aucun emplacement validé')
