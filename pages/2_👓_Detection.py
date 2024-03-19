@@ -23,7 +23,7 @@ def get_bbox_Lambert(bbox):
    return(coords_bbox_Lambert.geometry[0].x, coords_bbox_Lambert.geometry[1].x, coords_bbox_Lambert.geometry[0].y, coords_bbox_Lambert.geometry[1].y)
 
 # titre de la page
-st.set_page_config(page_title="Détection", page_icon="👓")
+st.set_page_config(page_title="Détection", page_icon="👓", layout = 'wide')
 
 # variables de session
 PIXEL_SIZE_MIN = 500
