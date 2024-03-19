@@ -54,7 +54,7 @@ if 'pixel_size' not in st.session_state:
    st.session_state['pixel_size'] = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
 if 'scale' not in st.session_state:
    if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-      st.session_state['scale'] = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
+      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    else:
       st.session_state['scale'] = None
 
@@ -65,16 +65,16 @@ if st.session_state['refresh_bbox'] == 1:
 if load_button:
    st.session_state['bbox_selected'] = st.session_state['bbox']
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
-   st.session_state['scale'] = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
+   st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    st.rerun()
    
 # taille en pixel
 pixel_size = st.sidebar.slider('Résolution (pixel)', PIXEL_SIZE_MIN, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
 if pixel_size:
    if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-      scale = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
-      st.sidebar.caption('Echelle: {} m/pixel'.format(scale))
-      if scale != PIXEL_SCALE_REF:
+      scale_round = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
+      st.sidebar.caption('Echelle: {} m/pixel'.format(scale_round))
+      if scale_round != PIXEL_SCALE_REF:
          st.sidebar.warning('⚠️échelle de référence {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # bouton de calcul
@@ -84,7 +84,7 @@ if st.session_state['pixel_size'] != pixel_size:
 if calcul_button:
    st.session_state['pixel_size'] = pixel_size
    if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-      st.session_state['scale'] = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size'], 1)
+      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    st.rerun()
 
 ##############
