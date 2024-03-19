@@ -94,7 +94,6 @@ def get_bbox_center(bbox):
 
 # titre de la page
 st.set_page_config(page_title="Carte", page_icon="🔎")
-st.markdown("# Carte")
 
 # variables de session
 CENTER_START = [48.858370, 2.294481]

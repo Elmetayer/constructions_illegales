@@ -24,7 +24,6 @@ def get_bbox_Lambert(bbox):
 
 # titre de la page
 st.set_page_config(page_title="Détection", page_icon="👓")
-st.markdown("# Détection")
 
 # variables de session
 PIXEL_SIZE_MAX = 1000
