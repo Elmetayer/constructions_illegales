@@ -103,6 +103,8 @@ if load_button:
          st.session_state['coords_bbox_Lambert'][3], 
          st.session_state['pixel_size'])
 
+st.write(orthophoto is None and gdf_cadastre is None)
+
 ##############
 # prédiction #
 ##############
@@ -161,5 +163,4 @@ if calcul_button:
 # affichage de la prédiction
 if fig is not None:
    st.plotly_chart(fig)
-else:
-   st.write('en attente des données ...')
+   
