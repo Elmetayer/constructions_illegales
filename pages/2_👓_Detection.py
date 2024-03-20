@@ -149,8 +149,6 @@ if pixel_size:
    if all(st.session_state['coords_bbox_Lambert']):
       scale_round = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
       st.sidebar.caption('Echelle: {} m/pixel'.format(scale_round))
-      if scale_round != PIXEL_SCALE_REF:
-         st.sidebar.warning('⚠️échelle de référence {} m/pixel'.format(PIXEL_SCALE_REF))
 
 # bouton de calcul
 fig = None
