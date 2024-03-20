@@ -96,6 +96,7 @@ if st.session_state['refresh_bbox'] == 1:
    load_button = st.sidebar.button('nouvelle zone')
 if load_button:
    st.session_state['bbox_selected'] = st.session_state['bbox']
+   st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] != st.session_state['bbox'])*1
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
    st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    with st.spinner('récupération des données IGN ...'):
@@ -167,5 +168,5 @@ if calcul_button:
 # affichage de la prédiction
 if fig is not None:
    st.plotly_chart(fig)
-elif st.session_state['refresh_bbox'] != 1:
-   st.write('aucun emplacement validé')
+else:
+   st.write('en attente des données ...')
