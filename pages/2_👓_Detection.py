@@ -48,11 +48,11 @@ def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
       return None, None
 
 @st.cache_data(show_spinner = False)
-def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
-   if (xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto) != (None, None, None, None, None, None):
+def get_fig_prev(xmin, ymin, pixel_size, scale, _gdf_cadastre, orthophoto):
+   if (xmin, ymin, pixel_size, scale, _gdf_cadastre, orthophoto) != (None, None, None, None, None, None):
       _, _, _, _, _, _, fig = affiche_contours(
          orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-         (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
+         (xmin, ymin, scale), gdf_shapes_ref = _gdf_cadastre,
          resolution_target = (pixel_size, pixel_size),
          seuil = 0.05, seuil_iou = 0.01, delta_only = False,
          seuil_area = 10,
