@@ -90,6 +90,7 @@ def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
       return None, None
 
 # bouton de mise à jour de la zone
+orthophoto = gdf_cadastre = None
 load_button = None
 if st.session_state['refresh_bbox'] == 1:
    load_button = st.sidebar.button('nouvelle zone')
@@ -148,6 +149,7 @@ def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
       return None
 
 # bouton de calcul
+fig = None
 calcul_button = st.sidebar.button('prédire')
 if calcul_button:
    st.session_state['pixel_size'] = pixel_size
