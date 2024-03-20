@@ -65,37 +65,36 @@ with col2:
 # image de zone #
 #################
 
-@st.cache_data(show_spinner = False)
-def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
-   if all((xmin, xmax, ymin, ymax, pixel_size)):
-      request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
-      xmin, ymin, xmax, ymax, pixel_size, pixel_size)
-      response_wms = requests.get(request_wms).content
-      orthophoto = Image.open(BytesIO(response_wms))
-      bounds = gpd.GeoDataFrame(
-         {'Nom': ['name1', 'name2'],
-         'geometry': [shapely.geometry.Point(xmin, ymin), shapely.geometry.Point(xmax, ymax)]},
-         crs = 'EPSG:2154')
-      bounds = bounds.to_crs('EPSG:4326')
-      request_wfs = 'https://data.geopf.fr/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typename=CADASTRALPARCELS.PARCELLAIRE_EXPRESS:batiment&outputformat=application/json&BBOX={},{},{},{}'.format(
-    bounds.geometry[0].y, bounds.geometry[0].x, bounds.geometry[1].y, bounds.geometry[1].x)
-      response_wfs = requests.get(request_wfs)
-      gdf_cadastre = gpd.GeoDataFrame.from_features(response_wfs.json()['features'])
-      if gdf_cadastre.shape[0]>0 :
-         gdf_cadastre = gdf_cadastre.set_crs('EPSG:4326').to_crs('EPSG:2154')
-         gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
-         gdf_cadastre = gdf_cadastre.explode(index_parts = False)
-         gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
-      return orthophoto, gdf_cadastre
-   else:
-      return None, None
-
 # mise à jour de la zone
 orthophoto = gdf_cadastre = None
 if load_button:
    st.session_state['bbox_selected'] = st.session_state['bbox']
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
    st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
+   @st.cache_data(show_spinner = False)
+   def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
+      if all((xmin, xmax, ymin, ymax, pixel_size)):
+         request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
+         xmin, ymin, xmax, ymax, pixel_size, pixel_size)
+         response_wms = requests.get(request_wms).content
+         orthophoto = Image.open(BytesIO(response_wms))
+         bounds = gpd.GeoDataFrame(
+            {'Nom': ['name1', 'name2'],
+            'geometry': [shapely.geometry.Point(xmin, ymin), shapely.geometry.Point(xmax, ymax)]},
+            crs = 'EPSG:2154')
+         bounds = bounds.to_crs('EPSG:4326')
+         request_wfs = 'https://data.geopf.fr/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typename=CADASTRALPARCELS.PARCELLAIRE_EXPRESS:batiment&outputformat=application/json&BBOX={},{},{},{}'.format(
+       bounds.geometry[0].y, bounds.geometry[0].x, bounds.geometry[1].y, bounds.geometry[1].x)
+         response_wfs = requests.get(request_wfs)
+         gdf_cadastre = gpd.GeoDataFrame.from_features(response_wfs.json()['features'])
+         if gdf_cadastre.shape[0]>0 :
+            gdf_cadastre = gdf_cadastre.set_crs('EPSG:4326').to_crs('EPSG:2154')
+            gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
+            gdf_cadastre = gdf_cadastre.explode(index_parts = False)
+            gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
+         return orthophoto, gdf_cadastre
+      else:
+         return None, None
    with st.spinner('récupération des données IGN ...'):
       orthophoto, gdf_cadastre = get_IGN_data(
          st.session_state['coords_bbox_Lambert'][0], 
@@ -103,9 +102,6 @@ if load_button:
          st.session_state['coords_bbox_Lambert'][2], 
          st.session_state['coords_bbox_Lambert'][3], 
          st.session_state['pixel_size'])
-
-st.write(orthophoto is None)
-st.write(gdf_cadastre is None)
 
 ##############
 # prédiction #
@@ -134,28 +130,25 @@ if pixel_size:
       if scale_round != PIXEL_SCALE_REF:
          st.sidebar.warning('⚠️échelle de référence {} m/pixel'.format(PIXEL_SCALE_REF))
 
-# calcul de la prédiction
-@st.cache_data(show_spinner = False)
-def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
-   if (xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto) != (None, None, None, None, None, None):
-      _, _, _, _, _, _, fig = affiche_contours(
-         orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-         (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
-         resolution_target = (pixel_size, pixel_size),
-         seuil = 0.05, seuil_iou = 0.01, delta_only = False,
-         seuil_area = 10,
-         tolerance_polygone = 0.1)
-      return fig
-   else:
-      return None
-
 # bouton de calcul
 fig = None
 if calcul_button:
-   st.write('test calcul')
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
       st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
+   @st.cache_data(show_spinner = False)
+   def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
+      if (xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto) != (None, None, None, None, None, None):
+         _, _, _, _, _, _, fig = affiche_contours(
+            orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
+            (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
+            resolution_target = (pixel_size, pixel_size),
+            seuil = 0.05, seuil_iou = 0.01, delta_only = False,
+            seuil_area = 10,
+            tolerance_polygone = 0.1)
+         return fig
+      else:
+         return None
    with st.spinner('calcul de la prédiction ...'):
       fig = get_fig_prev(
          st.session_state['coords_bbox_Lambert'][0], 
