@@ -160,8 +160,8 @@ if calcul_button:
          st.session_state['coords_bbox_Lambert'][1], 
          st.session_state['pixel_size'],
          st.session_state['scale'],
-         orthophoto, 
-         gdf_cadastre)
+         gdf_cadastre,
+         orthophoto)
 
 # affichage de la prédiction
 if fig is not None:
