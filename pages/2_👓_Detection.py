@@ -47,13 +47,13 @@ if 'bbox' not in st.session_state:
 else:
    st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] != st.session_state['bbox'])*1
 if 'pixel_size' not in st.session_state:
-   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+   if all(st.session_state['coords_bbox_Lambert']):
       coords_size = st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]
    else:
       coords_size = SIZE_MAX
    st.session_state['pixel_size'] = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
 if 'scale' not in st.session_state:
-   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+   if all(st.session_state['coords_bbox_Lambert']):
       st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    else:
       st.session_state['scale'] = None
@@ -64,7 +64,7 @@ if 'scale' not in st.session_state:
 
 @st.cache_data(show_spinner = False)
 def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
-   if all(xmin, xmax, ymin, ymax, pixel_size):
+   if all((xmin, xmax, ymin, ymax, pixel_size)):
       # ORTHOPHOTO
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
@@ -136,7 +136,7 @@ if pixel_size:
 # calcul de la prédiction
 @st.cache_data(show_spinner = False)
 def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
-   if all(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
+   if all((xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto)):
       _, _, _, _, _, _, fig = affiche_contours(
          orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
          (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
@@ -153,7 +153,7 @@ fig = None
 calcul_button = st.sidebar.button('prédire')
 if calcul_button:
    st.session_state['pixel_size'] = pixel_size
-   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+   if all(st.session_state['coords_bbox_Lambert']):
       st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    with st.spinner('calcul de la prédiction ...'):
       fig = get_fig_prev(
