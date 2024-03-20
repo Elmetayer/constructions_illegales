@@ -72,7 +72,6 @@ def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
       response_wms = requests.get(request_wms).content
       orthophoto = Image.open(BytesIO(response_wms))
-      # cadastre
       bounds = gpd.GeoDataFrame(
          {'Nom': ['name1', 'name2'],
          'geometry': [shapely.geometry.Point(xmin, ymin), shapely.geometry.Point(xmax, ymax)]},
@@ -104,6 +103,9 @@ if load_button:
          st.session_state['coords_bbox_Lambert'][2], 
          st.session_state['coords_bbox_Lambert'][3], 
          st.session_state['pixel_size'])
+
+st.write(orthophoto is None)
+st.write(gdf_cadastre is None)
 
 ##############
 # prédiction #
@@ -162,11 +164,6 @@ if calcul_button:
          st.session_state['scale'],
          gdf_cadastre,
          orthophoto)
-
-st.write(all((st.session_state['coords_bbox_Lambert'][0], 
-         st.session_state['coords_bbox_Lambert'][1], 
-         st.session_state['pixel_size'],
-         st.session_state['scale'])))
 
 # affichage de la prédiction
 if fig is not None:
