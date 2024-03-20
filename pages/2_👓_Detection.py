@@ -58,57 +58,13 @@ if 'scale' not in st.session_state:
    else:
       st.session_state['scale'] = None
 
-# bouton de mise à jour de la zone
-load_button = None
-if st.session_state['refresh_bbox'] == 1:
-   load_button = st.sidebar.button('nouvelle zone')
-if load_button:
-   st.session_state['bbox_selected'] = st.session_state['bbox']
-   st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
-   st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
-   st.rerun()
-   
-# taille en pixel
-pixel_size = st.sidebar.slider('Résolution (pixel)', PIXEL_SIZE_MIN, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
-if pixel_size:
-   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-      scale_round = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
-      st.sidebar.caption('Echelle: {} m/pixel'.format(scale_round))
-      if scale_round != PIXEL_SCALE_REF:
-         st.sidebar.warning('⚠️échelle de référence {} m/pixel'.format(PIXEL_SCALE_REF))
+#################
+# image de zone #
+#################
 
-# bouton de calcul
-calcul_button = None
-if st.session_state['pixel_size'] != pixel_size:
-   calcul_button = st.sidebar.button('prédire')
-if calcul_button:
-   st.session_state['pixel_size'] = pixel_size
-   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
-      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
-   st.rerun()
-
-##############
-# prédiction #
-##############
-
-# modèle YOLO  
-@st.cache_resource
-def getmodel_YOLO():
-    return YOLO('models/YOLOv8_20240124_bruno.pt')
-model_YOLO = getmodel_YOLO()
-
-# paramètres des modèles
-dict_models = {
-   'YOLOv8' : {
-      'predict_function' : predict_YOLOv8, 
-      'model' : model_YOLO, 
-      'size' : SIZE_YOLO}
-}
-
-# calcul de la prédiction
 @st.cache_data(show_spinner = False)
-def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size, scale):
-   if (xmin, xmax, ymin, ymax, pixel_size, scale) != (None, None, None, None, None, None):
+def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
+   if (xmin, xmax, ymin, ymax, pixel_size) != (None, None, None, None, None):
       # ORTHOPHOTO
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
@@ -129,6 +85,57 @@ def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size, scale):
          gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
          gdf_cadastre = gdf_cadastre.explode(index_parts = False)
          gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
+      return orthophoto, gdf_cadastre
+   else:
+      return None, None
+
+# bouton de mise à jour de la zone
+load_button = None
+if st.session_state['refresh_bbox'] == 1:
+   load_button = st.sidebar.button('nouvelle zone')
+if load_button:
+   st.session_state['bbox_selected'] = st.session_state['bbox']
+   st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+   st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
+   with st.spinner('récupération des données IGN ...'):
+   orthophoto, gdf_cadastre = get_IGN_data(
+      st.session_state['coords_bbox_Lambert'][0], 
+      st.session_state['coords_bbox_Lambert'][1], 
+      st.session_state['coords_bbox_Lambert'][2], 
+      st.session_state['coords_bbox_Lambert'][3], 
+      st.session_state['pixel_size'])
+
+##############
+# prédiction #
+##############
+
+# modèle YOLO  
+@st.cache_resource
+def getmodel_YOLO():
+    return YOLO('models/YOLOv8_20240124_bruno.pt')
+model_YOLO = getmodel_YOLO()
+
+# paramètres des modèles
+dict_models = {
+   'YOLOv8' : {
+      'predict_function' : predict_YOLOv8, 
+      'model' : model_YOLO, 
+      'size' : SIZE_YOLO}
+}
+
+# taille en pixel
+pixel_size = st.sidebar.slider('Résolution (pixel)', PIXEL_SIZE_MIN, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
+if pixel_size:
+   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+      scale_round = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
+      st.sidebar.caption('Echelle: {} m/pixel'.format(scale_round))
+      if scale_round != PIXEL_SCALE_REF:
+         st.sidebar.warning('⚠️échelle de référence {} m/pixel'.format(PIXEL_SCALE_REF))
+
+# calcul de la prédiction
+@st.cache_data(show_spinner = False)
+def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
+   if (xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto) != (None, None, None, None, None, None):
       _, _, _, _, _, _, fig = affiche_contours(
          orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
          (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
@@ -136,17 +143,24 @@ def get_fig_prev(xmin, xmax, ymin, ymax, pixel_size, scale):
          seuil = 0.05, seuil_iou = 0.01, delta_only = False,
          seuil_area = 10,
          tolerance_polygone = 0.1)
-      return fig, orthophoto, gdf_cadastre
+      return fig
    else:
-      return None, None, None
-with st.spinner('calcul de la prédiction ...'):
-   fig, orthophoto, gdf_cadastre = get_fig_prev(
+      return None
+
+# bouton de calcul
+calcul_button = st.sidebar.button('prédire')
+if calcul_button:
+   st.session_state['pixel_size'] = pixel_size
+   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
+   with st.spinner('calcul de la prédiction ...'):
+   fig = get_fig_prev(
       st.session_state['coords_bbox_Lambert'][0], 
       st.session_state['coords_bbox_Lambert'][1], 
-      st.session_state['coords_bbox_Lambert'][2], 
-      st.session_state['coords_bbox_Lambert'][3], 
       st.session_state['pixel_size'],
-      st.session_state['scale'])
+      st.session_state['scale'],
+      orthophoto, 
+      gdf_cadastre)
 
 # affichage de la prédiction
 if fig is not None:
