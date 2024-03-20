@@ -42,10 +42,6 @@ if 'coords_bbox_Lambert' not in st.session_state:
       st.session_state['coords_bbox_Lambert'] = (None, None, None, None)
    else:
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
-if 'bbox' not in st.session_state:
-   st.session_state['refresh_bbox'] = 0
-else:
-   st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] != st.session_state['bbox'])*1
 if 'pixel_size' not in st.session_state:
    if all(st.session_state['coords_bbox_Lambert']):
       coords_size = st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]
@@ -58,6 +54,13 @@ if 'scale' not in st.session_state:
    else:
       st.session_state['scale'] = None
 
+
+col1, col2 = st.sidebar.columns([1,1])
+with col1:
+  load_button = st.button('nouvelle zone')
+with col2:
+  calcul_button = st.button('prédire')
+
 #################
 # image de zone #
 #################
@@ -65,7 +68,6 @@ if 'scale' not in st.session_state:
 @st.cache_data(show_spinner = False)
 def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
    if all((xmin, xmax, ymin, ymax, pixel_size)):
-      # ORTHOPHOTO
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
       response_wms = requests.get(request_wms).content
@@ -89,14 +91,10 @@ def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
    else:
       return None, None
 
-# bouton de mise à jour de la zone
+# mise à jour de la zone
 orthophoto = gdf_cadastre = None
-load_button = None
-if st.session_state['refresh_bbox'] == 1:
-   load_button = st.sidebar.button('nouvelle zone')
 if load_button:
    st.session_state['bbox_selected'] = st.session_state['bbox']
-   st.session_state['refresh_bbox'] = (st.session_state['bbox_selected'] != st.session_state['bbox'])*1
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
    st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    with st.spinner('récupération des données IGN ...'):
@@ -151,7 +149,6 @@ def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
 
 # bouton de calcul
 fig = None
-calcul_button = st.sidebar.button('prédire')
 if calcul_button:
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
