@@ -101,7 +101,7 @@ if 'orthophoto' not in st.session_state:
 
 col1, col2 = st.sidebar.columns([1,1])
 with col1:
-  load_button = st.button('nouvelle zone')
+  load_button = st.button('données IGN')
 with col2:
   calcul_button = st.button('prédire')
 
