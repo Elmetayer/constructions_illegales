@@ -163,6 +163,13 @@ if calcul_button:
          gdf_cadastre,
          orthophoto)
 
+st.write(all((st.session_state['coords_bbox_Lambert'][0], 
+         st.session_state['coords_bbox_Lambert'][1], 
+         st.session_state['pixel_size'],
+         st.session_state['scale'],
+         gdf_cadastre,
+         orthophoto)))
+
 # affichage de la prédiction
 if fig is not None:
    st.plotly_chart(fig)
