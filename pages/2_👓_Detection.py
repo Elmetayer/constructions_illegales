@@ -64,7 +64,7 @@ if 'scale' not in st.session_state:
 
 @st.cache_data(show_spinner = False)
 def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
-   if (xmin, xmax, ymin, ymax, pixel_size) != (None, None, None, None, None):
+   if all(xmin, xmax, ymin, ymax, pixel_size):
       # ORTHOPHOTO
       request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
       xmin, ymin, xmax, ymax, pixel_size, pixel_size)
@@ -127,7 +127,7 @@ dict_models = {
 # taille en pixel
 pixel_size = st.sidebar.slider('Résolution (pixel)', PIXEL_SIZE_MIN, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
 if pixel_size:
-   if st.session_state['coords_bbox_Lambert'] != (None, None, None, None):
+   if all(st.session_state['coords_bbox_Lambert']):
       scale_round = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
       st.sidebar.caption('Echelle: {} m/pixel'.format(scale_round))
       if scale_round != PIXEL_SCALE_REF:
@@ -136,7 +136,7 @@ if pixel_size:
 # calcul de la prédiction
 @st.cache_data(show_spinner = False)
 def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
-   if (xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto) != (None, None, None, None, None, None):
+   if all(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
       _, _, _, _, _, _, fig = affiche_contours(
          orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
          (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
