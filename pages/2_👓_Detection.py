@@ -150,6 +150,7 @@ def get_fig_prev(xmin, ymin, pixel_size, scale, gdf_cadastre, orthophoto):
 # bouton de calcul
 fig = None
 if calcul_button:
+   st.write('test calcul')
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
       st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
