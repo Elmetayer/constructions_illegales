@@ -121,6 +121,8 @@ if load_button:
          st.session_state['coords_bbox_Lambert'][2], 
          st.session_state['coords_bbox_Lambert'][3], 
          st.session_state['pixel_size'])
+      st.session_state['fig'] = None
+
 
 ##############
 # prédiction #
