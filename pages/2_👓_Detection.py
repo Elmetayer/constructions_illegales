@@ -170,8 +170,9 @@ if calcul_button:
 # affichage de la prédiction
 if st.session_state['fig'] is not None:
    if st.session_state['gdf_cadastre'] is not None:
-      shapes_ref = st.session_state['gdf_cadastre']['geometry'].exterior
+      # shapes_ref = st.session_state['gdf_cadastre']['geometry'].exterior
       # shapes_ref = [shape for shape in shapes_ref if shape is not None]
-      st.write(len(shapes_ref))
+      # st.write(len(shapes_ref))
+      st.write(len(st.session_state['gdf_cadastre']))
    st.plotly_chart(st.session_state['fig'])
 
