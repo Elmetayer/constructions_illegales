@@ -169,5 +169,7 @@ if calcul_button:
 
 # affichage de la prédiction
 if st.session_state['fig'] is not None:
+   if st.session_state['gdf_cadastre'] is not None:
+      st.write(len(st.session_state['gdf_cadastre']))
    st.plotly_chart(st.session_state['fig'])
 
