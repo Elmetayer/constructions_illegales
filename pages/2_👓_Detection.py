@@ -37,19 +37,20 @@ def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
       request_wfs = 'https://data.geopf.fr/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typename=CADASTRALPARCELS.PARCELLAIRE_EXPRESS:batiment&outputformat=application/json&BBOX={},{},{},{}'.format(
     bounds.geometry[0].y, bounds.geometry[0].x, bounds.geometry[1].y, bounds.geometry[1].x)
       response_wfs = requests.get(request_wfs)
-      gdf_cadastre = gpd.GeoDataFrame.from_features(response_wfs.json()['features'])
+      cadastre = response_wfs.json()
+      return orthophoto, cadastre
+   else:
+      return None, None
+
+@st.cache_data(show_spinner = False)
+def get_fig_prev(xmin, ymin, pixel_size, scale, _orthophoto, cadastre):
+   if (xmin, ymin, pixel_size, scale, _orthophoto, cadastre) != (None, None, None, None, None, None):
+      gdf_cadastre = gpd.GeoDataFrame.from_features(cadastre['features'])
       if gdf_cadastre.shape[0]>0 :
          gdf_cadastre = gdf_cadastre.set_crs('EPSG:4326').to_crs('EPSG:2154')
          gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
          gdf_cadastre = gdf_cadastre.explode(index_parts = False)
          gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
-      return orthophoto, gdf_cadastre
-   else:
-      return None, None
-
-@st.cache_data(show_spinner = False)
-def get_fig_prev(xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre):
-   if (xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre) != (None, None, None, None, None, None):
       _, _, _, _, _, _, fig = affiche_contours(
          _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
          (xmin, ymin, scale), gdf_shapes_ref = _gdf_cadastre,
@@ -94,8 +95,8 @@ if 'scale' not in st.session_state:
       st.session_state['scale'] = None
 if 'fig' not in st.session_state:
    st.session_state['fig'] = None
-if 'gdf_cadastre' not in st.session_state:
-   st.session_state['gdf_cadastre'] = None
+if 'cadastre' not in st.session_state:
+   st.session_state['cadastre'] = None
 if 'orthophoto' not in st.session_state:
    st.session_state['orthophoto'] = None
 
@@ -115,16 +116,13 @@ if load_button:
    st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
    st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    with st.spinner('récupération des données IGN ...'):
-      st.session_state['orthophoto'], st.session_state['gdf_cadastre'] = get_IGN_data(
+      st.session_state['orthophoto'], st.session_state['cadastre'] = get_IGN_data(
          st.session_state['coords_bbox_Lambert'][0], 
          st.session_state['coords_bbox_Lambert'][1], 
          st.session_state['coords_bbox_Lambert'][2], 
          st.session_state['coords_bbox_Lambert'][3], 
          st.session_state['pixel_size'])
       st.session_state['fig'] = None
-
-if st.session_state['gdf_cadastre'] is not None:
-   st.write(len(st.session_state['gdf_cadastre']))
 
 ##############
 # prédiction #
@@ -165,7 +163,7 @@ if calcul_button:
          st.session_state['pixel_size'],
          st.session_state['scale'],
          st.session_state['orthophoto'],
-         st.session_state['gdf_cadastre'])
+         st.session_state['cadastre'])
 
 # affichage de la prédiction
 if st.session_state['fig'] is not None:
