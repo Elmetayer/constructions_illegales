@@ -48,8 +48,8 @@ def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
       return None, None
 
 @st.cache_data(show_spinner = False)
-def get_fig_prev(xmin, ymin, pixel_size, scale, _gdf_cadastre, _orthophoto):
-   if (xmin, ymin, pixel_size, scale, _gdf_cadastre, _orthophoto) != (None, None, None, None, None, None):
+def get_fig_prev(xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre):
+   if (xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre) != (None, None, None, None, None, None):
       _, _, _, _, _, _, fig = affiche_contours(
          _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
          (xmin, ymin, scale), gdf_shapes_ref = _gdf_cadastre,
@@ -164,8 +164,8 @@ if calcul_button:
          st.session_state['coords_bbox_Lambert'][1], 
          st.session_state['pixel_size'],
          st.session_state['scale'],
-         st.session_state['gdf_cadastre'],
-         st.session_state['orthophoto'])
+         st.session_state['orthophoto'],
+         st.session_state['gdf_cadastre'])
 
 # affichage de la prédiction
 if st.session_state['fig'] is not None:
