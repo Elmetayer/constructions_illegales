@@ -123,8 +123,8 @@ if load_button:
          st.session_state['pixel_size'])
       st.session_state['fig'] = None
 
-if st.session_state['orthophoto'] is not None:
-   st.write(len(st.session_state['orthophoto']))
+if st.session_state['gdf_cadastre'] is not None:
+   st.write(len(st.session_state['gdf_cadastre']))
 
 ##############
 # prédiction #
