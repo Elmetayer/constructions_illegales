@@ -44,8 +44,11 @@ if 'orthophoto' not in st.session_state:
 # données IGN #
 #################
    
+container_IGN = st.sidebar.container(border=True)
+   
 # taille en pixel
-pixel_size = st.sidebar.slider('Taille (pixel)', min_value = PIXEL_SIZE_MIN, max_value = PIXEL_SIZE_MAX, value = st.session_state['pixel_size'], step = 100)
+with container_IGN:
+   pixel_size = st.sidebar.slider('Taille (pixel)', min_value = PIXEL_SIZE_MIN, max_value = PIXEL_SIZE_MAX, value = st.session_state['pixel_size'], step = 100)
 if pixel_size:
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
@@ -53,7 +56,8 @@ if pixel_size:
       st.sidebar.caption('Echelle: {} m/pixel'.format(round(st.session_state['scale'], 1)))
 
 # chargement des données
-load_button = st.sidebar.button('données IGN')
+with container_IGN:
+   load_button = st.sidebar.button('données IGN')
 if load_button:
    if 'bbox' in st.session_state:
       st.session_state['bbox_selected'] = st.session_state['bbox']
