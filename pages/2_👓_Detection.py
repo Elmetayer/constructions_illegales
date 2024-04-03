@@ -124,11 +124,13 @@ model_Unet = getmodel_Unet()
 dict_models = {
    'YOLOv8' : {
       'predict_function' : predict_YOLOv8, 
-      'model' : model_YOLO
+      'model' : model_YOLO,
+      'size' : 512
    },
    'Unet' : {
       'predict_function' : predict_Unet, 
-      'model' : model_Unet
+      'model' : model_Unet,
+      'size' : (512, 512)
    }
 }
 
@@ -153,7 +155,7 @@ if calcul_button:
          def get_fig_prev(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre, model_predict, seuil_conf, seuil_iou, seuil_area):
             if all((X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
                _, _, _, _, _, _, fig = affiche_contours(
-                  _orthophoto, dict_models[model_predict]['predict_function'], dict_models[model_predict]['model'], SIZE_YOLO, 
+                  _orthophoto, dict_models[model_predict]['predict_function'], dict_models[model_predict]['model'], dict_models[model_predict]['size'], 
                   (X0, YO, scale), gdf_shapes_ref = _gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = seuil_conf, seuil_iou = seuil_iou,
