@@ -140,7 +140,7 @@ dict_models = {
 }
 
 # taille en pixel
-pixel_size = st.sidebar.slider('Taille (pixel)', PIXEL_SIZE_MIN, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
+pixel_size = st.sidebar.slider('Taille (pixel)', min_value = PIXEL_SIZE_MIN, max_value = PIXEL_SIZE_MAX, value = st.session_state['pixel_size'], step = 100)
 if pixel_size:
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
