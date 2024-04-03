@@ -89,10 +89,6 @@ if load_button:
                return orthophoto, gdf_cadastre
             else:
                return None, None
-         st.write(st.session_state['coords_bbox_Lambert'][0])
-         st.write(st.session_state['coords_bbox_Lambert'][1]) 
-         st.write(st.session_state['coords_bbox_Lambert'][2]) 
-         st.write(st.session_state['coords_bbox_Lambert'][3])
          st.session_state['orthophoto'], st.session_state['cadastre'] = get_IGN_data(
             st.session_state['coords_bbox_Lambert'][0], 
             st.session_state['coords_bbox_Lambert'][1], 
