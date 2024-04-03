@@ -40,18 +40,12 @@ if 'cadastre' not in st.session_state:
 if 'orthophoto' not in st.session_state:
    st.session_state['orthophoto'] = None
 
-
-inter1, col1, inter2, col2, inter3 = st.sidebar.columns([1, 6, 1, 4, 1])
-with col1:
-  load_button = st.button('données IGN')
-with col2:
-  calcul_button = st.button('prédire')
-
 #################
 # données IGN #
 #################
 
-# mise à jour des données IGN
+# chargement des données IGN
+load_button = st.button('données IGN')
 if load_button:
    if 'bbox' in st.session_state:
       st.session_state['bbox_selected'] = st.session_state['bbox']
@@ -124,6 +118,7 @@ seuil_iou = st.sidebar.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, v
 seuil_area = st.sidebar.slider('Seuil de surface', min_value = 0, max_value = 500, value = 10, step = 10)
 
 # bouton de calcul
+calcul_button = st.button('prédire')
 if calcul_button:
    if all((st.session_state['coords_bbox_Lambert'], 
           st.session_state['pixel_size'],

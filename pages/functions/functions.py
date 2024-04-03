@@ -120,7 +120,7 @@ def affiche_contours(
     image, predict_function, model, size_model, coord_transform, gdf_shapes_ref, resolution_target = (1000, 1000),
     seuil = 0.05, seuil_iou = 0.01, 
     seuil_area = 10,
-    tolerance_polygone = 0.1):
+    tolerance_polygone = 0.1, tolerance_display = 1):
   '''
   fonction qui calcule les IoU des formes prédites par rapport à des formes de référence
   utilise les mêmes arguements que compare_ligne, avec en plus :
@@ -246,7 +246,7 @@ def affiche_contours(
   i_pred = 0
   i_pred_delta = 0
   for i, (shape, iou, rapprochement) in enumerate(zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements)):
-    list_x, list_y = shape.xy
+    list_x, list_y = shape.simplify(tolerance_display).xy
     if iou <= seuil_iou:
       shape_traces_to_plot.append(
         go.Scatter(
