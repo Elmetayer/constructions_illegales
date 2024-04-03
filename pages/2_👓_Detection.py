@@ -136,11 +136,11 @@ if calcul_button:
           st.session_state['cadastre'] is not None)):
       with st.spinner('calcul de la prédiction ...'):
          @st.cache_data(show_spinner = False)
-         def get_fig_prev(X0, YO, pixel_size, scale, orthophoto, gdf_cadastre):
-            if all((X0, YO, pixel_size, scale, orthophoto, gdf_cadastre is not None)):
+         def get_fig_prev(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre):
+            if all((X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
                _, _, _, _, _, _, fig = affiche_contours(
-                  orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-                  (X0, YO, scale), gdf_shapes_ref = gdf_cadastre,
+                  _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
+                  (X0, YO, scale), gdf_shapes_ref = _gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = seuil_conf, seuil_iou = seuil_iou,
                   seuil_area = seuil_area,
