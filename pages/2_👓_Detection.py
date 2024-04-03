@@ -73,8 +73,8 @@ if load_button:
                request_wfs = 'https://data.geopf.fr/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typename=CADASTRALPARCELS.PARCELLAIRE_EXPRESS:batiment&outputformat=application/json&BBOX={},{},{},{}'.format(
             bounds.geometry[0].y, bounds.geometry[0].x, bounds.geometry[1].y, bounds.geometry[1].x)
                response_wfs = requests.get(request_wfs)
-               cadastre = response_wfs.json()
-               return orthophoto, cadastre
+               gdf_cadastre = gpd.GeoDataFrame.from_features(response_wfs.json()['features'])
+               return orthophoto, gdf_cadastre
             else:
                return None, None
          st.session_state['orthophoto'], st.session_state['cadastre'] = get_IGN_data(
@@ -87,7 +87,6 @@ if load_button:
          st.session_state['fig'] = None
    else:
       st.write('⚠️ zone non sélectionnée')
-
 
 ##############
 # prédiction #
