@@ -97,7 +97,7 @@ if 'orthophoto' not in st.session_state:
    st.session_state['orthophoto'] = None
 
 
-inter1, col1, inter2, col2, inter3 = st.sidebar.columns([1, 5, 1, 4, 1])
+inter1, col1, inter2, col2, inter3 = st.sidebar.columns([1, 6, 1, 4, 1])
 with col1:
   load_button = st.button('données IGN')
 with col2:
