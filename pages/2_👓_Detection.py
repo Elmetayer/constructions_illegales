@@ -83,6 +83,7 @@ if load_button:
             st.session_state['coords_bbox_Lambert'][2], 
             st.session_state['coords_bbox_Lambert'][3], 
             st.session_state['pixel_size'])
+         st.write(st.session_state['orthophoto'].shape)
          st.session_state['fig'] = None
    else:
       st.write('⚠️ zone non sélectionnée')
