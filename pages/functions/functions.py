@@ -235,13 +235,15 @@ def affiche_contours(
         mode = 'lines',
         fill = 'toself',
         fillcolor = 'blue',
-        opacity = 0.4,
+        opacity = 0.4))
+    '''
         text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
         hoverinfo = 'text',
         name = 'référence',
         legendgroup = 'référence',
         showlegend = (i==0)))
-  
+    '''
+ 
   # formes prédites
   i_pred = 0
   i_pred_delta = 0
