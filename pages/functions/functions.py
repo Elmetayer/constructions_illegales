@@ -152,8 +152,6 @@ def affiche_contours(
 
   # utilisation des informations raster pour les coordonnées
   X0, Y0, coords_scale = coord_transform
-  raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
-                            0.0, -coords_scale, Y0 + coords_scale*resolution_target[1])
   bounds = rasterio.coords.BoundingBox(X0, Y0, X0 + coords_scale*resolution_target[0], Y0 + coords_scale*resolution_target[1])
 
   # Shapes référence
@@ -170,6 +168,8 @@ def affiche_contours(
   '''
 
   # Shapes prédiction
+  raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
+                                               0.0, coords_scale, Y0)
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
   shapes_xy = []
   shapes_predict = []
