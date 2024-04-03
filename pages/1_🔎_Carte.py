@@ -114,6 +114,7 @@ if bbox_size:
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
 if st.session_state['warning_adresse']:
     st.sidebar.warning(st.session_state['warning_adresse'])
+st.sidebar.write('adresse courante: <br>{}'.format(st.session_state['adresse_text']))
 
 # gestion des points de recherche
 update_button = None
@@ -132,8 +133,7 @@ if cancel_button:
     st.session_state['map_center'] = [st.session_state['map_center'][0]+EPSILON_COORD, st.session_state['map_center'][1]+EPSILON_COORD]
     st.rerun()
 
-# affichage de la carte et centrage sur l'adresse entrée
-st.write('adresse: {}'.format(st.session_state['adresse_text']))
+# centrage sur l'adresse entrée
 center_button = st.button('centrer la carte')
 if center_button:
     st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
