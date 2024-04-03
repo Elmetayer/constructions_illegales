@@ -140,11 +140,11 @@ if calcul_button:
           st.session_state['cadastre'] is not None)):
       with st.spinner('calcul de la prédiction ...'):
          #@st.cache_data(show_spinner = False)
-         def get_fig_prev(xmin, ymax, pixel_size, scale, orthophoto, gdf_cadastre):
-            if all((xmin, ymax, pixel_size, scale, orthophoto, gdf_cadastre is not None)):
+         def get_fig_prev(X0, YO, pixel_size, scale, orthophoto, gdf_cadastre):
+            if all((X0, YO, pixel_size, scale, orthophoto, gdf_cadastre is not None)):
                _, _, _, _, _, _, fig = affiche_contours(
                   orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-                  (xmin, ymax, scale), gdf_shapes_ref = gdf_cadastre,
+                  (X0, YO, scale), gdf_shapes_ref = gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = 0.05, seuil_iou = 0.01,
                   seuil_area = 10,
@@ -154,7 +154,7 @@ if calcul_button:
                return None
          st.session_state['fig'] = get_fig_prev(
             st.session_state['coords_bbox_Lambert'][0], 
-            st.session_state['coords_bbox_Lambert'][3], 
+            st.session_state['coords_bbox_Lambert'][1], 
             st.session_state['pixel_size'],
             st.session_state['scale'],
             st.session_state['orthophoto'],
