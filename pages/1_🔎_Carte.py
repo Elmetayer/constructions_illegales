@@ -76,7 +76,7 @@ ZOOM_DEFAUT = 14
 EPSILON_COORD = 0.00001
 
 if 'last_coords' not in st.session_state:
-    st.session_state['last_coords'] = [48.858370, 2.294481]
+    st.session_state['last_coords'] = CENTER_START
 if 'adresse_text' not in st.session_state:
     st.session_state['adresse_text'] = search_lat_lon(st.session_state['last_coords'])
 # convention pour la bbox : xmin, ymin, xmax, ymax
@@ -172,7 +172,7 @@ if st.session_state['bbox']:
     fg.add_child(polygon_folium_bbox)
 
 # affichage de la carte
-m = folium.Map(location = CENTER_START, zoom_start = ZOOM_DEFAUT)
+m = folium.Map(location = st.session_state['last_coords'], zoom_start = ZOOM_DEFAUT)
 if satellite:
     tile = folium.TileLayer(
             tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',

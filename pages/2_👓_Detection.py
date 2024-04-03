@@ -66,8 +66,8 @@ if load_button:
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
       with st.spinner('récupération des données IGN ...'):
          # @st.cache_data(show_spinner = False)
-         def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
-            if all((xmin, xmax, ymin, ymax, pixel_size)):
+         def get_IGN_data(xmin, ymin, xmax, ymax, pixel_size):
+            if all((xmin, ymin, xmax, ymax, pixel_size)):
                request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
                xmin, ymin, xmax, ymax, pixel_size, pixel_size)
                response_wms = requests.get(request_wms).content
