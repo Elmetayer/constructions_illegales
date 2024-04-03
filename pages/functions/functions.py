@@ -263,7 +263,8 @@ def affiche_contours(
       i_pred += 1
 
   # formes de référence
-  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
+  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements)):
+  #for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
     list_x, list_y = shape.xy
     shape_traces_to_plot.append(
       go.Scatter(
