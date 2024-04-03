@@ -30,7 +30,7 @@ if 'pixel_size' not in st.session_state:
    st.session_state['pixel_size'] = PIXEL_SIZE_DEFAULT
 if 'scale' not in st.session_state:
    if all(st.session_state['coords_bbox_Lambert']):
-      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
+      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][2] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    else:
       st.session_state['scale'] = None
 if 'fig' not in st.session_state:
@@ -52,7 +52,7 @@ with container_IGN:
 if pixel_size:
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
-      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
+      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][2] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
       with container_IGN:
          st.caption('Echelle: {} m/pixel'.format(round(st.session_state['scale'], 1)))
 
