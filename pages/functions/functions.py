@@ -113,12 +113,15 @@ def affiche_contours(
   # on enlève les shapes extérieurs à la dalle pour diminuer le volume de données inutiles
   img_bound = shapely.Polygon(((bounds.left, bounds.bottom), (bounds.right, bounds.bottom), (bounds.right, bounds.top), (bounds.left, bounds.top), (bounds.left, bounds.bottom)))
   try:
-    gdf_shapes_ref_copy['geometry'] = gdf_shapes_ref_copy['geometry'].intersection(img_bound)
-    gdf_shapes_ref_copy = gdf_shapes_ref_copy[
-      ~(gdf_shapes_ref_copy['geometry'].isna() | gdf_shapes_ref_copy['geometry'].is_empty)]
+    #gdf_shapes_ref_copy['geometry'] = gdf_shapes_ref_copy['geometry'].intersection(img_bound)
+    #gdf_shapes_ref_copy = gdf_shapes_ref_copy[
+    #  ~(gdf_shapes_ref_copy['geometry'].isna() | gdf_shapes_ref_copy['geometry'].is_empty)]
+    pass
   except:
     # si erreur, on fait un test simple
-    gdf_shapes_ref_copy = gdf_shapes_ref_copy[gdf_shapes_ref_copy['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
+    #gdf_shapes_ref_copy = gdf_shapes_ref_copy[gdf_shapes_ref_copy['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
+    pass
+    
 
   # Shapes prédiction
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
