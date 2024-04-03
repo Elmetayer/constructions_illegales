@@ -58,7 +58,7 @@ def get_bbox_Lambert(bbox):
         shapely.geometry.Point(bbox[2], bbox[3])]},
     crs = 'EPSG:4326')
   coords_bbox_Lambert = coords_bbox_WSG.to_crs('EPSG:2154')
-  return(coords_bbox_Lambert.geometry[0].x, coords_bbox_Lambert.geometry[1].x, coords_bbox_Lambert.geometry[0].y, coords_bbox_Lambert.geometry[1].y)
+  return(coords_bbox_Lambert.geometry[0].x, coords_bbox_Lambert.geometry[0].y, coords_bbox_Lambert.geometry[1].x, coords_bbox_Lambert.geometry[1].y)
 
 def calcul_ious_shapes(shapes_1_ext, shapes_2_ext, seuil_iou = 0):
   '''
