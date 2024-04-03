@@ -163,7 +163,6 @@ def affiche_contours(
     gdf_shapes_ref['geometry'] = gdf_shapes_ref['geometry'].intersection(img_bound)
     gdf_shapes_ref = gdf_shapes_ref[
       ~(gdf_shapes_ref['geometry'].isna() | gdf_shapes_ref['geometry'].is_empty)]
-    print('/////////////// {}'.format(gdf_shapes_ref.shape))
   except:
     # si erreur, on fait un test simple
     gdf_shapes_ref = gdf_shapes_ref[gdf_shapes_ref['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
@@ -222,6 +221,7 @@ def affiche_contours(
   # ajout des formes
   shape_traces_to_plot = []
   # formes de référence
+  '''
   for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
     list_x, list_y = shape.xy
     shape_traces_to_plot.append(
@@ -238,6 +238,7 @@ def affiche_contours(
         name = 'référence',
         legendgroup = 'référence',
         showlegend = (i==0)))
+  '''
   # formes prédites
   i_pred = 0
   i_pred_delta = 0
@@ -285,7 +286,7 @@ def affiche_contours(
     height = 600,
     width = 600)
 
-  return shapes_predict, shapes_ref, shapes_pred_ious, shapes_ref_ious, shapes_pred_rapprochements, shapes_ref_rapprochements, fig
+  return shapes_predict, shapes_ref, shapes_pred_ious, shapes_ref_ious, shapes_pred_rapprochements, shapes_ref_rapprochements, fig, gdf_shapes_ref.shape[0]
 
 def predict_YOLOv8(image, model, size_model = SIZE_YOLO, seuil = 0.01):
   '''

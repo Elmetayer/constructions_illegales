@@ -134,13 +134,14 @@ if calcul_button:
          @st.cache_data(show_spinner = False)
          def get_fig_prev(xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre):
             if all((xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
-               _, _, _, _, _, _, fig = affiche_contours(
+               _, _, _, _, _, _, fig, size_ref = affiche_contours(
                   _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
                   (xmin, ymin, scale), gdf_shapes_ref = _gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = 0.05, seuil_iou = 0.01,
                   seuil_area = 10,
                   tolerance_polygone = 0.1)
+               st.write(size_ref)
                return fig
             else:
                return None
