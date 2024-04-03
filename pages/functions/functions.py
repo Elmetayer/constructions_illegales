@@ -289,7 +289,7 @@ def affiche_contours(
     height = 600,
     width = 600)
 
-  return shapes_predict, shapes_ref, shapes_pred_ious, shapes_ref_ious, shapes_pred_rapprochements, shapes_ref_rapprochements, fig, gdf_shapes_ref.shape[0]
+  return shapes_predict, shapes_ref, shapes_pred_ious, shapes_ref_ious, shapes_pred_rapprochements, shapes_ref_rapprochements, fig, gdf_shapes_ref
 
 def predict_YOLOv8(image, model, size_model = SIZE_YOLO, seuil = 0.01):
   '''
