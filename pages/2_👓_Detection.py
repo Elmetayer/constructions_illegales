@@ -72,16 +72,13 @@ PIXEL_SIZE_DEFAULT = 1000
 PIXEL_SCALE_REF = 0.2
 SIZE_MAX = 1000
 
-if 'bbox_selected' not in st.session_state:
-   if 'bbox' not in st.session_state:
-      st.session_state['bbox_selected'] = None
-   else:
-      st.session_state['bbox_selected'] = st.session_state['bbox']
+if 'bbox' not in st.session_state:
+   st.session_state['bbox'] = None
 if 'coords_bbox_Lambert' not in st.session_state:
-   if st.session_state['bbox_selected'] is None:
+   if st.session_state['bbox'] is None:
       st.session_state['coords_bbox_Lambert'] = (None, None, None, None)
    else:
-      st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+      st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox'])
 if 'pixel_size' not in st.session_state:
    st.session_state['pixel_size'] = PIXEL_SIZE_DEFAULT
 if 'scale' not in st.session_state:
@@ -110,8 +107,7 @@ with col2:
 # mise à jour des données IGN
 if load_button:
    if all((st.session_state['bbox'], st.session_state['pixel_size'])):
-      st.session_state['bbox_selected'] = st.session_state['bbox']
-      st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+      st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox'])
       with st.spinner('récupération des données IGN ...'):
          st.session_state['orthophoto'], st.session_state['cadastre'] = get_IGN_data(
             st.session_state['coords_bbox_Lambert'][0], 
