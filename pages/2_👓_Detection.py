@@ -114,24 +114,6 @@ def getmodel_YOLO():
     return YOLO('models/YOLOv8_20240124_bruno.pt')
 model_YOLO = getmodel_YOLO()
 
-'''
-# modèle Segformer  
-@st.cache_resource
-def getmodel_SegFormer():
-   path_model_saved = 'models/segformer'
-   id2label = {0: "outer", 1: "inner", 2: "border"}
-   label2id = {label: id for id, label in id2label.items()}
-   num_labels = 3
-   model = TFSegformerForSemanticSegmentation.from_pretrained(
-      path_model_saved,
-      num_labels = num_labels,
-      id2label = id2label,
-      label2id = label2id,
-      ignore_mismatched_sizes=True)
-   return model
-model_segformer = getmodel_SegFormer()
-'''
-
 # modèle Unet  
 @st.cache_resource
 def getmodel_Unet():
