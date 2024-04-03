@@ -227,6 +227,7 @@ def affiche_contours(
   # formes de référence
   for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
     list_x, list_y = shape.xy
+    '''
     shape_traces_to_plot.append(
       go.Scatter(
         x = np.array(list_x),
@@ -235,8 +236,7 @@ def affiche_contours(
         mode = 'lines',
         fill = 'toself',
         fillcolor = 'blue',
-        opacity = 0.4))
-    '''
+        opacity = 0.4,
         text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
         hoverinfo = 'text',
         name = 'référence',
