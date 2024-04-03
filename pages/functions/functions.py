@@ -217,7 +217,7 @@ def affiche_contours(
       y = np.linspace(bounds.bottom, bounds.top, resolution_target[1]),
       title = '{} bâtiments référence<br>{} zones détectées'.format(
           str(nb_formes),
-          np.sum((np.array(shapes_pred_ious) <= seuil_iou) & (np.array(shapes_pred_rapprochements) == 0))),
+          np.sum(np.array(shapes_pred_ious) <= seuil_iou)),
       origin = 'lower')
   # ajout des formes
   shape_traces_to_plot = []
