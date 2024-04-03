@@ -224,7 +224,6 @@ def affiche_contours(
   # ajout des formes
   shape_traces_to_plot = []
 
-  '''
   # formes de référence
   for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
     list_x, list_y = shape.xy
@@ -280,7 +279,6 @@ def affiche_contours(
             legendgroup = 'prédiction',
             showlegend = (i_pred==0)))
       i_pred += 1
-  '''
 
   fig.add_traces(shape_traces_to_plot)
   # mise en forme
