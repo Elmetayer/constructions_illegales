@@ -169,7 +169,7 @@ def affiche_contours(
 
   # Shapes prédiction
   raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
-                                               0.0, coords_scale, Y0)
+                                               0.0, -coords_scale, Y0 + coords_scale*resolution_target[1])
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
   shapes_xy = []
   shapes_predict = []
