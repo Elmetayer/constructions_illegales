@@ -158,6 +158,7 @@ def affiche_contours(
 
   # Shapes référence
   # on enlève les shapes extérieurs à la dalle pour diminuer le volume de données inutiles
+  '''
   img_bound = shapely.Polygon(((bounds.left, bounds.bottom), (bounds.right, bounds.bottom), (bounds.right, bounds.top), (bounds.left, bounds.top), (bounds.left, bounds.bottom)))
   try:
     gdf_shapes_ref['geometry'] = gdf_shapes_ref['geometry'].intersection(img_bound)
@@ -166,7 +167,7 @@ def affiche_contours(
   except:
     # si erreur, on fait un test simple
     gdf_shapes_ref = gdf_shapes_ref[gdf_shapes_ref['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
-  
+  '''
 
   # Shapes prédiction
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
@@ -222,7 +223,6 @@ def affiche_contours(
   # ajout des formes
   shape_traces_to_plot = []
   # formes de référence
-  '''
   for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
     list_x, list_y = shape.xy
     shape_traces_to_plot.append(
@@ -239,7 +239,7 @@ def affiche_contours(
         name = 'référence',
         legendgroup = 'référence',
         showlegend = (i==0)))
-  '''
+  
   # formes prédites
   i_pred = 0
   i_pred_delta = 0
