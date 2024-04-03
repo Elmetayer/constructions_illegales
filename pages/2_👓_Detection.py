@@ -64,6 +64,10 @@ if load_button:
       st.session_state['bbox_selected'] = st.session_state['bbox']
    if all((st.session_state['bbox_selected'], st.session_state['pixel_size'])):
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+      st.write(st.session_state['coords_bbox_Lambert'][0])
+      st.write(st.session_state['coords_bbox_Lambert'][1])
+      st.write(st.session_state['coords_bbox_Lambert'][2])
+      st.write(st.session_state['coords_bbox_Lambert'][3])
       with st.spinner('récupération des données IGN ...'):
          # @st.cache_data(show_spinner = False)
          def get_IGN_data(xmin, ymin, xmax, ymax, pixel_size):
