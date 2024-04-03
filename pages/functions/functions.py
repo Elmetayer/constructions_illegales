@@ -163,12 +163,11 @@ def affiche_contours(
     gdf_shapes_ref['geometry'] = gdf_shapes_ref['geometry'].intersection(img_bound)
     gdf_shapes_ref = gdf_shapes_ref[
       ~(gdf_shapes_ref['geometry'].isna() | gdf_shapes_ref['geometry'].is_empty)]
-    print('/////////////// {}'.format(df_shapes_ref.shape))
+    print('/////////////// {}'.format(gdf_shapes_ref.shape))
   except:
     # si erreur, on fait un test simple
     gdf_shapes_ref = gdf_shapes_ref[gdf_shapes_ref['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
-
-    
+  
   # Shapes prédiction
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
   shapes_xy = []
