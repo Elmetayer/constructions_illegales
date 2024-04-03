@@ -133,17 +133,11 @@ if calcul_button:
           st.session_state['cadastre'] is not None)):
       with st.spinner('calcul de la prédiction ...'):
          @st.cache_data(show_spinner = False)
-         def get_fig_prev(xmin, ymin, pixel_size, scale, _orthophoto, cadastre):
-            if (xmin, ymin, pixel_size, scale, _orthophoto, cadastre) != (None, None, None, None, None, None):
-               gdf_cadastre = gpd.GeoDataFrame.from_features(cadastre['features'])
-               if gdf_cadastre.shape[0]>0 :
-                  gdf_cadastre = gdf_cadastre.set_crs('EPSG:4326').to_crs('EPSG:2154')
-                  gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
-                  gdf_cadastre = gdf_cadastre.explode(index_parts = False)
-                  gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
+         def get_fig_prev(xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre):
+            if all((xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
                _, _, _, _, _, _, fig = affiche_contours(
                   _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-                  (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
+                  (xmin, ymin, scale), gdf_shapes_ref = _gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = 0.05, seuil_iou = 0.01,
                   seuil_area = 10,
