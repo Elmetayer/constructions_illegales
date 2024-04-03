@@ -145,8 +145,6 @@ if calcul_button:
                   seuil = 0.05, seuil_iou = 0.01,
                   seuil_area = 10,
                   tolerance_polygone = 0.1)
-               st.write(shapes_predict)
-               st.write(shapes_ref)
                return fig
             else:
                return None

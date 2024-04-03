@@ -229,8 +229,8 @@ def affiche_contours(
     list_x, list_y = shape.xy
     shape_traces_to_plot.append(
       go.Scatter(
-        x = np.array(list_x)[-2],
-        y = np.array(list_y)[-2]))
+        x = np.array(list_x)[:2],
+        y = np.array(list_y)[:2]))
     '''
         line = dict(color='black', width=1),
         mode = 'lines',
