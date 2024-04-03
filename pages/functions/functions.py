@@ -157,16 +157,15 @@ def affiche_contours(
   bounds = rasterio.coords.BoundingBox(X0, Y0, X0 + coords_scale*resolution_target[0], Y0 + coords_scale*resolution_target[1])
 
   # Shapes référence
-  gdf_shapes_ref_copy = gdf_shapes_ref.copy()
   # on enlève les shapes extérieurs à la dalle pour diminuer le volume de données inutiles
   img_bound = shapely.Polygon(((bounds.left, bounds.bottom), (bounds.right, bounds.bottom), (bounds.right, bounds.top), (bounds.left, bounds.top), (bounds.left, bounds.bottom)))
   try:
-    gdf_shapes_ref_copy['geometry'] = gdf_shapes_ref_copy['geometry'].intersection(img_bound)
-    gdf_shapes_ref_copy = gdf_shapes_ref_copy[
-      ~(gdf_shapes_ref_copy['geometry'].isna() | gdf_shapes_ref_copy['geometry'].is_empty)]
+    gdf_shapes_ref['geometry'] = gdf_shapes_ref['geometry'].intersection(img_bound)
+    gdf_shapes_ref = gdf_shapes_ref[
+      ~(gdf_shapes_ref['geometry'].isna() | gdf_shapes_ref['geometry'].is_empty)]
   except:
     # si erreur, on fait un test simple
-    gdf_shapes_ref_copy = gdf_shapes_ref_copy[gdf_shapes_ref_copy['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
+    gdf_shapes_ref = gdf_shapes_ref[gdf_shapes_ref['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
     
   # Shapes prédiction
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
@@ -200,7 +199,7 @@ def affiche_contours(
   gdf_shapes_predict = gpd.GeoDataFrame(geometry = gpd.GeoSeries(shapes_predict_holes, crs=2154), crs=2154)
 
   # Intersection et IoUs
-  shapes_ref = gdf_shapes_ref_copy['geometry'].exterior
+  shapes_ref = gdf_shapes_ref['geometry'].exterior
   shapes_ref = [shape for shape in shapes_ref if shape is not None]
   shapes_predict = gdf_shapes_predict['geometry'].exterior
   shapes_predict = [shape for shape in shapes_predict if shape is not None]
