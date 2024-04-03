@@ -169,6 +169,8 @@ def affiche_contours(
     gdf_shapes_ref = gdf_shapes_ref[gdf_shapes_ref['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
   '''
 
+  gdf_shapes_ref = gdf_shapes_ref.head(1)
+
   # Shapes prédiction
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
   shapes_xy = []
