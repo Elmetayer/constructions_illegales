@@ -228,12 +228,12 @@ def affiche_contours(
   i_pred = 0
   i_pred_delta = 0
   for shape, iou, rapprochement in zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements):
-    list_x, list_y = shape.xy
+    x_coords, y_coords = shape.xy
     if iou <= seuil_iou:
       shape_traces_to_plot.append(
         go.Scatter(
-            x = np.array(list_x),
-            y = np.array(list_y),
+            x = x_coords.tolist(),
+            y = y_coords.tolist(),
             line = dict(color='black', width=1),
             mode = 'lines',
             fill = 'toself',
@@ -248,8 +248,8 @@ def affiche_contours(
     else:
       shape_traces_to_plot.append(
         go.Scatter(
-            x = np.array(list_x),
-            y = np.array(list_y),
+            x = x_coords.tolist(),
+            y = y_coords.tolist(),
             line = dict(color='black', width=1),
             mode = 'lines',
             fill = 'toself',
