@@ -114,7 +114,7 @@ if bbox_size:
 adresse = st.sidebar.text_input('Adresse', key = 'adresse_field', on_change = search_adresse, placeholder = 'entrer une adresse', label_visibility = 'collapsed')
 if st.session_state['warning_adresse']:
     st.sidebar.warning(st.session_state['warning_adresse'])
-st.sidebar.caption('**adresse validée**<br>{}'.format(st.session_state['adresse_text']))
+st.sidebar.caption(st.session_state['adresse_text'])
 
 # gestion des points de recherche
 update_button = None
