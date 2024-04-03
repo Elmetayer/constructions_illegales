@@ -168,7 +168,6 @@ def affiche_contours(
     # si erreur, on fait un test simple
     gdf_shapes_ref = gdf_shapes_ref[gdf_shapes_ref['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
   '''
-  gdf_shapes_ref = gdf_shapes_ref.head(1)
 
   # Shapes prédiction
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
@@ -205,7 +204,8 @@ def affiche_contours(
   shapes_ref = gdf_shapes_ref['geometry'].exterior
   shapes_ref = [shape for shape in shapes_ref if shape is not None]
   shapes_predict = gdf_shapes_predict['geometry'].exterior
-  shapes_predict = [shape for shape in shapes_predict if shape is not None]
+  # pour les formes prédites, on simplifie
+  shapes_predict = [shape.simplify(tolerance_display) for shape in shapes_predict if shape is not None]
   # iou des prédictions
   shapes_pred_ious, shapes_pred_rapprochements, _ = calcul_ious_shapes(shapes_predict, shapes_ref)
   # iou des réferences
@@ -234,7 +234,7 @@ def affiche_contours(
         line = dict(color='black', width=1),
         mode = 'lines',
         fill = 'toself',
-        fillcolor = '#80b1d3',
+        fillcolor = 'blue',
         opacity = 0.4,
         text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
         hoverinfo = 'text',
@@ -245,8 +245,8 @@ def affiche_contours(
   # formes prédites
   i_pred = 0
   i_pred_delta = 0
-  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements)):
-    list_x, list_y = shape.simplify(tolerance_display).xy
+  for shape, iou, rapprochement in zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements):
+    list_x, list_y = shape.xy
     if iou <= seuil_iou:
       shape_traces_to_plot.append(
         go.Scatter(
