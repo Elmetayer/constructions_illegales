@@ -286,8 +286,8 @@ def affiche_contours(
     xaxis=dict(title='X en Lambert93'),
     yaxis=dict(title='Y en Lambert93'),
     plot_bgcolor='white',
-    height = 600,
-    width = 600)
+    height = 1200,
+    width = 1200)
   fig.update_xaxes(range = [bounds.left, bounds.right])
   fig.update_yaxes(range = [bounds.bottom, bounds.top])
 
