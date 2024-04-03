@@ -7,6 +7,8 @@ from io import BytesIO
 import shapely
 import geopandas as gpd
 
+from pages.functions.functions import *
+
 def search_adresse():
     '''
     fonction qui renvoie les coordonnées à partir d'une saisie d'adresse en texte libre
