@@ -116,6 +116,14 @@ dict_models = {
    'YOLOv8' : {
       'predict_function' : predict_YOLOv8, 
       'model' : model_YOLO
+   },
+   'Unet' : {
+      'predict_function' : predict_YOLOv8, 
+      'model' : model_YOLO
+   },
+   'Segformer' : {
+      'predict_function' : predict_YOLOv8, 
+      'model' : model_YOLO
    }
 }
 
@@ -137,10 +145,10 @@ if calcul_button:
           st.session_state['cadastre'] is not None)):
       with st.spinner('calcul de la prédiction ...'):
          @st.cache_data(show_spinner = False)
-         def get_fig_prev(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre, seuil_conf, seuil_iou, seuil_area):
+         def get_fig_prev(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre, model_predict, seuil_conf, seuil_iou, seuil_area):
             if all((X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
                _, _, _, _, _, _, fig = affiche_contours(
-                  _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
+                  _orthophoto, dict_models[model_predict]['predict_function'], dict_models[model_predict]['model'], SIZE_YOLO, 
                   (X0, YO, scale), gdf_shapes_ref = _gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = seuil_conf, seuil_iou = seuil_iou,
@@ -156,6 +164,7 @@ if calcul_button:
             st.session_state['scale'],
             st.session_state['orthophoto'],
             st.session_state['cadastre'],
+            model_predict,
             seuil_conf, seuil_iou, seuil_area)
    else:
       st.write('⚠️ données IGN absentes')
