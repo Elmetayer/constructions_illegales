@@ -58,7 +58,7 @@ if load_button:
    if all((st.session_state['bbox_selected'], st.session_state['pixel_size'])):
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
       with st.spinner('récupération des données IGN ...'):
-         @st.cache_data(show_spinner = False)
+         # @st.cache_data(show_spinner = False)
          def get_IGN_data(xmin, xmax, ymin, ymax, pixel_size):
             if all((xmin, xmax, ymin, ymax, pixel_size)):
                request_wms = 'https://data.geopf.fr/wms-r?LAYERS=ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
@@ -131,12 +131,12 @@ if calcul_button:
           st.session_state['orthophoto'],
           st.session_state['cadastre'] is not None)):
       with st.spinner('calcul de la prédiction ...'):
-         @st.cache_data(show_spinner = False)
-         def get_fig_prev(xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre):
-            if all((xmin, ymin, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
+         #@st.cache_data(show_spinner = False)
+         def get_fig_prev(xmin, ymin, pixel_size, scale, orthophoto, gdf_cadastre):
+            if all((xmin, ymin, pixel_size, scale, orthophoto, gdf_cadastre is not None)):
                _, _, _, _, _, _, fig, size_ref = affiche_contours(
-                  _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
-                  (xmin, ymin, scale), gdf_shapes_ref = _gdf_cadastre,
+                  orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
+                  (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = 0.05, seuil_iou = 0.01,
                   seuil_area = 10,
