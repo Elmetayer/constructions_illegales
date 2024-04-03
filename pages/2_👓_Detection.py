@@ -156,5 +156,5 @@ if calcul_button:
 
 # affichage de la prédiction
 if st.session_state['fig'] is not None:
-   st.plotly_chart(st.session_state['fig'])
+   st.plotly_chart(st.session_state['fig'], use_container_width = True)
 
