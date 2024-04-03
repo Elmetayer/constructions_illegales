@@ -48,7 +48,7 @@ container_IGN = st.sidebar.container(border=True)
    
 # taille en pixel
 with container_IGN:
-   pixel_size = st.sidebar.slider('Taille (pixel)', min_value = PIXEL_SIZE_MIN, max_value = PIXEL_SIZE_MAX, value = st.session_state['pixel_size'], step = 100)
+   pixel_size = st.slider('Taille (pixel)', min_value = PIXEL_SIZE_MIN, max_value = PIXEL_SIZE_MAX, value = st.session_state['pixel_size'], step = 100)
 if pixel_size:
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
@@ -57,7 +57,7 @@ if pixel_size:
 
 # chargement des données
 with container_IGN:
-   load_button = st.sidebar.button('données IGN')
+   load_button = st.button('données IGN')
 if load_button:
    if 'bbox' in st.session_state:
       st.session_state['bbox_selected'] = st.session_state['bbox']
