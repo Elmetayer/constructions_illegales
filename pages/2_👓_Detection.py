@@ -136,7 +136,7 @@ if calcul_button:
           st.session_state['cadastre'] is not None)):
       with st.spinner('calcul de la prédiction ...'):
          @st.cache_data(show_spinner = False)
-         def get_fig_prev(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre):
+         def get_fig_prev(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre, seuil_conf, seuil_iou, seuil_area):
             if all((X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
                _, _, _, _, _, _, fig = affiche_contours(
                   _orthophoto, predict_YOLOv8, model_YOLO, SIZE_YOLO, 
@@ -154,7 +154,8 @@ if calcul_button:
             st.session_state['pixel_size'],
             st.session_state['scale'],
             st.session_state['orthophoto'],
-            st.session_state['cadastre'])
+            st.session_state['cadastre'],
+            seuil_conf, seuil_iou, seuil_area)
    else:
       st.write('⚠️ données IGN absentes')
 
