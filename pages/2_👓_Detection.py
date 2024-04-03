@@ -118,7 +118,7 @@ seuil_iou = st.sidebar.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, v
 seuil_area = st.sidebar.slider('Seuil de surface', min_value = 0, max_value = 500, value = 10, step = 10)
 
 # bouton de calcul
-calcul_button = st.button('prédire')
+calcul_button = st.sidebar.button('prédire')
 if calcul_button:
    if all((st.session_state['coords_bbox_Lambert'], 
           st.session_state['pixel_size'],
