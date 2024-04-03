@@ -270,10 +270,6 @@ def affiche_contours(
       go.Scatter(
         x = x_coords.tolist(),
         y = y_coords.tolist(),
-        name = 'référence',
-        legendgroup = 'référence',
-        showlegend = (i==0)))
-    '''
         line = dict(color='black', width=1),
         mode = 'lines',
         fill = 'toself',
@@ -281,7 +277,9 @@ def affiche_contours(
         opacity = 0.4,
         text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
         hoverinfo = 'text',
-    '''
+        name = 'référence',
+        legendgroup = 'référence',
+        showlegend = (i==0)))
 
   fig.add_traces(shape_traces_to_plot)
   # mise en forme
