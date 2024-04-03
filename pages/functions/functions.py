@@ -229,8 +229,7 @@ def affiche_contours(
   # formes prédites
   i_pred = 0
   i_pred_delta = 0
-  #for shape, iou, rapprochement in zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements):
-  for shape, iou, rapprochement in zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements):
+  for shape, iou, rapprochement in zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements):
     x_coords, y_coords = shape.xy
     if iou <= seuil_iou:
       shape_traces_to_plot.append(
@@ -266,8 +265,8 @@ def affiche_contours(
       i_pred += 1
 
   # formes de référence
-  #for i, (shape, iou, rapprochement) in enumerate(zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements)):
-  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
+  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements)):
+  #for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
     x_coords, y_coords = shape.xy
     shape_traces_to_plot.append(
       go.Scatter(
