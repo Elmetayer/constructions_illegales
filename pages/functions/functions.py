@@ -9,10 +9,6 @@ from PIL import ImageOps
 from skimage.measure import find_contours, approximate_polygon, subdivide_polygon, label
 import tensorflow as tf
 from tensorflow import image as tf_image
-from tensorflow import data as tf_data
-from tensorflow import io as tf_io
-
-SIZE_YOLO = 512
 
 def get_bbox(coords_center, size, mode):
   '''
@@ -290,15 +286,3 @@ def affiche_contours(
   fig.update_yaxes(range = [bounds.bottom, bounds.top])
 
   return shapes_predict, shapes_ref, shapes_pred_ious, shapes_ref_ious, shapes_pred_rapprochements, shapes_ref_rapprochements, fig
-
-def predict_YOLOv8(image, model, size_model = SIZE_YOLO, seuil = 0.01):
-  '''
-  on ne prédit que la classe "0", bâtiments
-  '''
-  res = model.predict(image, save = False, classes = [0], imgsz = size_model, conf = seuil, verbose=False)
-  if len(res[0]) > 0:
-    mask = np.sum(res[0].masks.data.cpu().numpy(), 0)
-    mask = np.clip(mask, 0, 1)
-  else:
-    mask = [np.zeros((size_model, size_model))]
-  return [mask]
