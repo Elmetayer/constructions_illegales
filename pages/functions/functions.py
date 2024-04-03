@@ -291,6 +291,8 @@ def affiche_contours(
     plot_bgcolor='white',
     height = 600,
     width = 600)
+  fig.update_xaxes(range = [bounds.left, bounds.right])
+  fig.update_yaxes(range = [bounds.bottom, bounds.top])
 
   return shapes_predict, shapes_ref, shapes_pred_ious, shapes_ref_ious, shapes_pred_rapprochements, shapes_ref_rapprochements, fig
 
