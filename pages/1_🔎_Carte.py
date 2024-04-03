@@ -59,39 +59,6 @@ def update_point():
         st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
         st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
     
-def get_bbox(coords_center, size, mode):
-    '''
-    fonction qui calcule les coordonnées xmin, ymin, xmax, ymax de la bounding box
-    à partir du point de référence, de la taille et du mode
-    '''
-    ccoords_center_WSG = gpd.GeoDataFrame(
-        {'Nom': ['centre'],
-        'geometry': [shapely.geometry.Point(coords_center[1], coords_center[0])]},
-        crs = 'EPSG:4326')
-    coords_center_Lambert = ccoords_center_WSG.to_crs('EPSG:2154')
-    if mode == 'haut/gauche':
-        bbox_Lambert = gpd.GeoDataFrame(
-            {'Nom': ['min', 'max'],
-            'geometry': [
-                shapely.geometry.Point(coords_center_Lambert.geometry[0].x, coords_center_Lambert.geometry[0].y - size),
-                shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size, coords_center_Lambert.geometry[0].y)]},
-            crs = 'EPSG:2154')
-    if mode == 'centre':
-        bbox_Lambert = gpd.GeoDataFrame(
-            {'Nom': ['min', 'max'],
-            'geometry': [
-                shapely.geometry.Point(coords_center_Lambert.geometry[0].x - size//2, coords_center_Lambert.geometry[0].y - size//2),
-                shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
-            crs = 'EPSG:2154')
-    bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
-    return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
-
-def get_bbox_center(bbox):
-    '''
-    renvoie le centre de la bounding box
-    '''
-    return([(bbox[1] + bbox[3])/2, (bbox[0] + bbox[2])/2])
-
 # titre de la page
 st.set_page_config(page_title='Carte', page_icon='🔎', layout = 'wide')
 

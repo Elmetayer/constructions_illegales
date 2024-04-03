@@ -14,6 +14,52 @@ from tensorflow import io as tf_io
 
 SIZE_YOLO = 512
 
+def get_bbox(coords_center, size, mode):
+  '''
+  fonction qui calcule les coordonnées xmin, ymin, xmax, ymax de la bounding box
+  à partir du point de référence, de la taille et du mode
+  '''
+  ccoords_center_WSG = gpd.GeoDataFrame(
+      {'Nom': ['centre'],
+      'geometry': [shapely.geometry.Point(coords_center[1], coords_center[0])]},
+      crs = 'EPSG:4326')
+  coords_center_Lambert = ccoords_center_WSG.to_crs('EPSG:2154')
+  if mode == 'haut/gauche':
+      bbox_Lambert = gpd.GeoDataFrame(
+          {'Nom': ['min', 'max'],
+          'geometry': [
+              shapely.geometry.Point(coords_center_Lambert.geometry[0].x, coords_center_Lambert.geometry[0].y - size),
+              shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size, coords_center_Lambert.geometry[0].y)]},
+          crs = 'EPSG:2154')
+  if mode == 'centre':
+      bbox_Lambert = gpd.GeoDataFrame(
+          {'Nom': ['min', 'max'],
+          'geometry': [
+              shapely.geometry.Point(coords_center_Lambert.geometry[0].x - size//2, coords_center_Lambert.geometry[0].y - size//2),
+              shapely.geometry.Point(coords_center_Lambert.geometry[0].x + size//2, coords_center_Lambert.geometry[0].y + size//2)]},
+          crs = 'EPSG:2154')
+  bbox_WSG = bbox_Lambert.to_crs('EPSG:4326')
+  return(bbox_WSG.geometry[0].x, bbox_WSG.geometry[0].y, bbox_WSG.geometry[1].x, bbox_WSG.geometry[1].y)
+
+def get_bbox_center(bbox):
+  '''
+  renvoie le centre de la bounding box
+  '''
+  return([(bbox[1] + bbox[3])/2, (bbox[0] + bbox[2])/2])
+
+def get_bbox_Lambert(bbox):
+  '''
+  fonction qui renvoie un gdf en Lambert à partir d'une bbox en WSG84
+  '''
+  coords_bbox_WSG = gpd.GeoDataFrame({
+    'Nom': ['min', 'max'],
+    'geometry': [
+        shapely.geometry.Point(bbox[0], bbox[1]),
+        shapely.geometry.Point(bbox[2], bbox[3])]},
+    crs = 'EPSG:4326')
+  coords_bbox_Lambert = coords_bbox_WSG.to_crs('EPSG:2154')
+  return(coords_bbox_Lambert.geometry[0].x, coords_bbox_Lambert.geometry[1].x, coords_bbox_Lambert.geometry[0].y, coords_bbox_Lambert.geometry[1].y)
+
 def calcul_ious_shapes(shapes_1_ext, shapes_2_ext, seuil_iou = 0):
   '''
   fonction qui calcule l'IoU des shapes_1_ext en cherchant à rapprocher les shapes_2_ext
@@ -51,24 +97,24 @@ def calcul_ious_shapes(shapes_1_ext, shapes_2_ext, seuil_iou = 0):
   return ious, rapprochements, selected_intersections
 
 def isInMap(xrange, yrange, bounds = False):
-    '''
-    fonction qui renvoie une autre fonction permettant de tester si une forme
-    est à l'intérieur d'un restangle défini par xrange, yrange
-    si l'argument "bounds" est mis à True, la fonction renvoyée réalise le test sur la base de l'emprise rectangulaire de la forme
-    sinon, la fonction renvoyée réalise le test sur la base du centroïd
-    l'argument "bounds" est à False par défaut
-    '''
-    def my_function(polynom):
-        if bounds:
-            minx, miny, maxx, maxy = polynom.bounds
-        else:
-            centroid_x, centroid_y = polynom.centroid.x, polynom.centroid.y
-            minx, miny, maxx, maxy = centroid_x, centroid_y, centroid_x, centroid_y
-        if xrange[0] < minx and xrange[1] > maxx and yrange[0] < miny and yrange[1] > maxy:
-            return(True)
-        else:
-            return(False)
-    return my_function
+  '''
+  fonction qui renvoie une autre fonction permettant de tester si une forme
+  est à l'intérieur d'un restangle défini par xrange, yrange
+  si l'argument "bounds" est mis à True, la fonction renvoyée réalise le test sur la base de l'emprise rectangulaire de la forme
+  sinon, la fonction renvoyée réalise le test sur la base du centroïd
+  l'argument "bounds" est à False par défaut
+  '''
+  def my_function(polynom):
+      if bounds:
+          minx, miny, maxx, maxy = polynom.bounds
+      else:
+          centroid_x, centroid_y = polynom.centroid.x, polynom.centroid.y
+          minx, miny, maxx, maxy = centroid_x, centroid_y, centroid_x, centroid_y
+      if xrange[0] < minx and xrange[1] > maxx and yrange[0] < miny and yrange[1] > maxy:
+          return(True)
+      else:
+          return(False)
+  return my_function
 
 def affiche_contours(
     image, predict_function, model, size_model, coord_transform, gdf_shapes_ref, resolution_target = (1000, 1000),
