@@ -168,6 +168,7 @@ def affiche_contours(
     # si erreur, on fait un test simple
     gdf_shapes_ref = gdf_shapes_ref[gdf_shapes_ref['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
   '''
+  gdf_shapes_ref = gdf_shapes_ref.head(1)
     
   # Shapes prédiction
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
@@ -223,8 +224,7 @@ def affiche_contours(
   # ajout des formes
   shape_traces_to_plot = []
   # formes de référence
-  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious,
-                                                      shapes_ref_rapprochements)):
+  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
     list_x, list_y = shape.xy
     shape_traces_to_plot.append(
       go.Scatter(
