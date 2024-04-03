@@ -68,9 +68,9 @@ st.set_page_config(page_title="Détection", page_icon="👓", layout = 'wide')
 # variables de session
 PIXEL_SIZE_MIN = 500
 PIXEL_SIZE_MAX = 2000
+PIXEL_SIZE_DEFAULT = 1000
 PIXEL_SCALE_REF = 0.2
 SIZE_MAX = 1000
-SIZE_YOLO = 512
 
 if 'bbox_selected' not in st.session_state:
    if 'bbox' not in st.session_state:
@@ -83,11 +83,7 @@ if 'coords_bbox_Lambert' not in st.session_state:
    else:
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
 if 'pixel_size' not in st.session_state:
-   if all(st.session_state['coords_bbox_Lambert']):
-      coords_size = st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0]
-   else:
-      coords_size = SIZE_MAX
-   st.session_state['pixel_size'] = min(PIXEL_SIZE_MAX, int(coords_size/PIXEL_SCALE_REF))
+   st.session_state['pixel_size'] = PIXEL_SIZE_DEFAULT
 if 'scale' not in st.session_state:
    if all(st.session_state['coords_bbox_Lambert']):
       st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
@@ -100,7 +96,8 @@ if 'cadastre' not in st.session_state:
 if 'orthophoto' not in st.session_state:
    st.session_state['orthophoto'] = None
 
-col1, col2 = st.sidebar.columns([1,1])
+
+inter1, col1, inter2, col2, inter3 = st.sidebar.columns([1, 5, 1, 4, 1])
 with col1:
   load_button = st.button('données IGN')
 with col2:
@@ -138,24 +135,21 @@ model_YOLO = getmodel_YOLO()
 dict_models = {
    'YOLOv8' : {
       'predict_function' : predict_YOLOv8, 
-      'model' : model_YOLO, 
-      'size' : SIZE_YOLO
+      'model' : model_YOLO
    }
 }
 
 # taille en pixel
-pixel_size = st.sidebar.slider('Résolution (pixel)', PIXEL_SIZE_MIN, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
+pixel_size = st.sidebar.slider('Taille (pixel)', PIXEL_SIZE_MIN, PIXEL_SIZE_MAX, st.session_state['pixel_size'], 100)
 if pixel_size:
+   st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
-      scale_round = round((st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/pixel_size, 1)
-      st.sidebar.caption('Echelle: {} m/pixel'.format(scale_round))
+      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
+      st.sidebar.caption('Echelle: {} m/pixel'.format(round(st.session_state['scale'], 1)))
 
 # bouton de calcul
 fig = None
 if calcul_button:
-   st.session_state['pixel_size'] = pixel_size
-   if all(st.session_state['coords_bbox_Lambert']):
-      st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
    with st.spinner('calcul de la prédiction ...'):
       st.session_state['fig'] = get_fig_prev(
          st.session_state['coords_bbox_Lambert'][0], 

@@ -12,6 +12,8 @@ from tensorflow import image as tf_image
 from tensorflow import data as tf_data
 from tensorflow import io as tf_io
 
+SIZE_YOLO = 512
+
 def calcul_ious_shapes(shapes_1_ext, shapes_2_ext, seuil_iou = 0):
   '''
   fonction qui calcule l'IoU des shapes_1_ext en cherchant à rapprocher les shapes_2_ext
@@ -70,7 +72,7 @@ def isInMap(xrange, yrange, bounds = False):
 
 def affiche_contours(
     image, predict_function, model, size_model, coord_transform, gdf_shapes_ref, resolution_target = (1000, 1000),
-    seuil = 0.05, seuil_iou = 0.01, delta_only = False,
+    seuil = 0.05, seuil_iou = 0.01, 
     seuil_area = 10,
     tolerance_polygone = 0.1):
   '''
@@ -113,16 +115,13 @@ def affiche_contours(
   # on enlève les shapes extérieurs à la dalle pour diminuer le volume de données inutiles
   img_bound = shapely.Polygon(((bounds.left, bounds.bottom), (bounds.right, bounds.bottom), (bounds.right, bounds.top), (bounds.left, bounds.top), (bounds.left, bounds.bottom)))
   try:
-    #gdf_shapes_ref_copy['geometry'] = gdf_shapes_ref_copy['geometry'].intersection(img_bound)
-    #gdf_shapes_ref_copy = gdf_shapes_ref_copy[
-    #  ~(gdf_shapes_ref_copy['geometry'].isna() | gdf_shapes_ref_copy['geometry'].is_empty)]
-    pass
+    gdf_shapes_ref_copy['geometry'] = gdf_shapes_ref_copy['geometry'].intersection(img_bound)
+    gdf_shapes_ref_copy = gdf_shapes_ref_copy[
+      ~(gdf_shapes_ref_copy['geometry'].isna() | gdf_shapes_ref_copy['geometry'].is_empty)]
   except:
     # si erreur, on fait un test simple
-    #gdf_shapes_ref_copy = gdf_shapes_ref_copy[gdf_shapes_ref_copy['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
-    pass
+    gdf_shapes_ref_copy = gdf_shapes_ref_copy[gdf_shapes_ref_copy['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
     
-
   # Shapes prédiction
   raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
   shapes_xy = []
@@ -167,7 +166,6 @@ def affiche_contours(
   # génération du graphique
   nb_formes = len(shapes_ref)
   fig = px.imshow(
-      #cv2.flip(raster_data, 0),
       ImageOps.flip(image),
       x = np.linspace(bounds.left, bounds.right, resolution_target[0]),
       y = np.linspace(bounds.bottom, bounds.top, resolution_target[1]),
@@ -177,25 +175,24 @@ def affiche_contours(
       origin = 'lower')
   # ajout des formes
   shape_traces_to_plot = []
-  if not delta_only:
-    # formes de référence
-    for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious,
-                                                        shapes_ref_rapprochements)):
-      list_x, list_y = shape.xy
-      shape_traces_to_plot.append(
-          go.Scatter(
-              x = np.array(list_x),
-              y = np.array(list_y),
-              line = dict(color='black', width=1),
-              mode = 'lines',
-              fill = 'toself',
-              fillcolor = '#80b1d3',
-              opacity = 0.4,
-              text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
-              hoverinfo = 'text',
-              name = 'référence',
-              legendgroup = 'référence',
-              showlegend = (i==0)))
+  # formes de référence
+  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious,
+                                                      shapes_ref_rapprochements)):
+    list_x, list_y = shape.xy
+    shape_traces_to_plot.append(
+      go.Scatter(
+        x = np.array(list_x),
+        y = np.array(list_y),
+        line = dict(color='black', width=1),
+        mode = 'lines',
+        fill = 'toself',
+        fillcolor = '#80b1d3',
+        opacity = 0.4,
+        text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
+        hoverinfo = 'text',
+        name = 'référence',
+        legendgroup = 'référence',
+        showlegend = (i==0)))
   # formes prédites
   i_pred = 0
   i_pred_delta = 0
@@ -217,7 +214,7 @@ def affiche_contours(
             legendgroup = 'écart',
             showlegend = (i_pred_delta==0)))
       i_pred_delta += 1
-    elif not delta_only:
+    else:
       shape_traces_to_plot.append(
         go.Scatter(
             x = np.array(list_x),
@@ -237,15 +234,15 @@ def affiche_contours(
   fig.add_traces(shape_traces_to_plot)
   # mise en forme
   fig.update_layout(
-      xaxis=dict(title='X en Lambert93'),
-      yaxis=dict(title='Y en Lambert93'),
-      plot_bgcolor='white',
-      height = 1200,
-      width = 1200)
+    xaxis=dict(title='X en Lambert93'),
+    yaxis=dict(title='Y en Lambert93'),
+    plot_bgcolor='white',
+    height = 1200,
+    width = 1200)
 
   return shapes_predict, shapes_ref, shapes_pred_ious, shapes_ref_ious, shapes_pred_rapprochements, shapes_ref_rapprochements, fig
 
-def predict_YOLOv8(image, model, size_model = 512, seuil = 0.01):
+def predict_YOLOv8(image, model, size_model = SIZE_YOLO, seuil = 0.01):
   '''
   on ne prédit que la classe "0", bâtiments
   '''
