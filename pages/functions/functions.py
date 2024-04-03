@@ -223,26 +223,6 @@ def affiche_contours(
       origin = 'lower')
   # ajout des formes
   shape_traces_to_plot = []
-
-  # formes de référence
-  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
-    list_x, list_y = shape.xy
-    shape_traces_to_plot.append(
-      go.Scatter(
-        x = np.array(list_x)[:2],
-        y = np.array(list_y)[:2]))
-    '''
-        line = dict(color='black', width=1),
-        mode = 'lines',
-        fill = 'toself',
-        fillcolor = 'blue',
-        opacity = 0.4,
-        text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
-        hoverinfo = 'text',
-        name = 'référence',
-        legendgroup = 'référence',
-        showlegend = (i==0)))
-    '''
  
   # formes prédites
   i_pred = 0
@@ -281,6 +261,26 @@ def affiche_contours(
             legendgroup = 'prédiction',
             showlegend = (i_pred==0)))
       i_pred += 1
+
+  # formes de référence
+  for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
+    list_x, list_y = shape.xy
+    shape_traces_to_plot.append(
+      go.Scatter(
+        x = np.array(list_x)[:2],
+        y = np.array(list_y)[:2],
+        name = 'référence',
+        legendgroup = 'référence',
+        showlegend = (i==0)))
+    '''
+        line = dict(color='black', width=1),
+        mode = 'lines',
+        fill = 'toself',
+        fillcolor = 'blue',
+        opacity = 0.4,
+        text = 'iou référence: {}<br>{} prédictions rapprochées'.format(iou, rapprochement),
+        hoverinfo = 'text',
+    '''
 
   fig.add_traces(shape_traces_to_plot)
   # mise en forme
