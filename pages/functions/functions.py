@@ -240,6 +240,7 @@ def affiche_contours(
         legendgroup = 'référence',
         showlegend = (i==0)))
   
+  '''
   # formes prédites
   i_pred = 0
   i_pred_delta = 0
@@ -277,6 +278,7 @@ def affiche_contours(
             legendgroup = 'prédiction',
             showlegend = (i_pred==0)))
       i_pred += 1
+  '''
 
   fig.add_traces(shape_traces_to_plot)
   # mise en forme
