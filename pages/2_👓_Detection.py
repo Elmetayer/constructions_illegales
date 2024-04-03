@@ -53,7 +53,8 @@ if pixel_size:
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
       st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
-      st.sidebar.caption('Echelle: {} m/pixel'.format(round(st.session_state['scale'], 1)))
+      with container_IGN:
+         st.caption('Echelle: {} m/pixel'.format(round(st.session_state['scale'], 1)))
 
 # chargement des données
 with container_IGN:
@@ -101,6 +102,8 @@ if load_button:
 ##############
 # prédiction #
 ##############
+      
+container_pred = st.sidebar.container(border=True)
 
 # modèle YOLO  
 @st.cache_resource
@@ -117,12 +120,14 @@ dict_models = {
 }
 
 # paramètres du modèle
-seuil_conf = st.sidebar.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
-seuil_iou = st.sidebar.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, value = 0.01, step = 0.01)
-seuil_area = st.sidebar.slider('Seuil de surface', min_value = 0, max_value = 500, value = 10, step = 10)
+with container_pred:
+   seuil_conf = st.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
+   seuil_iou = st.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, value = 0.01, step = 0.01)
+   seuil_area = st.slider('Seuil de surface', min_value = 0, max_value = 500, value = 10, step = 10)
 
 # bouton de calcul
-calcul_button = st.sidebar.button('prédire')
+with container_pred:
+   calcul_button = st.button('prédire')
 if calcul_button:
    if all((st.session_state['coords_bbox_Lambert'], 
           st.session_state['pixel_size'],
