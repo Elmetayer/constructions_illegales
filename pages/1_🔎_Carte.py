@@ -171,6 +171,7 @@ if st.session_state['bbox']:
     polygon_folium_bbox = folium.GeoJson(data = gdf_bbox, style_function = lambda x: style_bbox)
     fg.add_child(polygon_folium_bbox)
 
+# affichage de la carte
 m = folium.Map(location = CENTER_START, zoom_start = ZOOM_DEFAUT)
 if satellite:
     tile = folium.TileLayer(
