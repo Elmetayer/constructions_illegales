@@ -74,6 +74,11 @@ if load_button:
             bounds.geometry[0].y, bounds.geometry[0].x, bounds.geometry[1].y, bounds.geometry[1].x)
                response_wfs = requests.get(request_wfs)
                gdf_cadastre = gpd.GeoDataFrame.from_features(response_wfs.json()['features'])
+               if gdf_cadastre.shape[0]>0 :
+                  gdf_cadastre = gdf_cadastre.set_crs('EPSG:4326').to_crs('EPSG:2154')
+                  gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
+                  gdf_cadastre = gdf_cadastre.explode(index_parts = False)
+                  gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
                return orthophoto, gdf_cadastre
             else:
                return None, None
@@ -125,7 +130,7 @@ if calcul_button:
           st.session_state['pixel_size'],
           st.session_state['scale'],
           st.session_state['orthophoto'],
-          st.session_state['cadastre'])):
+          st.session_state['cadastre'] is not None)):
       with st.spinner('calcul de la prédiction ...'):
          @st.cache_data(show_spinner = False)
          def get_fig_prev(xmin, ymin, pixel_size, scale, _orthophoto, cadastre):
