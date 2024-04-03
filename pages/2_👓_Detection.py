@@ -124,6 +124,7 @@ with container_pred:
    seuil_conf = st.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
    seuil_iou = st.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, value = 0.01, step = 0.01)
    seuil_area = st.slider('Seuil de surface', min_value = 0, max_value = 500, value = 10, step = 10)
+   model_predict = st.selectbox('modèle', dict_models.keys())
 
 # bouton de calcul
 with container_pred:
