@@ -104,22 +104,22 @@ with col2:
   calcul_button = st.button('prédire')
 
 #################
-# image de zone #
+# données IGN #
 #################
 
-# mise à jour de la zone
+# mise à jour des données IGN
 if load_button:
-   st.session_state['bbox_selected'] = st.session_state['bbox']
-   st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
-   st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][1] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
-   with st.spinner('récupération des données IGN ...'):
-      st.session_state['orthophoto'], st.session_state['cadastre'] = get_IGN_data(
-         st.session_state['coords_bbox_Lambert'][0], 
-         st.session_state['coords_bbox_Lambert'][1], 
-         st.session_state['coords_bbox_Lambert'][2], 
-         st.session_state['coords_bbox_Lambert'][3], 
-         st.session_state['pixel_size'])
-      st.session_state['fig'] = None
+   if all((st.session_state['bbox'], st.session_state['pixel_size'])):
+      st.session_state['bbox_selected'] = st.session_state['bbox']
+      st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
+      with st.spinner('récupération des données IGN ...'):
+         st.session_state['orthophoto'], st.session_state['cadastre'] = get_IGN_data(
+            st.session_state['coords_bbox_Lambert'][0], 
+            st.session_state['coords_bbox_Lambert'][1], 
+            st.session_state['coords_bbox_Lambert'][2], 
+            st.session_state['coords_bbox_Lambert'][3], 
+            st.session_state['pixel_size'])
+         st.session_state['fig'] = None
 
 ##############
 # prédiction #
@@ -148,16 +148,20 @@ if pixel_size:
       st.sidebar.caption('Echelle: {} m/pixel'.format(round(st.session_state['scale'], 1)))
 
 # bouton de calcul
-fig = None
 if calcul_button:
-   with st.spinner('calcul de la prédiction ...'):
-      st.session_state['fig'] = get_fig_prev(
-         st.session_state['coords_bbox_Lambert'][0], 
-         st.session_state['coords_bbox_Lambert'][1], 
-         st.session_state['pixel_size'],
-         st.session_state['scale'],
-         st.session_state['orthophoto'],
-         st.session_state['cadastre'])
+   if all((st.session_state['coords_bbox_Lambert'], 
+          st.session_state['pixel_size'],
+          st.session_state['scale'],
+          st.session_state['orthophoto'],
+          st.session_state['cadastre'])):
+      with st.spinner('calcul de la prédiction ...'):
+         st.session_state['fig'] = get_fig_prev(
+            st.session_state['coords_bbox_Lambert'][0], 
+            st.session_state['coords_bbox_Lambert'][1], 
+            st.session_state['pixel_size'],
+            st.session_state['scale'],
+            st.session_state['orthophoto'],
+            st.session_state['cadastre'])
 
 # affichage de la prédiction
 if st.session_state['fig'] is not None:
