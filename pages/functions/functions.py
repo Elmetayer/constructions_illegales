@@ -144,6 +144,8 @@ def affiche_contours(
   # Shapes référence #
   ####################
 
+  shapes_ref = shapes_ref_ious = shapes_ref_rapprochements = None
+
   # on enlève les shapes extérieurs à la dalle pour diminuer le volume de données inutiles
   img_bound = shapely.Polygon(((bounds.left, bounds.bottom), (bounds.right, bounds.bottom), (bounds.right, bounds.top), (bounds.left, bounds.top), (bounds.left, bounds.bottom)))
   try:
@@ -161,6 +163,8 @@ def affiche_contours(
   ###############
   # Prédictions #
   ###############
+
+  shapes_predict = shapes_pred_ious = shapes_pred_rapprochements = None
 
   if model is not None:
     prev_masks = predict_function(image, model, size_model, seuil)
