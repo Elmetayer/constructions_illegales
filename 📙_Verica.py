@@ -1,7 +1,7 @@
 import streamlit as st
 from pathlib import Path
 
-MD_CONTENT = '/pages/content/description.md'
+MD_CONTENT = 'pages/content/description.md'
 
 # page principale
 # un mdenu s'affiche automatiquement à partir des fichiers .py qui sont présents dans /pages
