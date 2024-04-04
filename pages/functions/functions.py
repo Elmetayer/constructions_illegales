@@ -234,9 +234,7 @@ def affiche_contours(
       ImageOps.flip(image),
       x = np.linspace(bounds.left, bounds.right, resolution_target[0]),
       y = np.linspace(bounds.bottom, bounds.top, resolution_target[1]),
-      title = '{} bâtiments référence<br>{} zones détectées'.format(
-          str(nb_formes),
-          np.sum(np.array(shapes_pred_ious) <= seuil_iou)),
+      title = title,
       origin = 'lower')
   
   # ajout des formes
