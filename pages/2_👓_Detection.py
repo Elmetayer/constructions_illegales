@@ -95,7 +95,7 @@ if load_button:
                # graphique
                scale = (xmax - xmin)/pixel_size
                _, _, _, _, _, _, fig = affiche_contours(
-                  st.session_state['orthophoto'], None, None, None, 
+                  orthophoto, None, None, None, 
                   (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = None, seuil_iou = None,
