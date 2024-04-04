@@ -65,16 +65,18 @@ with container_IGN:
 if load_button:
    if 'bbox' in st.session_state:
       st.session_state['bbox_selected'] = st.session_state['bbox']
-   if all((st.session_state['bbox_selected'], st.session_state['pixel_size'])):
+   if all((st.session_state['bbox_selected'], st.session_state['pixel_size'], st.session_state['scale'])):
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
       with st.spinner('récupération des données IGN ...'):
          # @st.cache_data(show_spinner = False)
-         def get_IGN_data(xmin, ymin, xmax, ymax, pixel_size):
+         def get_IGN_data(xmin, ymin, xmax, ymax, pixel_size, scale):
             if all((xmin, ymin, xmax, ymax, pixel_size)):
+               # orthophoto
                request_wms = 'https://data.geopf.fr/wms-r?LAYERS=HR.ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
                xmin, ymin, xmax, ymax, pixel_size, pixel_size)
                response_wms = requests.get(request_wms).content
                orthophoto = Image.open(BytesIO(response_wms))
+               # cadastre
                bounds = gpd.GeoDataFrame(
                   {'Nom': ['min', 'max'],
                   'geometry': [shapely.geometry.Point(xmin, ymin), shapely.geometry.Point(xmax, ymax)]},
@@ -89,36 +91,24 @@ if load_button:
                   gdf_cadastre['geometry'] = gdf_cadastre['geometry'].make_valid()
                   gdf_cadastre = gdf_cadastre.explode(index_parts = False)
                   gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
-               return orthophoto, gdf_cadastre
-            else:
-               return None, None
-         st.session_state['orthophoto'], st.session_state['cadastre'] = get_IGN_data(
-            st.session_state['coords_bbox_Lambert'][0], 
-            st.session_state['coords_bbox_Lambert'][1], 
-            st.session_state['coords_bbox_Lambert'][2], 
-            st.session_state['coords_bbox_Lambert'][3], 
-            st.session_state['pixel_size'])
-      with st.spinner('affichage des données IGN ...'):
-         @st.cache_data(show_spinner = False)
-         def get_fig_IGN(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre):
-            if all((X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
+               # graphique
                _, _, _, _, _, _, fig = affiche_contours(
-                  _orthophoto, None, None, None, 
-                  (X0, YO, scale), gdf_shapes_ref = _gdf_cadastre,
+                  st.session_state['orthophoto'], None, None, None, 
+                  (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
                   resolution_target = (pixel_size, pixel_size),
                   seuil = None, seuil_iou = None,
                   seuil_area = None,
                   tolerance_polygone = None)
-               return fig
+               return orthophoto, gdf_cadastre, fig
             else:
-               return None
-         st.session_state['fig'] = get_fig_IGN(
+               return None, None, None
+         st.session_state['orthophoto'], st.session_state['cadastre'], st.session_state['fig'] = get_fig_IGN(
             st.session_state['coords_bbox_Lambert'][0], 
             st.session_state['coords_bbox_Lambert'][1], 
+            st.session_state['coords_bbox_Lambert'][2], 
+            st.session_state['coords_bbox_Lambert'][3], 
             st.session_state['pixel_size'],
-            st.session_state['scale'],
-            st.session_state['orthophoto'],
-            st.session_state['cadastre'])
+            st.session_state['scale'])
    else:
       st.write('⚠️ zone non sélectionnée')
 
