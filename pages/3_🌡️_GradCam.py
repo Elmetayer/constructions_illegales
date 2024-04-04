@@ -6,6 +6,8 @@ from pages.functions.gradcam import *
 st.set_page_config(page_title="GradCam", page_icon="🌡️", layout = 'wide')
 
 # variables de session
+if 'orthophoto_GradCam' not in st.session_state:
+   st.session_state['orthophoto_GradCam'] = None
 if 'fig_GradCam' not in st.session_state:
    st.session_state['fig_GradCam'] = None
 
@@ -48,7 +50,9 @@ result_display = st.sidebar.selectbox('afficher', DISPLAY_GRADCAM)
 calcul_button = st.sidebar.button('calculer')
 
 if calcul_button:
-    if st.session_state['orthophoto']:
+    if 'orthophoto' in st.session_state:
+        st.session_state['orthophoto_GradCam'] = st.session_state['orthophoto']
+    if st.session_state['orthophoto_GradCam']:
         with st.spinner('calcul du GradCam ...'):
             @st.cache_data(show_spinner = False)
             def get_gradCam(_image):
