@@ -55,25 +55,22 @@ if calcul_button:
     if st.session_state['orthophoto_GradCam']:
         with st.spinner('calcul du GradCam ...'):
             @st.cache_data(show_spinner = False)
-            def get_gradCam(_image, _model_YOLO_GradCam, _model_YOLO, result_display, normalize_boxes, abs_norm, norm_grads_act, grads_only):
+            def get_fig_gradCam(_image, _model_YOLO_GradCam, _model_YOLO, result_display, normalize_boxes, abs_norm, norm_grads_act, grads_only,
+                output_YOLO):
                 n_classes = len(_model_YOLO.names)
                 target_layers = [_model_YOLO_GradCam.model[i] for i in TARGET_LAYERS_IDX]
                 dict_heatmaps = make_gradCam_heatmap(_image, model_YOLO_GradCam, model_YOLO, target_layers, conf_threshold, n_classes, PREDICT_CLASSES,
                                             result_display = result_display, normalize_boxes = normalize_boxes, abs_norm = abs_norm, norm_grads_act = norm_grads_act,
                                             grads_only = grads_only)
-                return dict_heatmaps
-            dict_heatmaps = get_gradCam(st.session_state['orthophoto'], model_YOLO_GradCam, model_YOLO, result_display, normalize_boxes, 
-                abs_norm, norm_grads_act, grads_only)
-            @st.cache_data(show_spinner = False)
-            def get_fig_gradCam(dict_heatmaps, output_YOLO):
                 superposed_heatmaps = np.concatenate(
-                    [np.expand_dims(cv2.resize(dict_heatmaps[output_YOLO]['layers'][layer_id]['superposed_heatmap'], RESOLUTION), 0) for layer_id in dict_heatmaps[output_YOLO]['layers'].keys()])
+                        [np.expand_dims(cv2.resize(dict_heatmaps[output_YOLO]['layers'][layer_id]['superposed_heatmap'], RESOLUTION), 0) for layer_id in dict_heatmaps[output_YOLO]['layers'].keys()])
                 fig = px.imshow(superposed_heatmaps, animation_frame = 0)
                 fig.update_layout(
                     height = 900,
                     width = 900)
                 return fig
-            st.session_state['fig_GradCam'] = get_fig_gradCam(dict_heatmaps, output_YOLO)
+            st.session_state['fig_GradCam'] = get_fig_gradCam(st.session_state['orthophoto'], model_YOLO_GradCam, model_YOLO, result_display, normalize_boxes, 
+                abs_norm, norm_grads_act, grads_only, output_YOLO)
     else:
         st.write('⚠️ données IGN absentes')
 
