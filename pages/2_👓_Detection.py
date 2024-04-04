@@ -93,6 +93,7 @@ if load_button:
                   gdf_cadastre = gdf_cadastre.explode(index_parts = False)
                   gdf_cadastre = gdf_cadastre[gdf_cadastre['geometry'].geom_type.isin(['Polygon', 'MultiPolygon'])]
                # graphique
+               scale = (xmax - xmin)/pixel_size
                _, _, _, _, _, _, fig = affiche_contours(
                   st.session_state['orthophoto'], None, None, None, 
                   (xmin, ymin, scale), gdf_shapes_ref = gdf_cadastre,
@@ -103,14 +104,12 @@ if load_button:
                return orthophoto, gdf_cadastre, fig
             else:
                return None, None, None
-         scale = (st.session_state['coords_bbox_Lambert'][2] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
          st.session_state['orthophoto'], st.session_state['cadastre'], st.session_state['fig'] = get_fig_IGN(
             st.session_state['coords_bbox_Lambert'][0], 
             st.session_state['coords_bbox_Lambert'][1], 
             st.session_state['coords_bbox_Lambert'][2], 
             st.session_state['coords_bbox_Lambert'][3], 
-            st.session_state['pixel_size'],
-            scale)
+            st.session_state['pixel_size'])
    else:
       st.write('⚠️ zone non sélectionnée')
 
