@@ -98,7 +98,27 @@ if load_button:
             st.session_state['coords_bbox_Lambert'][2], 
             st.session_state['coords_bbox_Lambert'][3], 
             st.session_state['pixel_size'])
-         st.session_state['fig'] = None
+         with st.spinner('affichage des données IGN ...'):
+         @st.cache_data(show_spinner = False)
+         def get_fig_IGN(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre):
+            if all((X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
+               _, _, _, _, _, _, fig = affiche_contours(
+                  _orthophoto, None, None, None, 
+                  (X0, YO, scale), gdf_shapes_ref = _gdf_cadastre,
+                  resolution_target = (pixel_size, pixel_size),
+                  seuil = None, seuil_iou = None,
+                  seuil_area = None,
+                  tolerance_polygone = None)
+               return fig
+            else:
+               return None
+         st.session_state['fig'] = get_fig_IGN(
+            st.session_state['coords_bbox_Lambert'][0], 
+            st.session_state['coords_bbox_Lambert'][1], 
+            st.session_state['pixel_size'],
+            st.session_state['scale'],
+            st.session_state['orthophoto'],
+            st.session_state['cadastre'])
    else:
       st.write('⚠️ zone non sélectionnée')
 

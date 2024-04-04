@@ -136,21 +136,14 @@ def affiche_contours(
   - le calcul de l'iou "pixel par pixel"
   '''
 
-  # Prévision
-  prev_masks = predict_function(image, model, size_model, seuil)
-  
-  # Contours prédiction
-  mask_contours = []
-  for prev_mask in prev_masks:
-    prev_mask_resized = tf.squeeze(tf_image.resize(images = np.expand_dims(prev_mask, -1), size = resolution_target, method = 'nearest'))
-    mask_padded = np.pad(prev_mask_resized, ((1, 1),(1, 1)), mode = 'constant', constant_values = 0)
-    mask_contours += ski.measure.find_contours(image = mask_padded == 1)
-
   # utilisation des informations raster pour les coordonnées
   X0, Y0, coords_scale = coord_transform
   bounds = rasterio.coords.BoundingBox(X0, Y0, X0 + coords_scale*resolution_target[0], Y0 + coords_scale*resolution_target[1])
 
-  # Shapes référence
+  ####################
+  # Shapes référence #
+  ####################
+
   # on enlève les shapes extérieurs à la dalle pour diminuer le volume de données inutiles
   img_bound = shapely.Polygon(((bounds.left, bounds.bottom), (bounds.right, bounds.bottom), (bounds.right, bounds.top), (bounds.left, bounds.top), (bounds.left, bounds.bottom)))
   try:
@@ -160,53 +153,83 @@ def affiche_contours(
   except:
     # si erreur, on fait un test simple
     gdf_shapes_ref = gdf_shapes_ref[gdf_shapes_ref['geometry'].apply(isInMap([bounds.left, bounds.right], [bounds.bottom, bounds.top], False))]
-  
-  # Shapes prédiction
-  raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
-                                               0.0, -coords_scale, Y0 + coords_scale*resolution_target[1])
-  raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
-  shapes_xy = []
-  shapes_predict = []
-  # parcours de tous les contours prédits
-  for contour in mask_contours:
-    # on crée le polygone
-    polygon = approximate_polygon(contour, tolerance = tolerance_polygone)
-    # on tranforme en coordonnées
-    xy_polygon = raster_transformer.xy(polygon[:,0], polygon[:,1])
-    shapes_xy.append(xy_polygon)
-    # on crée le polygone
-    shapes_predict.append(shapely.Polygon(np.array(xy_polygon).transpose()))
-  # on filtre les surface trop petites
-  shapes_predict = [shape for shape in shapes_predict if shapely.area(shape) > seuil_area]
-  # Ajout des trous dans les shapes prédiction
-  shapes_predict_holes = []
-  shapes_holes = []
-  for shape_a in shapes_predict:
-    if shape_a not in shapes_holes:
-      shape_a_holes = []
-      for shape_b in shapes_predict:
-        if shape_a.contains_properly(shape_b):
-          shape_a_holes.append(shape_b.exterior)
-          shapes_holes.append(shape_b)
-      if len(shape_a_holes) > 0:
-        shapes_predict_holes.append(shapely.Polygon(shape_a.exterior, holes = shape_a_holes))
-      else:
-        shapes_predict_holes.append(shape_a)
-  gdf_shapes_predict = gpd.GeoDataFrame(geometry = gpd.GeoSeries(shapes_predict_holes, crs=2154), crs=2154)
 
-  # Intersection et IoUs
+  # shapes à afficher
   shapes_ref = gdf_shapes_ref['geometry'].exterior
   shapes_ref = [shape for shape in shapes_ref if shape is not None]
-  shapes_predict = gdf_shapes_predict['geometry'].exterior
-  # pour les formes prédites, on simplifie
-  shapes_predict = [shape.simplify(tolerance_display) for shape in shapes_predict if shape is not None]
-  # iou des prédictions
-  shapes_pred_ious, shapes_pred_rapprochements, _ = calcul_ious_shapes(shapes_predict, shapes_ref)
-  # iou des réferences
-  shapes_ref_ious, shapes_ref_rapprochements, _ = calcul_ious_shapes(shapes_ref, shapes_predict)
 
-  # génération du graphique
+  ###############
+  # Prédictions #
+  ###############
+
+  if model is not None:
+    prev_masks = predict_function(image, model, size_model, seuil)
+    
+    # Contours prédiction
+    mask_contours = []
+    for prev_mask in prev_masks:
+      prev_mask_resized = tf.squeeze(tf_image.resize(images = np.expand_dims(prev_mask, -1), size = resolution_target, method = 'nearest'))
+      mask_padded = np.pad(prev_mask_resized, ((1, 1),(1, 1)), mode = 'constant', constant_values = 0)
+      mask_contours += ski.measure.find_contours(image = mask_padded == 1)
+    
+    # Shapes prédiction
+    raster_transform = rasterio.transform.Affine(coords_scale, 0.0, X0,
+                                                0.0, -coords_scale, Y0 + coords_scale*resolution_target[1])
+    raster_transformer = rasterio.transform.AffineTransformer(raster_transform)
+    shapes_xy = []
+    shapes_predict = []
+    # parcours de tous les contours prédits
+    for contour in mask_contours:
+      # on crée le polygone
+      polygon = approximate_polygon(contour, tolerance = tolerance_polygone)
+      # on tranforme en coordonnées
+      xy_polygon = raster_transformer.xy(polygon[:,0], polygon[:,1])
+      shapes_xy.append(xy_polygon)
+      # on crée le polygone
+      shapes_predict.append(shapely.Polygon(np.array(xy_polygon).transpose()))
+    # on filtre les surface trop petites
+    shapes_predict = [shape for shape in shapes_predict if shapely.area(shape) > seuil_area]
+    # Ajout des trous dans les shapes prédiction
+    shapes_predict_holes = []
+    shapes_holes = []
+    for shape_a in shapes_predict:
+      if shape_a not in shapes_holes:
+        shape_a_holes = []
+        for shape_b in shapes_predict:
+          if shape_a.contains_properly(shape_b):
+            shape_a_holes.append(shape_b.exterior)
+            shapes_holes.append(shape_b)
+        if len(shape_a_holes) > 0:
+          shapes_predict_holes.append(shapely.Polygon(shape_a.exterior, holes = shape_a_holes))
+        else:
+          shapes_predict_holes.append(shape_a)
+    gdf_shapes_predict = gpd.GeoDataFrame(geometry = gpd.GeoSeries(shapes_predict_holes, crs=2154), crs=2154)
+
+    # shapes à afficher
+    shapes_predict = gdf_shapes_predict['geometry'].exterior
+    # on simplifie
+    shapes_predict = [shape.simplify(tolerance_display) for shape in shapes_predict if shape is not None]
+    
+    ########################
+    # Intersection et IoUs #
+    ########################
+    
+    # iou des prédictions
+    shapes_pred_ious, shapes_pred_rapprochements, _ = calcul_ious_shapes(shapes_predict, shapes_ref)
+    # iou des réferences
+    shapes_ref_ious, shapes_ref_rapprochements, _ = calcul_ious_shapes(shapes_ref, shapes_predict)
+
+  ###########################
+  # génération du graphique #
+  ###########################
+
   nb_formes = len(shapes_ref)
+  if model is not None:
+    title = '{} bâtiments référence<br>{} zones détectées'.format(
+            str(nb_formes),
+            np.sum(np.array(shapes_pred_ious) <= seuil_iou))
+  else:
+    title = '{} bâtiments référence'.format(str(nb_formes))
   fig = px.imshow(
       ImageOps.flip(image),
       x = np.linspace(bounds.left, bounds.right, resolution_target[0]),
@@ -215,46 +238,48 @@ def affiche_contours(
           str(nb_formes),
           np.sum(np.array(shapes_pred_ious) <= seuil_iou)),
       origin = 'lower')
+  
   # ajout des formes
   shape_traces_to_plot = []
  
   # formes prédites
-  i_pred = 0
-  i_pred_delta = 0
-  for shape, iou, rapprochement in zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements):
-    x_coords, y_coords = shape.xy
-    if iou <= seuil_iou:
-      shape_traces_to_plot.append(
-        go.Scatter(
-            x = x_coords.tolist(),
-            y = y_coords.tolist(),
-            line = dict(color='black', width=1),
-            mode = 'lines',
-            fill = 'toself',
-            fillcolor = 'red',
-            opacity = 0.4,
-            text = 'iou prédiction: {}'.format(iou),
-            hoverinfo = 'text',
-            name = 'écart',
-            legendgroup = 'écart',
-            showlegend = (i_pred_delta==0)))
-      i_pred_delta += 1
-    else:
-      shape_traces_to_plot.append(
-        go.Scatter(
-            x = x_coords.tolist(),
-            y = y_coords.tolist(),
-            line = dict(color='black', width=1),
-            mode = 'lines',
-            fill = 'toself',
-            fillcolor = '#ffed6f',
-            opacity = 0.4,
-            text = 'iou prédiction: {}<br>{} bâtiments rapprochés'.format(iou, rapprochement),
-            hoverinfo = 'text',
-            name = 'prédiction',
-            legendgroup = 'prédiction',
-            showlegend = (i_pred==0)))
-      i_pred += 1
+  if model is not None:
+    i_pred = 0
+    i_pred_delta = 0
+    for shape, iou, rapprochement in zip(shapes_predict, shapes_pred_ious, shapes_pred_rapprochements):
+      x_coords, y_coords = shape.xy
+      if iou <= seuil_iou:
+        shape_traces_to_plot.append(
+          go.Scatter(
+              x = x_coords.tolist(),
+              y = y_coords.tolist(),
+              line = dict(color='black', width=1),
+              mode = 'lines',
+              fill = 'toself',
+              fillcolor = 'red',
+              opacity = 0.4,
+              text = 'iou prédiction: {}'.format(iou),
+              hoverinfo = 'text',
+              name = 'écart',
+              legendgroup = 'écart',
+              showlegend = (i_pred_delta==0)))
+        i_pred_delta += 1
+      else:
+        shape_traces_to_plot.append(
+          go.Scatter(
+              x = x_coords.tolist(),
+              y = y_coords.tolist(),
+              line = dict(color='black', width=1),
+              mode = 'lines',
+              fill = 'toself',
+              fillcolor = '#ffed6f',
+              opacity = 0.4,
+              text = 'iou prédiction: {}<br>{} bâtiments rapprochés'.format(iou, rapprochement),
+              hoverinfo = 'text',
+              name = 'prédiction',
+              legendgroup = 'prédiction',
+              showlegend = (i_pred==0)))
+        i_pred += 1
 
   # formes de référence
   for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
