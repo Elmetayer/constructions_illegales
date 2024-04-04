@@ -280,6 +280,8 @@ def affiche_contours(
         i_pred += 1
 
   # formes de référence
+  if model is  None:
+    shapes_ref_ious = shapes_ref_rapprochements = [0] * len(shapes_ref)
   for i, (shape, iou, rapprochement) in enumerate(zip(shapes_ref, shapes_ref_ious, shapes_ref_rapprochements)):
     x_coords, y_coords = shape.xy
     shape_traces_to_plot.append(
