@@ -98,7 +98,7 @@ if load_button:
             st.session_state['coords_bbox_Lambert'][2], 
             st.session_state['coords_bbox_Lambert'][3], 
             st.session_state['pixel_size'])
-         with st.spinner('affichage des données IGN ...'):
+      with st.spinner('affichage des données IGN ...'):
          @st.cache_data(show_spinner = False)
          def get_fig_IGN(X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre):
             if all((X0, YO, pixel_size, scale, _orthophoto, _gdf_cadastre is not None)):
