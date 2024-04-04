@@ -51,7 +51,8 @@ container_IGN = st.sidebar.container(border=True)
    
 # taille en pixel
 with container_IGN:
-   pixel_size = st.slider('Taille (pixel)', min_value = PIXEL_SIZE_MIN, max_value = PIXEL_SIZE_MAX, value = st.session_state['pixel_size'], step = 100)
+   pixel_size = st.slider('Taille (pixel)', min_value = PIXEL_SIZE_MIN, max_value = PIXEL_SIZE_MAX, 
+      value = st.session_state['pixel_size'], step = 100)
 if pixel_size:
    st.session_state['pixel_size'] = pixel_size
    if all(st.session_state['coords_bbox_Lambert']):
@@ -65,11 +66,11 @@ with container_IGN:
 if load_button:
    if 'bbox' in st.session_state:
       st.session_state['bbox_selected'] = st.session_state['bbox']
-   if all((st.session_state['bbox_selected'], st.session_state['pixel_size'], st.session_state['scale'])):
+   if all((st.session_state['bbox_selected'], st.session_state['pixel_size'])):
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
       with st.spinner('récupération des données IGN ...'):
-         # @st.cache_data(show_spinner = False)
-         def get_IGN_data(xmin, ymin, xmax, ymax, pixel_size, scale):
+         @st.cache_data(show_spinner = False)
+         def get_IGN_data(xmin, ymin, xmax, ymax, pixel_size):
             if all((xmin, ymin, xmax, ymax, pixel_size)):
                # orthophoto
                request_wms = 'https://data.geopf.fr/wms-r?LAYERS=HR.ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}'.format(
@@ -102,13 +103,14 @@ if load_button:
                return orthophoto, gdf_cadastre, fig
             else:
                return None, None, None
+         scale = (st.session_state['coords_bbox_Lambert'][2] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
          st.session_state['orthophoto'], st.session_state['cadastre'], st.session_state['fig'] = get_fig_IGN(
             st.session_state['coords_bbox_Lambert'][0], 
             st.session_state['coords_bbox_Lambert'][1], 
             st.session_state['coords_bbox_Lambert'][2], 
             st.session_state['coords_bbox_Lambert'][3], 
             st.session_state['pixel_size'],
-            st.session_state['scale'])
+            scale)
    else:
       st.write('⚠️ zone non sélectionnée')
 
