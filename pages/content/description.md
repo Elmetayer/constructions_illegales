@@ -62,9 +62,8 @@ Les données sont récupérées depuis les API IGN (voir [documentation](https:/
 
 **Images satellites (BDORTHO)**
 
-Exemple de requête :
-
-https://data.geopf.fr/wms-r?LAYERS=HR.ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}
+> Exemple de requête :
+> https://data.geopf.fr/wms-r?LAYERS=HR.ORTHOIMAGERY.ORTHOPHOTOS&FORMAT=image/tiff&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&STYLES=&CRS=EPSG:2154&BBOX={},{},{},{}&WIDTH={}&HEIGHT={}
 
 **Cadastre**
 
@@ -79,7 +78,6 @@ Données cadastrales compilées par [Etalab](https://geoservices.ign.fr/bdortho)
 + communes
 + batiments (code 01 pour un bâtiment dur et code 02 pour un bâtiment léger)
 
-Exemple de requête :
-
-https://data.geopf.fr/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typename=CADASTRALPARCELS.PARCELLAIRE_EXPRESS:batiment&outputformat=application/json&BBOX={},{},{},{} 
+> Exemple de requête :
+> https://data.geopf.fr/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typename=CADASTRALPARCELS.PARCELLAIRE_EXPRESS:batiment&outputformat=application/json&BBOX={},{},{},{} 
 
