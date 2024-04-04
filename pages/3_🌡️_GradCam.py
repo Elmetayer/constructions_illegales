@@ -38,7 +38,7 @@ model_YOLO_GradCam = getmodel_YOLO_GradCam()
 conf_threshold = st.sidebar.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
 grads_only = st.sidebar.toggle('gradients seuls')
 normalize_boxes = st.sidebar.toggle('bbox')
-norm_grads_act = st.sidebar.toggle('normer grad. & act.')
+norm_grads_act = st.sidebar.toggle('normer gradients, activations')
 abs_norm = st.sidebar.toggle('normer')
 output_YOLO = st.sidebar.selectbox('sortie à analyser', OUTPUT_YOLO)
 result_display = st.sidebar.selectbox('afficher', DISPLAY_GRADCAM)
@@ -55,19 +55,20 @@ if calcul_button:
     if st.session_state['orthophoto_GradCam']:
         with st.spinner('calcul du GradCam ...'):
             @st.cache_data(show_spinner = False)
-            def get_gradCam(_image):
-                n_classes = len(model_YOLO.names)
-                target_layers = [model_YOLO_GradCam.model[i] for i in TARGET_LAYERS_IDX]
+            def get_gradCam(_image, _model_YOLO_GradCam, _model_YOLO, result_display, normalize_boxes, abs_norm, norm_grads_act, norm_grads_act):
+                n_classes = len(_model_YOLO.names)
+                target_layers = [_model_YOLO_GradCam.model[i] for i in TARGET_LAYERS_IDX]
                 dict_heatmaps = make_gradCam_heatmap(_image, model_YOLO_GradCam, model_YOLO, target_layers, conf_threshold, n_classes, PREDICT_CLASSES,
                                             result_display = result_display, normalize_boxes = normalize_boxes, abs_norm = abs_norm, norm_grads_act = norm_grads_act,
                                             grads_only = norm_grads_act)
                 return dict_heatmaps
-            dict_heatmaps = get_gradCam(st.session_state['orthophoto'])
+            dict_heatmaps = get_gradCam(st.session_state['orthophoto'], model_YOLO_GradCam, model_YOLO, result_display, normalize_boxes, 
+                abs_norm, norm_grads_act, norm_grads_act)
             @st.cache_data(show_spinner = False)
             def get_fig_gradCam(dict_heatmaps, output_YOLO):
                 superposed_heatmaps = np.concatenate(
                     [np.expand_dims(cv2.resize(dict_heatmaps[output_YOLO]['layers'][layer_id]['superposed_heatmap'], RESOLUTION), 0) for layer_id in dict_heatmaps[output_YOLO]['layers'].keys()])
-                fig = px.imshow(superposed_heatmaps, animation_frame=0)
+                fig = px.imshow(superposed_heatmaps, animation_frame = 0)
                 fig.update_layout(
                     height = 900,
                     width = 900)
