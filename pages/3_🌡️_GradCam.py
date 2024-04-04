@@ -5,10 +5,10 @@ from pages.functions.gradcam import *
 # titre de la page
 st.set_page_config(page_title="GradCam", page_icon="🌡️", layout = 'wide')
 
-if 'fig' not in st.session_state:
-   st.session_state['fig'] = None
-
 # variables de session
+if 'fig_GradCam' not in st.session_state:
+   st.session_state['fig_GradCam'] = None
+
 OUTPUT_YOLO = ['boxes', 'conf', 'logits', 'all']
 DISPLAY_GRADCAM = ['activations', 'gradients', 'cam_heatmap']
 YOLO_PATH = 'models/YOLOv8_20240124_bruno.pt'
@@ -33,7 +33,7 @@ def getmodel_YOLO_GradCam():
     return YOLO(YOLO_PATH)
 model_YOLO_GradCam = getmodel_YOLO().model
 
-conf_threshold = st.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
+conf_threshold = st.sidebar.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
 grads_only = st.sidebar.toggle('gradients seuls')
 normalize_boxes = st.sidebar.toggle('bbox')
 norm_grads_act = st.sidebar.toggle('normer grad. & act.')
