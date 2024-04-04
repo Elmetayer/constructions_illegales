@@ -48,7 +48,7 @@ result_display = st.sidebar.selectbox('afficher', DISPLAY_GRADCAM)
 calcul_button = st.sidebar.button('calculer')
 
 if calcul_button:
-     if st.session_state['orthophoto']:
+    if st.session_state['orthophoto']:
         with st.spinner('calcul du GradCam ...'):
             @st.cache_data(show_spinner = False)
             def get_gradCam(_image):
@@ -69,6 +69,8 @@ if calcul_button:
                     width = 900)
                 return fig
             st.session_state['fig_GradCam'] = get_fig_gradCam(dict_heatmaps, output_YOLO)
+    else:
+        st.write('⚠️ données IGN absentes')
 
 # affichage du GradCam
 if st.session_state['fig_GradCam'] is not None:
