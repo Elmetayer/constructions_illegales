@@ -32,8 +32,8 @@ model_YOLO = getmodel_YOLO()
 # modèle YOLO GradCam
 @st.cache_resource
 def getmodel_YOLO_GradCam():
-    return YOLO(YOLO_PATH)
-model_YOLO_GradCam = getmodel_YOLO().model
+    return YOLO(YOLO_PATH).model
+model_YOLO_GradCam = getmodel_YOLO_GradCam()
 
 conf_threshold = st.sidebar.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
 grads_only = st.sidebar.toggle('gradients seuls')
