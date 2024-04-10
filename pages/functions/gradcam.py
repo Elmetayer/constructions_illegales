@@ -87,7 +87,6 @@ class yolov8_GradCamLoss(torch.nn.Module):
 
 def make_gradCam_heatmap(image, model_GradCam, model, target_layers, conf_threshold, n_classes, predict_classes,
                          result_display, normalize_boxes = False, abs_norm = False, norm_grads_act = False,
-                         grads_only = False,
                          names_result = OUTPUT_YOLO,
                          img_weigth = 0.5):
   # préparation des images
@@ -147,10 +146,7 @@ def make_gradCam_heatmap(image, model_GradCam, model, target_layers, conf_thresh
         else:
           dict_heatmaps[name_result]['layers'][id_layer]['activations'] = (np.squeeze(activations) - np.min(activations)) / (np.max(activations) - np.min(activations))
           dict_heatmaps[name_result]['layers'][id_layer]['gradients'] = (np.squeeze(grads) - np.min(grads)) / (np.max(grads) - np.min(grads))
-        if grads_only:
-          dict_heatmaps[name_result]['layers'][id_layer]['cam_heatmap'] = np.squeeze(grads)
-        else:
-          dict_heatmaps[name_result]['layers'][id_layer]['cam_heatmap'] = np.squeeze(activations) * np.squeeze(grads)
+        dict_heatmaps[name_result]['layers'][id_layer]['cam_heatmap'] = np.squeeze(activations) * np.squeeze(grads)
         # mise à jour du min/max
         heatmap_min = min(heatmap_min, np.min(dict_heatmaps[name_result]['layers'][id_layer]['cam_heatmap']))
         heatmap_max = max(heatmap_max, np.max(dict_heatmaps[name_result]['layers'][id_layer]['cam_heatmap']))

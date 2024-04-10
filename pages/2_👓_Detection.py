@@ -111,7 +111,7 @@ if load_button:
             st.session_state['coords_bbox_Lambert'][3], 
             st.session_state['pixel_size'])
    else:
-      st.write('⚠️ zone non sélectionnée')
+      st.warning('⚠️ zone non sélectionnée')
 
 ##############
 # prédiction #
@@ -185,7 +185,7 @@ if calcul_button:
             model_predict,
             seuil_conf, seuil_iou, seuil_area)
    else:
-      st.write('⚠️ données IGN absentes')
+      st.warning('⚠️ données IGN absentes')
 
 # affichage de la prédiction
 if st.session_state['fig'] is not None:
