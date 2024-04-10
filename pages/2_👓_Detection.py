@@ -18,15 +18,6 @@ import pages.functions.config
 st.set_page_config(page_title="Détection", page_icon="👓", layout = 'wide')
 
 # variables de session
-PIXEL_SIZE_MIN = 500
-PIXEL_SIZE_MAX = 2000
-PIXEL_SIZE_DEFAULT = 1000
-PIXEL_SCALE_REF = 0.2
-SIZE_MAX = 1000
-SEUIL_CONF_DEFAULT = 0.05
-SEUIL_IOU_DEFAULT = 0.01
-SEUIL_AREA_DEFAULT = 10
-
 if 'bbox_selected' not in st.session_state:
    st.session_state['bbox_selected'] = None
 if 'coords_bbox_Lambert' not in st.session_state:
@@ -35,7 +26,7 @@ if 'coords_bbox_Lambert' not in st.session_state:
    else:
       st.session_state['coords_bbox_Lambert'] = get_bbox_Lambert(st.session_state['bbox_selected'])
 if 'pixel_size' not in st.session_state:
-   st.session_state['pixel_size'] = PIXEL_SIZE_DEFAULT
+   st.session_state['pixel_size'] = config.detection.PIXEL_SIZE_DEFAULT
 if 'scale' not in st.session_state:
    if all(st.session_state['coords_bbox_Lambert']):
       st.session_state['scale'] = (st.session_state['coords_bbox_Lambert'][2] - st.session_state['coords_bbox_Lambert'][0])/st.session_state['pixel_size']
@@ -48,7 +39,7 @@ if 'cadastre' not in st.session_state:
 if 'orthophoto' not in st.session_state:
    st.session_state['orthophoto'] = None
 if 'seuil_conf' not in st.session_state:
-   st.session_state['seuil_conf'] = SEUIL_CONF_DEFAULT
+   st.session_state['seuil_conf'] = config.detection.SEUIL_CONF_DEFAULT
 
 #################
 # données IGN #
@@ -58,7 +49,7 @@ container_IGN = st.sidebar.container(border=True)
    
 # taille en pixel
 with container_IGN:
-   pixel_size = st.slider('Taille (pixel)', min_value = PIXEL_SIZE_MIN, max_value = PIXEL_SIZE_MAX, 
+   pixel_size = st.slider('Taille (pixel)', min_value = config.detection.PIXEL_SIZE_MIN, max_value = config.detection.PIXEL_SIZE_MAX, 
       value = st.session_state['pixel_size'], step = 100)
 if pixel_size:
    st.session_state['pixel_size'] = pixel_size
@@ -129,13 +120,13 @@ container_pred = st.sidebar.container(border=True)
 # modèle YOLO  
 @st.cache_resource
 def getmodel_YOLO():
-    return YOLO('models/YOLOv8_20240124_bruno.pt')
+    return YOLO(config.model_YOLO.YOLO_PATH)
 model_YOLO = getmodel_YOLO()
 
 # modèle Unet  
 @st.cache_resource
 def getmodel_Unet():
-    return load_model('models/UNet07_res512_23_12_23.h5')
+    return load_model(config.model_Unet.UNET_PATH)
 model_Unet = getmodel_Unet()
 
 # paramètres des modèles
@@ -143,20 +134,20 @@ dict_models = {
    'YOLOv8' : {
       'predict_function' : predict_YOLOv8, 
       'model' : model_YOLO,
-      'size' : 512
+      'size' : config.model_YOLO.YOLO_SIZE
    },
    'Unet' : {
       'predict_function' : predict_Unet, 
       'model' : model_Unet,
-      'size' : (512, 512)
+      'size' : config.model_Unet.UNET_RESOLUTION
    }
 }
 
 # paramètres du modèle
 with container_pred:
    seuil_conf = st.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = st.session_state['seuil_conf'], step = 0.05)
-   seuil_iou = st.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, value = SEUIL_IOU_DEFAULT, step = 0.01)
-   seuil_area = st.slider('Seuil de surface', min_value = 0, max_value = 500, value = SEUIL_AREA_DEFAULT, step = 10)
+   seuil_iou = st.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, value = config.detection.SEUIL_IOU_DEFAULT, step = 0.01)
+   seuil_area = st.slider('Seuil de surface', min_value = 0, max_value = 500, value = config.detection.SEUIL_AREA_DEFAULT, step = 10)
    model_predict = st.selectbox('modèle', dict_models.keys())
 
 # bouton de calcul

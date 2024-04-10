@@ -40,7 +40,7 @@ def search_lat_lon(lat_lon):
     fonction qui renvoie une adresse à partir de coordonnées
     utilise l'API de géocodage inversée de l'IGN
     '''
-    result = ADRESSE_DEFAUT
+    result = config.carte.ADRESSE_DEFAUT
     request_geocodage = 'https://data.geopf.fr/geocodage/reverse?lat={}&lon={}&index=address&limit=1&returntruegeometry=false'.format(
         lat_lon[0], lat_lon[1])
     response_geocodage = requests.get(request_geocodage).content
@@ -57,7 +57,7 @@ def update_point():
         st.session_state['last_coords'] = st.session_state['new_point']
         st.session_state['adresse_text'] = st.session_state['new_adresse']
         st.session_state['new_point'] = None
-        st.session_state['new_adresse'] = ADRESSE_DEFAUT
+        st.session_state['new_adresse'] = config.carte.ADRESSE_DEFAUT
         st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
         st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
     
@@ -65,44 +65,34 @@ def update_point():
 st.set_page_config(page_title='Carte', page_icon='🔎', layout = 'wide')
 
 # variables de session
-CENTER_START = [48.858370, 2.294481]
-ADRESSE_DEFAUT = 'non defini'
-SIZE_DEFAUT = 200
-SIZE_MIN = 100
-SIZE_MAX = 1000
-MODE_DEFAUT = 'haut/gauche'
-MODES = [MODE_DEFAUT, 'centre']
-ZOOM_DEFAUT = 14
-EPSILON_COORD = 0.00001
-
 if 'last_coords' not in st.session_state:
-    st.session_state['last_coords'] = CENTER_START
+    st.session_state['last_coords'] = config.carte.CENTER_START
 if 'adresse_text' not in st.session_state:
     st.session_state['adresse_text'] = search_lat_lon(st.session_state['last_coords'])
 # convention pour la bbox : xmin, ymin, xmax, ymax
 if 'bbox' not in st.session_state:
-    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], SIZE_DEFAUT, MODE_DEFAUT)
+    st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], config.carte.SIZE_DEFAUT, config.carte.MODE_DEFAUT)
 if 'map_center' not in st.session_state:
     st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
 if 'new_point' not in st.session_state:
     st.session_state['new_point'] = None
 if 'new_adresse' not in st.session_state:
-    st.session_state['new_adresse'] = ADRESSE_DEFAUT
+    st.session_state['new_adresse'] = config.carte.ADRESSE_DEFAUT
 if 'warning_adresse' not in st.session_state:
     st.session_state['warning_adresse'] = None    
 if 'last_clicked' not in st.session_state:
     st.session_state['last_clicked'] = None
 if 'bbox_mode' not in st.session_state:
-    st.session_state['bbox_mode'] = MODE_DEFAUT
+    st.session_state['bbox_mode'] = config.carte.MODE_DEFAUT
 if 'bbox_size' not in st.session_state:
-    st.session_state['bbox_size'] = SIZE_DEFAUT
+    st.session_state['bbox_size'] = config.carte.SIZE_DEFAUT
 
 # fond de carte
 satellite = st.sidebar.toggle('satellite')
 
 # mode d'affichage et taille de la bouding box
-bbox_mode = st.sidebar.radio('Bounding box', MODES, index = MODES.index(st.session_state['bbox_mode']), horizontal = True)
-bbox_size = st.sidebar.slider('Taille (m)', SIZE_MIN, SIZE_MAX, st.session_state['bbox_size'], 50)
+bbox_mode = st.sidebar.radio('Bounding box', config.carte.MODES, index = MODES.index(st.session_state['bbox_mode']), horizontal = True)
+bbox_size = st.sidebar.slider('Taille (m)', config.carte.SIZE_MIN, config.carte.SIZE_MAX, st.session_state['bbox_size'], 50)
 if bbox_mode:
     st.session_state['bbox_mode'] = bbox_mode
     st.session_state['bbox'] = get_bbox(st.session_state['last_coords'], bbox_size, bbox_mode)
@@ -127,10 +117,12 @@ if st.session_state['new_point']:
         cancel_button = st.button('annuler le point')
 if cancel_button:
     st.session_state['new_point'] = None
-    st.session_state['adresse_clicked'] = ADRESSE_DEFAUT
+    st.session_state['adresse_clicked'] = config.carte.ADRESSE_DEFAUT
     st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
     # astuce pour provoquer le rafraîchissement
-    st.session_state['map_center'] = [st.session_state['map_center'][0]+EPSILON_COORD, st.session_state['map_center'][1]+EPSILON_COORD]
+    st.session_state['map_center'] = [
+        st.session_state['map_center'][0] + config.carte.EPSILON_COORD, 
+        st.session_state['map_center'][1] + config.carte.EPSILON_COORD]
     st.rerun()
 
 # centrage sur l'adresse entrée
@@ -138,7 +130,9 @@ center_button = st.button('centrer la carte')
 if center_button:
     st.session_state['map_center'] = get_bbox_center(st.session_state['bbox'])
     # astuce pour provoquer le rafraîchissement
-    st.session_state['map_center'] = [st.session_state['map_center'][0]+EPSILON_COORD, st.session_state['map_center'][1]+EPSILON_COORD]
+    st.session_state['map_center'] = [
+        st.session_state['map_center'][0] + config.carte.EPSILON_COORD, 
+        st.session_state['map_center'][1] + config.carte.EPSILON_COORD]
     
 fg = folium.FeatureGroup(name = 'centre carte')
 
@@ -172,7 +166,7 @@ if st.session_state['bbox']:
     fg.add_child(polygon_folium_bbox)
 
 # affichage de la carte
-m = folium.Map(location = st.session_state['last_coords'], zoom_start = ZOOM_DEFAUT)
+m = folium.Map(location = st.session_state['last_coords'], zoom_start = config.carte.ZOOM_DEFAUT)
 if satellite:
     tile = folium.TileLayer(
             tiles = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',

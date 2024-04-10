@@ -16,11 +16,6 @@ from ultralytics.utils.ops import xywh2xyxy, non_max_suppression
 
 import pages.functions.config
 
-OUTPUT_YOLO = ['boxes', 'conf', 'logits', 'all']
-SIZE = 512
-RESOLUTION = (SIZE, SIZE)
-IOU_THRESHOLD = 0.7
-
 class yolov8_ActivationsAndGradients:
 
     def __init__(self, model, target_layers, conf_threshold, n_classes, predict_classes):
@@ -87,19 +82,19 @@ class yolov8_GradCamLoss(torch.nn.Module):
             loss += data[i, j]
       return loss
 
-def make_gradCam_heatmap(image, model_GradCam, model, target_layers, conf_threshold, n_classes, predict_classes,
+def make_gradCam_heatmap(image, model_GradCam, model, target_layers, conf_threshold, predict_classes = config.model_YOLO.YOLO_PREDICT_CLASSES,
                          result_display, normalize_boxes = False, abs_norm = False, norm_grads_act = False,
-                         names_result = OUTPUT_YOLO,
-                         img_weigth = 0.5):
+                         names_result = config.gradcam.OUTPUT_YOLO,
+                         img_weigth = config.gradcam.IMG_WEIGHT):
   # préparation des images
   image_array = np.asarray(image)
   # on redimensionne l'image de départ à la taille de la sortie du modèle
-  image_array_resized = cv2.resize(image_array, RESOLUTION)
+  image_array_resized = cv2.resize(image_array, config.model_YOLO.YOLO_RESOLUTION)
   # pour les calculs de gradient
-  input_tensor = torch.from_numpy(np.expand_dims(np.asarray(torchvision.transforms.functional.resize(image, RESOLUTION)).transpose(2, 0, 1)/255, 0)).to(torch.float32)
+  input_tensor = torch.from_numpy(np.expand_dims(np.asarray(torchvision.transforms.functional.resize(image, config.model_YOLO.YOLO_RESOLUTION)).transpose(2, 0, 1)/255, 0)).to(torch.float32)
 
   # coordonnées des boxes prédites par le modèle
-  result = model.predict(input_tensor, save = False, classes = predict_classes, imgsz = SIZE, conf = conf_threshold, iou = IOU_THRESHOLD, verbose=False)
+  result = model.predict(input_tensor, save = False, classes = predict_classes, imgsz = config.model_YOLO.YOLO_SIZE, conf = conf_threshold, iou = config.gradcam.IOU_THRESHOLD_YOLO, verbose=False)
   boxes_coords = result[0].boxes.data[:,:4].cpu().detach().numpy().astype(np.int32)
 
   # données de sorties de la fonction
@@ -111,6 +106,7 @@ def make_gradCam_heatmap(image, model_GradCam, model, target_layers, conf_thresh
   model_GradCam.eval()
 
   # passe forward
+  n_classes = len(model.names)
   activations_and_grads = yolov8_ActivationsAndGradients(model_GradCam, target_layers, conf_threshold, n_classes, predict_classes)
   forward_results = activations_and_grads(input_tensor)
 

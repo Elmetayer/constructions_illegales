@@ -3,8 +3,6 @@ from pathlib import Path
 
 import pages.functions.config
 
-# MD_CONTENT = 'pages/content/description.md'
-
 # page principale
 # un mdenu s'affiche automatiquement à partir des fichiers .py qui sont présents dans /pages
 # l'ordre du menu est l'ordre alphabétique des pages
