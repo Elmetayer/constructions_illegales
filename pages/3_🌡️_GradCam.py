@@ -12,6 +12,11 @@ if 'orthophoto_GradCam' not in st.session_state:
    st.session_state['orthophoto_GradCam'] = None
 if 'fig_GradCam' not in st.session_state:
    st.session_state['fig_GradCam'] = None
+if 'seuil_conf_GradCam' not in st.session_state:
+   if 'seuil_conf' not in st.session_state:
+    st.session_state['seuil_conf_GradCam'] = config.detection.SEUIL_CONF_DEFAULT
+   else
+    st.session_state['seuil_conf_GradCam'] = st.session_state['seuil_conf']
 
 ##############
 # Paramètres #
@@ -29,7 +34,7 @@ def getmodel_YOLO_GradCam():
     return YOLO(config.model_YOLO.YOLO_PATH).model
 model_YOLO_GradCam = getmodel_YOLO_GradCam()
 
-conf_threshold = st.sidebar.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
+conf_threshold = st.sidebar.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = st.session_state['seuil_conf_GradCam'], step = 0.05)
 normalize_boxes = st.sidebar.toggle('bbox')
 norm_grads_act = st.sidebar.toggle('normer gradients, activations')
 abs_norm = st.sidebar.toggle('normer')
@@ -65,7 +70,7 @@ if calcul_button:
                 conf_threshold, normalize_boxes, 
                 abs_norm, norm_grads_act, output_YOLO)
     else:
-        st.write('⚠️ données IGN absentes')
+        st.warning('⚠️ données IGN absentes')
 
 # affichage du GradCam
 if st.session_state['fig_GradCam'] is not None:
