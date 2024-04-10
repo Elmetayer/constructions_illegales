@@ -92,7 +92,7 @@ if 'bbox_size' not in st.session_state:
 satellite = st.sidebar.toggle('satellite')
 
 # mode d'affichage et taille de la bouding box
-bbox_mode = st.sidebar.radio('Bounding box', config.carte.MODES, index = MODES.index(st.session_state['bbox_mode']), horizontal = True)
+bbox_mode = st.sidebar.radio('Bounding box', config.carte.MODES, index = config.carte.MODES.index(st.session_state['bbox_mode']), horizontal = True)
 bbox_size = st.sidebar.slider('Taille (m)', config.carte.SIZE_MIN, config.carte.SIZE_MAX, st.session_state['bbox_size'], 50)
 if bbox_mode:
     st.session_state['bbox_mode'] = bbox_mode
