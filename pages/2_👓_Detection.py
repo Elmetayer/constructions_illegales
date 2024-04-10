@@ -12,6 +12,8 @@ from pages.functions.functions import *
 from pages.functions.yolo import *
 from pages.functions.unet import *
 
+import pages.functions.config
+
 # titre de la page
 st.set_page_config(page_title="Détection", page_icon="👓", layout = 'wide')
 
@@ -21,6 +23,9 @@ PIXEL_SIZE_MAX = 2000
 PIXEL_SIZE_DEFAULT = 1000
 PIXEL_SCALE_REF = 0.2
 SIZE_MAX = 1000
+SEUIL_CONF_DEFAULT = 0.05
+SEUIL_IOU_DEFAULT = 0.01
+SEUIL_AREA_DEFAULT = 10
 
 if 'bbox_selected' not in st.session_state:
    st.session_state['bbox_selected'] = None
@@ -42,6 +47,8 @@ if 'cadastre' not in st.session_state:
    st.session_state['cadastre'] = None
 if 'orthophoto' not in st.session_state:
    st.session_state['orthophoto'] = None
+if 'seuil_conf' not in st.session_state:
+   st.session_state['seuil_conf'] = SEUIL_CONF_DEFAULT
 
 #################
 # données IGN #
@@ -147,9 +154,9 @@ dict_models = {
 
 # paramètres du modèle
 with container_pred:
-   seuil_conf = st.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = 0.05, step = 0.05)
-   seuil_iou = st.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, value = 0.01, step = 0.01)
-   seuil_area = st.slider('Seuil de surface', min_value = 0, max_value = 500, value = 10, step = 10)
+   seuil_conf = st.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = st.session_state['seuil_conf'], step = 0.05)
+   seuil_iou = st.slider('Seuil IoU', min_value = 0.01, max_value = 0.99, value = SEUIL_IOU_DEFAULT, step = 0.01)
+   seuil_area = st.slider('Seuil de surface', min_value = 0, max_value = 500, value = SEUIL_AREA_DEFAULT, step = 10)
    model_predict = st.selectbox('modèle', dict_models.keys())
 
 # bouton de calcul

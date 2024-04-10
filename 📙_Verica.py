@@ -1,7 +1,9 @@
 import streamlit as st
 from pathlib import Path
 
-MD_CONTENT = 'pages/content/description.md'
+import pages.functions.config
+
+# MD_CONTENT = 'pages/content/description.md'
 
 # page principale
 # un mdenu s'affiche automatiquement à partir des fichiers .py qui sont présents dans /pages
@@ -9,5 +11,5 @@ MD_CONTENT = 'pages/content/description.md'
 
 st.set_page_config(page_title="Verification du cadastre", page_icon="📙", layout = 'wide')
 
-st.markdown(Path(MD_CONTENT).read_text(), unsafe_allow_html=True)
+st.markdown(Path(config.assets.MD_CONTENT).read_text(), unsafe_allow_html=True)
 

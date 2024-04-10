@@ -14,6 +14,8 @@ from ultralytics.nn.tasks import attempt_load_weights
 from ultralytics.utils.torch_utils import intersect_dicts
 from ultralytics.utils.ops import xywh2xyxy, non_max_suppression
 
+import pages.functions.config
+
 OUTPUT_YOLO = ['boxes', 'conf', 'logits', 'all']
 SIZE = 512
 RESOLUTION = (SIZE, SIZE)
