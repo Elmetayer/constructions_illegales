@@ -1,7 +1,7 @@
 import streamlit as st
 from pathlib import Path
 
-import pages.functions.config
+from pages.functions import config
 
 # page principale
 # un mdenu s'affiche automatiquement à partir des fichiers .py qui sont présents dans /pages
