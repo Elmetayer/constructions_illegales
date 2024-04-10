@@ -14,7 +14,7 @@ from ultralytics.nn.tasks import attempt_load_weights
 from ultralytics.utils.torch_utils import intersect_dicts
 from ultralytics.utils.ops import xywh2xyxy, non_max_suppression
 
-import pages.functions.config
+from pages.functions import config
 
 class yolov8_ActivationsAndGradients:
 
