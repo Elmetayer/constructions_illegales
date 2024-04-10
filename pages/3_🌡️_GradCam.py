@@ -48,12 +48,12 @@ if calcul_button:
     if st.session_state['orthophoto_GradCam']:
         with st.spinner('calcul du GradCam ...'):
             @st.cache_data(show_spinner = False)
-            def get_fig_gradCam(_image, _model_YOLO_GradCam, _model_YOLO, result_display, conf_threshold, normalize_boxes, abs_norm, norm_grads_act,
+            def get_fig_gradCam(_image, _model_YOLO_GradCam, _model_YOLO, result_display, 
+                                conf_threshold, normalize_boxes, abs_norm, norm_grads_act,
                 output_YOLO):
                 target_layers = [_model_YOLO_GradCam.model[i] for i in config.gradcam.TARGET_LAYERS_IDX_YOLO]
-                dict_heatmaps = make_gradCam_heatmap(_image, model_YOLO_GradCam, model_YOLO, target_layers, conf_threshold,
-                                            result_display = result_display, normalize_boxes = normalize_boxes, abs_norm = abs_norm, 
-                                            norm_grads_act = norm_grads_act)
+                dict_heatmaps = make_gradCam_heatmap(_image, model_YOLO_GradCam, model_YOLO, target_layers, conf_threshold, result_display, 
+                                                     normalize_boxes = normalize_boxes, abs_norm = abs_norm, norm_grads_act = norm_grads_act)
                 superposed_heatmaps = np.concatenate(
                         [np.expand_dims(cv2.resize(dict_heatmaps[output_YOLO]['layers'][layer_id]['superposed_heatmap'], config.gradcam.RESOLUTION_RESULT), 0) for layer_id in dict_heatmaps[output_YOLO]['layers'].keys()])
                 fig = px.imshow(superposed_heatmaps, animation_frame = 0)
