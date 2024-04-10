@@ -7,7 +7,7 @@ from io import BytesIO
 import shapely
 import geopandas as gpd
 
-import pages.functions.config
+from pages.functions import config
 
 def search_adresse():
     '''

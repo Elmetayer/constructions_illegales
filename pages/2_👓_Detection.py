@@ -11,8 +11,7 @@ from keras.models import load_model
 from pages.functions.functions import *
 from pages.functions.yolo import *
 from pages.functions.unet import *
-
-import pages.functions.config
+from pages.functions import config
 
 # titre de la page
 st.set_page_config(page_title="Détection", page_icon="👓", layout = 'wide')

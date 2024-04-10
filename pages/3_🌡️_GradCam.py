@@ -2,8 +2,7 @@ import plotly.express as px
 import streamlit as st
 
 from pages.functions.gradcam import *
-
-import pages.functions.config
+from pages.functions import config
 
 # titre de la page
 st.set_page_config(page_title="GradCam", page_icon="🌡️", layout = 'wide')
