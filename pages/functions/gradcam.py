@@ -205,7 +205,7 @@ def make_gradCam_heatmap_YOLO(image, model_GradCam, model, target_layers, conf_t
       for name_result in names_result:
         if id_layer in dict_heatmaps[name_result]['layers'].keys():
           heatmap_data = np.sum(dict_heatmaps[name_result]['layers'][id_layer][result_display], 0)
-          heatmap = cv2.resize(heatmap_data, config.gradcam_YOLO.RESOLUTION_RESULT)
+          heatmap = cv2.resize(heatmap_data, config.model_YOLO.YOLO_RESOLUTION)
           if normalize_boxes:
             # on extrait la heatmap pour chaque box
             blank_heatmaps = []
@@ -232,7 +232,7 @@ def make_gradCam_heatmap_YOLO(image, model_GradCam, model, target_layers, conf_t
           dict_heatmaps[name_result]['layers'][id_layer]['superposed_heatmap'] = np.uint8(superposed_img)
         else:
           dict_heatmaps[name_result]['layers'][id_layer] = {}
-          dict_heatmaps[name_result]['layers'][id_layer]['superposed_heatmap'] = np.zeros(RESOLUTION + (3,), dtype=np.uint8)
+          dict_heatmaps[name_result]['layers'][id_layer]['superposed_heatmap'] = np.zeros(config.model_YOLO.YOLO_RESOLUTION + (3,), dtype=np.uint8)
 
       # création de la heatmap moyenne
       normalized_heatmaps = np.concatenate([np.expand_dims(normalized_heatmap, 0) for normalized_heatmap in all_normalized_heatmap])

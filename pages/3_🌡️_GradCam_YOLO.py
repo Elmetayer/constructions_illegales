@@ -64,7 +64,7 @@ if calcul_button:
                 dict_heatmaps = make_gradCam_heatmap_YOLO(_image, model_YOLO_GradCam, model_YOLO, target_layers, conf_threshold, result_display, 
                                                      normalize_boxes = normalize_boxes, abs_norm = abs_norm, norm_grads_act = norm_grads_act)
                 superposed_heatmaps = np.concatenate(
-                        [np.expand_dims(dict_heatmaps[output_YOLO]['layers'][layer_id]['superposed_heatmap'], 0) for layer_id in dict_heatmaps[output_YOLO]['layers'].keys()])
+                        [np.expand_dims(cv2.resize(dict_heatmaps[output_YOLO]['layers'][layer_id]['superposed_heatmap'], config.gradcam_YOLO.RESOLUTION_RESULT), 0) for layer_id in dict_heatmaps[output_YOLO]['layers'].keys()])
                 fig = px.imshow(superposed_heatmaps, animation_frame = 0)
                 fig.update_layout(
                     height = 900,
