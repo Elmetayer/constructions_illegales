@@ -205,7 +205,7 @@ def make_gradCam_heatmap_YOLO(image, model_GradCam, model, target_layers, conf_t
       for name_result in names_result:
         if id_layer in dict_heatmaps[name_result]['layers'].keys():
           heatmap_data = np.sum(dict_heatmaps[name_result]['layers'][id_layer][result_display], 0)
-          heatmap = cv2.resize(heatmap_data, config.RESOLUTION_RESULT)
+          heatmap = cv2.resize(heatmap_data, config.gradcam_YOLO.RESOLUTION_RESULT)
           if normalize_boxes:
             # on extrait la heatmap pour chaque box
             blank_heatmaps = []
