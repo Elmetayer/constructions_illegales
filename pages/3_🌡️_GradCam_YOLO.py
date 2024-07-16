@@ -69,6 +69,13 @@ if calcul_button:
                 fig.update_layout(
                     height = 900,
                     width = 900)
+
+                for button in fig.layout.updatemenus[0].buttons:
+                    button['args'][1]['frame']['redraw'] = True
+
+                for k in range(len(fig.frames)):
+                    fig.frames[k]['layout'].update(title_text=f'My title {k}')
+
                 return fig
             st.session_state['fig_GradCam_YOLO'] = get_fig_gradCam_YOLO(st.session_state['orthophoto'], model_YOLO_GradCam, model_YOLO, result_display, 
                 conf_threshold, normalize_boxes, 
