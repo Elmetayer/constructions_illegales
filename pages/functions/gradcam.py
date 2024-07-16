@@ -6,6 +6,7 @@ import matplotlib as mpl
 import torch
 import torchvision
 
+import ultralytics 
 from ultralytics import YOLO
 from ultralytics.engine.results import Results, Boxes
 from ultralytics.models.yolo.detect.predict import DetectionPredictor
