@@ -15,7 +15,7 @@ if 'fig_GradCam' not in st.session_state:
 if 'seuil_conf_GradCam' not in st.session_state:
    if 'seuil_conf' not in st.session_state:
     st.session_state['seuil_conf_GradCam'] = config.detection.SEUIL_CONF_DEFAULT
-   else
+   else:
     st.session_state['seuil_conf_GradCam'] = st.session_state['seuil_conf']
 
 ##############

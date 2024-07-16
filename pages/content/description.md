@@ -28,7 +28,11 @@ La technique "GradCam", pour "Gradient-weighted Class Activation Mapping" s’ap
 
 **Le calcul n'est disponible que pour le modèle YOLO**
 
-> références : [pytorch-grad-cam](https://github.com/jacobgil/pytorch-grad-cam), [YOLO-V8-CAM](https://github.com/rigvedrs/YOLO-V8-CAM)
+> références utilisées :
+
++ package [pytorch-grad-cam](https://github.com/jacobgil/pytorch-grad-cam)
++ package [YOLO-V8-CAM](https://github.com/rigvedrs/YOLO-V8-CAM)
++ [dépôt](https://github.com/z1069614715/objectdetection_script/blob/master/yolo-gradcam/yolov8_heatmap.py) avec un exemple qui semble fonctionner
 
 ## Données utilisées
 
