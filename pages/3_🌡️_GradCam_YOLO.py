@@ -81,7 +81,7 @@ if st.session_state['fig_GradCam_YOLO'] is not None:
    st.plotly_chart(st.session_state['fig_GradCam_YOLO'], use_container_width = True)
 else:
     if st.session_state['orthophoto_GradCam_YOLO']:
-        st.warning('⏳ st.warning('⏳ récupérer les données IGN, puis lancer la prédiction')lancer le calcul GradCam')
+        st.warning('⏳ lancer le calcul GradCam')
     else:
         st.warning('⏳ récupérer les données IGN, puis lancer le calcul GradCam')
 
