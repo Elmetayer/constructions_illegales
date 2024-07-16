@@ -26,13 +26,13 @@ paramètres : 1 941 979
 
 La technique "GradCam", pour "Gradient-weighted Class Activation Mapping" s’appuie sur le calcul du gradient d’une valeur de perte ("loss") pour une classe c donnée par rapport au résultat de la fonction d’activation en sortie d’un layer donné (typiquement, un layer de convolution).
 
-**Le calcul n'est disponible que pour le modèle YOLO**
+**Le calcul n'est disponible que pour le modèle YOLO** *(en cours pour le modèle Unet ...)*
 
 > références utilisées :
-
-+ package [pytorch-grad-cam](https://github.com/jacobgil/pytorch-grad-cam)
-+ package [YOLO-V8-CAM](https://github.com/rigvedrs/YOLO-V8-CAM)
-+ [dépôt](https://github.com/z1069614715/objectdetection_script/blob/master/yolo-gradcam/yolov8_heatmap.py) avec un exemple qui semble fonctionner
+>
+> + package [pytorch-grad-cam](https://github.com/jacobgil/pytorch-grad-cam)
+> + package [YOLO-V8-CAM](https://github.com/rigvedrs/YOLO-V8-CAM)
+> + [dépôt](https://github.com/z1069614715/objectdetection_script/blob/master/yolo-gradcam/yolov8_heatmap.py) avec un exemple qui semble fonctionner
 
 ## Données utilisées
 
