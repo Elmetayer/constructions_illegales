@@ -39,8 +39,8 @@ all_target_layers = st.sidebar.toggle('tous les layers')
 normalize_boxes = st.sidebar.toggle('bbox')
 norm_grads_act = st.sidebar.toggle('normer gradients, activations')
 abs_norm = st.sidebar.toggle('normer')
-output_YOLO = st.sidebar.selectbox('sortie à analyser', config.gradcam.OUTPUT_YOLO)
-result_display = st.sidebar.selectbox('afficher', config.gradcam.DISPLAY_GRADCAM)
+output_YOLO = st.sidebar.selectbox('sortie à analyser', config.gradcam_YOLO.OUTPUT_YOLO)
+result_display = st.sidebar.selectbox('afficher', config.gradcam_YOLO.DISPLAY_GRADCAM)
 
 #######################
 # calcul et affichage #
@@ -58,7 +58,7 @@ if calcul_button:
                                 conf_threshold, normalize_boxes, abs_norm, norm_grads_act,
                 output_YOLO):
                 if all_target_layers:
-                    target_layers = [_model_YOLO_GradCam.model[i] for i in config.gradcam.TARGET_LAYERS_IDX_YOLO]
+                    target_layers = [_model_YOLO_GradCam.model[i] for i in config.gradcam_YOLO.TARGET_LAYERS_IDX_YOLO]
                 else:
                     target_layers = get_last_conv_layers_YOLO(_model_YOLO_GradCam)
                 dict_heatmaps = make_gradCam_heatmap_YOLO(_image, model_YOLO_GradCam, model_YOLO, target_layers, conf_threshold, result_display, 
