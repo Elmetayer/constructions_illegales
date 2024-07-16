@@ -31,11 +31,11 @@ class model_Unet:
 	UNET_PATH = 'models/UNet07_res512_23_12_23.h5'
 	UNET_RESOLUTION = (512, 512)
 
-class gradcam:
-	OUTPUT_YOLO = ['boxes', 'conf', 'logits', 'all']
+class gradcam_YOLO:
+	OUTPUT_YOLO = ['boxes', 'conf', 'logits masques', 'other', 'all']
 	DISPLAY_GRADCAM = ['activations', 'gradients', 'cam_heatmap']
 	TARGET_LAYERS_IDX_YOLO = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 15, 16, 18, 19, 21]
 	IOU_THRESHOLD_YOLO = 0.7
 	IMG_WEIGHT = 0.5
-	RESOLUTION_RESULT = (256, 256)
+	RESOLUTION_RESULT = (512, 512)
 	

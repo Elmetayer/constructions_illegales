@@ -2,6 +2,8 @@
 
 L'outil met en oeuvre un modèle de deep learning pour reconnaître des bâtiments à partir d'une image satellite. Les bâtiments détectés sont ensuite comparés aux données cadastrales afin de détecter les différences.
 
+[Dépôt de code](https://github.com/Elmetayer/constructions_illegales)
+
 ## Modèles
 
 Plusieurs modèles peuvent être utilisés :
@@ -93,4 +95,4 @@ Seuls les objets de type "bâtiment" sont récupérés.
 
 ## Fonctionnement de l'outil
 
-
+*à compléter ...*

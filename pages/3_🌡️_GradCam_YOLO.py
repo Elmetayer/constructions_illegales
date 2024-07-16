@@ -35,6 +35,7 @@ def getmodel_YOLO_GradCam():
 model_YOLO_GradCam = getmodel_YOLO_GradCam()
 
 conf_threshold = st.sidebar.slider('Seuil de confiance', min_value = 0.05, max_value = 0.95, value = st.session_state['seuil_conf_GradCam_YOLO'], step = 0.05)
+all_target_layers = st.sidebar.toggle('tous les layers')
 normalize_boxes = st.sidebar.toggle('bbox')
 norm_grads_act = st.sidebar.toggle('normer gradients, activations')
 abs_norm = st.sidebar.toggle('normer')
@@ -56,11 +57,14 @@ if calcul_button:
             def get_fig_gradCam_YOLO(_image, _model_YOLO_GradCam, _model_YOLO, result_display, 
                                 conf_threshold, normalize_boxes, abs_norm, norm_grads_act,
                 output_YOLO):
-                target_layers = [_model_YOLO_GradCam.model[i] for i in config.gradcam.TARGET_LAYERS_IDX_YOLO]
+                if all_target_layers:
+                    target_layers = [_model_YOLO_GradCam.model[i] for i in config.gradcam.TARGET_LAYERS_IDX_YOLO]
+                else:
+                    target_layers = get_last_conv_layers_YOLO(_model_YOLO_GradCam)
                 dict_heatmaps = make_gradCam_heatmap_YOLO(_image, model_YOLO_GradCam, model_YOLO, target_layers, conf_threshold, result_display, 
                                                      normalize_boxes = normalize_boxes, abs_norm = abs_norm, norm_grads_act = norm_grads_act)
                 superposed_heatmaps = np.concatenate(
-                        [np.expand_dims(cv2.resize(dict_heatmaps[output_YOLO]['layers'][layer_id]['superposed_heatmap'], config.gradcam.RESOLUTION_RESULT), 0) for layer_id in dict_heatmaps[output_YOLO]['layers'].keys()])
+                        [np.expand_dims(dict_heatmaps[output_YOLO]['layers'][layer_id]['superposed_heatmap'], 0) for layer_id in dict_heatmaps[output_YOLO]['layers'].keys()])
                 fig = px.imshow(superposed_heatmaps, animation_frame = 0)
                 fig.update_layout(
                     height = 900,
