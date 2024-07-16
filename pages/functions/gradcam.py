@@ -234,7 +234,7 @@ def make_gradCam_heatmap_YOLO(image, model_GradCam, model, target_layers, conf_t
           dict_heatmaps[name_result]['layers'][id_layer]['superposed_heatmap'] = np.zeros(RESOLUTION + (3,), dtype=np.uint8)
 
       # création de la heatmap moyenne
-      normalized_heatmaps = np.concatenate([np.expand_dims(normalized_heatmap), 0) for normalized_heatmap in all_normalized_heatmap])
+      normalized_heatmaps = np.concatenate([np.expand_dims(normalized_heatmap, 0) for normalized_heatmap in all_normalized_heatmap])
       normalized_heatmap_mean = np.mean(normalized_heatmaps, 0)
       jet = mpl.colormaps['jet']
       jet_colors = jet(np.arange(256))[:, :3]
