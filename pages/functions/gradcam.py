@@ -82,7 +82,7 @@ class yolov8_GradCamLoss(torch.nn.Module):
             loss += data[i, j]
       return loss
 
-def make_gradCam_heatmap(image, model_GradCam, model, target_layers, conf_threshold, result_display, 
+def make_gradCam_heatmap_YOLO(image, model_GradCam, model, target_layers, conf_threshold, result_display, 
                          normalize_boxes = False, abs_norm = False, norm_grads_act = False,
                          predict_classes = config.model_YOLO.YOLO_PREDICT_CLASSES,
                          names_result = config.gradcam.OUTPUT_YOLO,
